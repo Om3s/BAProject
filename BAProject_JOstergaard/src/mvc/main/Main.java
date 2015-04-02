@@ -1,7 +1,7 @@
-package controller;
+package mvc.main;
 
-import model.*;
-import view.*;
+import mvc.model.CaseReport;
+import mvc.view.Mainframe;
 
 public class Main {
 
@@ -9,6 +9,7 @@ public class Main {
 		System.out.println("Hello World!");
 		CaseReport report = new CaseReport();
 		Mainframe mFrame = new Mainframe();
+		mFrame.setVisible(true);
 	}
 
 }
