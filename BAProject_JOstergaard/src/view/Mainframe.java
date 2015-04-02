@@ -1,5 +1,7 @@
 package view;
 
-public class Mainframe {
+import javax.swing.JFrame;
 
+public class Mainframe extends JFrame {
+	
 }
