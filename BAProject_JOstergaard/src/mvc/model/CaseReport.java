@@ -9,6 +9,10 @@ public class CaseReport {
 	private Date dateOpened, dateClosed;
 	private String address, category, point;
 	
+	public CaseReport(){
+		
+	}
+	
 	public CaseReport(int caseID, String dateOpened, String dateClosed, String address, String category, String point){
 		this.caseID = caseID;
 		this.address = address;
@@ -16,12 +20,17 @@ public class CaseReport {
 		this.point = point;
 		try {
 			this.dateOpened = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(dateOpened);
-			this.dateClosed = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(dateClosed);
+			if(!dateClosed.isEmpty()){
+				this.dateClosed = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(dateClosed);
+			} else {
+				this.dateClosed = null;
+			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(this.dateOpened);
-		System.out.println(this.dateClosed);
+	}
+	
+	public String toString(){
+		return "CaseReport[CaseID: "+this.caseID+", Opened: "+this.dateOpened+", Closed: "+this.dateClosed+", Address: "+this.address+", Category: "+this.category+", Point: "+this.point+"]";
 	}
 }
