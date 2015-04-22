@@ -1,49 +1,40 @@
 package mvc.main;
 
-import java.io.File;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-import org.geotools.data.FileDataStore;
-import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
-import org.geotools.map.MapContent;
-import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
-import org.geotools.swing.JMapFrame;
-import org.geotools.swing.data.JFileDataStoreChooser;
+import org.openstreetmap.gui.jmapviewer.DefaultMapController;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
+import mvc.controller.MapController;
 import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
 
 public class Main {
-
+	private static boolean testMode = true;
+	
 	public static void main(String[] args) throws IOException {
-//		CrimeCaseDatabase dataBase = new CrimeCaseDatabase("dat\\Case_Data_from_San_Francisco_311__SF311_.csv");
-//		
-//		Mainframe mFrame = new Mainframe();
-//		mFrame.setVisible(true);
+		CrimeCaseDatabase dataBase;
+		if(testMode){
+			dataBase = new CrimeCaseDatabase("dat\\testData.csv");
+		} else {
+			dataBase = new CrimeCaseDatabase("dat\\Case_Data_from_San_Francisco_311__SF311_.csv");
+		}
+		System.out.println("Create Map...");
+		JMapViewer map = new JMapViewer();
+		map.setDisplayPositionByLatLon(37.7, -122, 7);
 		
-		// display a data store file chooser dialog for shapefiles
-        File file = JFileDataStoreChooser.showOpenFile("shp", null);
-        if (file == null) {
-            return;
-        }
-
-        FileDataStore store = FileDataStoreFinder.getDataStore(file);
-        SimpleFeatureSource featureSource = store.getFeatureSource();
-
-        // Create a map content and add our shapefile to it
-        MapContent map = new MapContent();
-        map.setTitle("Quickstart");
-        
-        Style style = SLD.createSimpleStyle(featureSource.getSchema());
-        Layer layer = new FeatureLayer(featureSource, style);
-        map.addLayer(layer);
-
-        // Now display the map
-        JMapFrame.showMap(map);
+		System.out.println("Create Controller...");
+		DefaultMapController controller = new MapController(map, dataBase);
+		controller.setMovementMouseButton(MouseEvent.BUTTON2);
+		controller.setDoubleClickZoomEnabled(false);
+		
+		System.out.println("Create UI...");
+		Mainframe mFrame = new Mainframe(map);
+		mFrame.setVisible(true);
+		
+		mFrame.repaint();
+		map.updateUI();
 	}
 
 }

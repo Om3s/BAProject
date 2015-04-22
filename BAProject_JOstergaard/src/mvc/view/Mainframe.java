@@ -23,13 +23,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextField;
+
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
+
 import java.awt.Font;
 
 public class Mainframe extends JFrame {
-	
-	public Mainframe(){
+	private JMapViewer geoMap;
+	public Mainframe(JMapViewer map){
 		super();
-		
+		this.geoMap = map;
 		this.init();
 	}
 	
@@ -39,10 +42,10 @@ public class Mainframe extends JFrame {
 		int screenWidth, screenHeight, frameWidth, frameHeight;
 		screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		frameWidth = (int) (screenWidth / 4);
+		frameWidth = (int) (screenWidth / 3);
 		frameHeight = (int) (frameWidth);
 		this.setSize(frameWidth, frameHeight);
-		this.setLocation((int)(screenWidth / 2 - frameWidth / 2), (int)(screenHeight / 2 - frameHeight / 2 ));
+		this.setLocation((int)((screenWidth / 2) - (frameWidth / 2)), (int)((screenHeight / 2) - (frameHeight / 2 )));
 		
 		//Layout:
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -76,6 +79,9 @@ public class Mainframe extends JFrame {
 		gbc_geomap_panel.gridx = 0;
 		gbc_geomap_panel.gridy = 0;
 		analysis_panel.add(geomap_panel, gbc_geomap_panel);
+		geomap_panel.add(this.geoMap);
+		GridLayout gl_geomap_panel = new GridLayout();
+		geomap_panel.setLayout(gl_geomap_panel);
 		
 		JPanel trend_panel = new JPanel();
 		trend_panel.setBackground(Color.CYAN);
