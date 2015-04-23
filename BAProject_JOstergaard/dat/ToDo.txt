@@ -1,0 +1,10 @@
+- Zeitleiste (Von - Bis Filter rechts und links von der Leiste oder im Filtermenü)
+- Filtermenü:
+	- Monatliche/Wöchentliche/Tägliche Betrachtung (pro Zeitleistenraster)
+	- Feld mit selektierbaren Wochentagen, sodass nur diese betrachtet werden. (Mehrfachselektion möglich)
+	- Dropdownmenü mit allen Crime Categories (Standardauswahl "All Categories")
+	- Von - Bis Daten für die Zeitleiste (evtl. mit graphischen Kalender, um Usereingabefehler zu vermeiden)
+	- Apply button
+	- Reset button
+- Entsprechenden Datensatz auf Karte zeichnen lassen
+- Heatmap visualisierung umsetzen.
