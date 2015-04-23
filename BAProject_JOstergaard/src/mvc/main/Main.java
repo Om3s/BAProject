@@ -11,7 +11,7 @@ import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
 
 public class Main {
-	private static boolean testMode = true;
+	private static boolean testMode = false;
 	
 	public static void main(String[] args) throws IOException {
 		CrimeCaseDatabase dataBase;
@@ -35,6 +35,7 @@ public class Main {
 		
 		mFrame.repaint();
 		map.updateUI();
+		System.out.println("All Done, program is running.");
 	}
 
 }

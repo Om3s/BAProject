@@ -35,18 +35,14 @@ public class CrimeCaseDatabase {
 		this.importData(path);
 		
 		// Testing:
-//		try {
-//			this.addAllCasesBetweenDatesToCurrentData(new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("07/01/2008 12:00:01 AM"), new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("07/01/2008 02:00:00 AM"));
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//		for(CaseReport cR : this.currentData){
-//			System.out.println(cR);
-//		}
-		System.out.println("Test Weekday Mon: "+Calendar.MONDAY);
-		System.out.println("Test Weekday Wed: "+Calendar.WEDNESDAY);
-		System.out.println("Test Weekday Sat: "+Calendar.SATURDAY);
-		System.out.println("Test Weekday Sun: "+Calendar.SUNDAY);
+		try {
+			this.selectAllCasesBetweenDatesToCurrentData(new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("07/01/2008 12:00:01 AM"), new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("07/01/2008 02:00:00 AM"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		for(CaseReport cR : this.currentData){
+			System.out.println(cR);
+		}
 	}
 	
 	private void importData(String path){
@@ -78,7 +74,7 @@ public class CrimeCaseDatabase {
 		System.out.println(this.allData.size() + " entries loaded.");
 		System.out.println(emptyEntries+" empty entries ignored.");
 		System.out.println("Sorting by Datetime...");
-		sortCurrentDataByDateTime();
+		sortAllDataByDateTime();
 		System.out.println("Sorting done in "+((System.currentTimeMillis() - tempTime) / 1000f)+" sec");
 		tempTime = System.currentTimeMillis()-startTime;
 		System.out.println("Indexing...");
@@ -108,8 +104,8 @@ public class CrimeCaseDatabase {
 		}
 	}
 	
-	private void sortCurrentDataByDateTime(){
-		Collections.sort(this.currentData, new Comparator<CaseReport>(){
+	private void sortAllDataByDateTime(){
+		Collections.sort(this.allData, new Comparator<CaseReport>(){
 			@Override
 			public int compare(CaseReport cR1, CaseReport cR2){
 				return cR1.compareTo(cR2);
