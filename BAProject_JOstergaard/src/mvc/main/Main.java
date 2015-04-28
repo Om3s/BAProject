@@ -11,7 +11,7 @@ import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
 
 public class Main {
-	private static boolean testMode = false;
+	private static boolean testMode = true;
 	
 	public static void main(String[] args) throws IOException {
 		CrimeCaseDatabase dataBase;
