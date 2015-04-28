@@ -462,7 +462,7 @@ public class Mainframe extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				System.out.println("Options applied.");
+				System.out.println("Apply button.");
 			}
 		});
 		
@@ -470,7 +470,7 @@ public class Mainframe extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				System.out.println("default setup.");
+				System.out.println("Default button.");
 				
 				//loadDefaul
 			}
