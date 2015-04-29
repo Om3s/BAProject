@@ -23,15 +23,11 @@ public class CaseReport {
 		this.address = address;
 		this.category = category;
 		this.point = fromStringToGeoPoint(point);
-		try {
-			this.dateOpened = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(dateOpened);
-			if(!dateClosed.isEmpty()){
-				this.dateClosed = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(dateClosed);
-			} else {
-				this.dateClosed = null;
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
+		this.dateOpened = new Date(Long.valueOf(dateOpened));
+		if(!dateClosed.isEmpty()){
+			this.dateClosed = new Date(Long.valueOf(dateClosed));
+		} else {
+			this.dateClosed = null;
 		}
 	}
 	
