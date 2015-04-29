@@ -58,8 +58,8 @@ public class CrimeCaseDatabase {
 		}
 		
 		// Testing:
-		String fromDateTest = "07/01/2008 12:00:01 AM";
-		String toDateTest = "08/01/2008 08:00:00 AM";
+		String fromDateTest = "01/01/2008 12:00:01 AM";
+		String toDateTest = "03/01/2008 23:59:99 PM";
 //		try {
 //			this.selectAllCasesBetweenTwoDates(new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(fromDateTest), new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(toDateTest));
 //		} catch (ParseException e) {

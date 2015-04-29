@@ -16,6 +16,7 @@ import java.awt.Insets;
 import java.awt.Color;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -23,6 +24,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
+import mvc.controller.MainframeController;
 
 import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
@@ -43,14 +46,66 @@ import javax.swing.BoxLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 
 public class Mainframe extends JFrame {
 	private JMapViewer geoMap;
+	private ArrayList<Integer> activeWeekdays;
+	private MainframeController controller;
+	private final JFileChooser fileChooser;
+	private final JMenuItem fileMenu_item_load;
+	private final JMenuItem fileMenu_item_exit;
+	public final ButtonGroup filtermenu_interval_buttongroup;
+	public final JRadioButton filtermenu_interval_radioButtonMonths;
+	public final JRadioButton filtermenu_interval_radioButtonWeeks;
+	public final JRadioButton filtermenu_interval_radioButtonDays;
+	public final JRadioButton filtermenu_interval_radioButtonHours;
+	public final JCheckBox checkBox_Mon;
+	public final JCheckBox checkBox_Tue;
+	public final JCheckBox checkBox_Wed;
+	public final JCheckBox checkBox_Thu;
+	public final JCheckBox checkBox_Fri;
+	public final JCheckBox checkBox_Sat;
+	public final JCheckBox checkBox_Sun;
+	public final JCalendarButton filtermenu_dates_leftCalendarButton, filtermenu_dates_rightCalendarButton;
+	public final JLabel timeline_panel_fromDate_label;
+	public final JLabel timeline_panel_toDate_label;
+	
 	
 	public Mainframe(JMapViewer map){
 		super();
 		this.geoMap = map;
+		//radiobuttons:
+		this.filtermenu_interval_buttongroup = new ButtonGroup();
+		this.filtermenu_interval_radioButtonMonths = new JRadioButton("Months");
+		this.filtermenu_interval_radioButtonWeeks = new JRadioButton("Weeks");
+		this.filtermenu_interval_radioButtonDays = new JRadioButton("Days");
+		this.filtermenu_interval_radioButtonHours = new JRadioButton("Hours");
+		//Day of Week Checkboxes:
+		this.checkBox_Mon = new JCheckBox("Mon");
+		this.checkBox_Tue = new JCheckBox("Tue");
+		this.checkBox_Wed = new JCheckBox("Wed");
+		this.checkBox_Thu = new JCheckBox("Thu");
+		this.checkBox_Fri = new JCheckBox("Fri");
+		this.checkBox_Sat = new JCheckBox("Sat");
+		this.checkBox_Sun = new JCheckBox("Sun");
+		//calendarbuttons:
+		this.filtermenu_dates_leftCalendarButton = new JCalendarButton();
+		this.filtermenu_dates_rightCalendarButton = new JCalendarButton();
+		this.timeline_panel_fromDate_label = new JLabel("fromDate");
+		this.timeline_panel_toDate_label = new JLabel("toDate");
+		//Filechooser:
+		this.fileChooser = new JFileChooser();
+		//MenuItems:
+		this.fileMenu_item_load = new JMenuItem("Load");
+		this.fileMenu_item_exit = new JMenuItem("Exit");
+		
 		this.init();
+	}
+	
+	public void setController(MainframeController mfC){
+		this.controller = mfC;
 	}
 	
 	private void init(){
@@ -151,10 +206,7 @@ public class Mainframe extends JFrame {
 		panel.add(scrollBar);
 		scrollBar.setOrientation(JScrollBar.HORIZONTAL);
 		
-		JLabel timeline_panel_fromDate_label = new JLabel("fromDate");
 		panel.add(timeline_panel_fromDate_label, BorderLayout.WEST);
-		
-		JLabel timeline_panel_toDate_label = new JLabel("toDate");
 		panel.add(timeline_panel_toDate_label, BorderLayout.EAST);
 		
 		JPanel filtermenu_panel = new JPanel();
@@ -181,48 +233,52 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_interval_panel.gridy = 1;
 		filtermenu_panel.add(filtermenu_interval_panel, gbc_filtermenu_interval_panel);
 		GridBagLayout gbl_filtermenu_interval_panel = new GridBagLayout();
-		gbl_filtermenu_interval_panel.columnWidths = new int[] {0, 0, 0};
-		gbl_filtermenu_interval_panel.rowHeights = new int[] {0, 0};
-		gbl_filtermenu_interval_panel.columnWeights = new double[]{0.0, 0.0, 0.0};
-		gbl_filtermenu_interval_panel.rowWeights = new double[]{0.0, 0.0};
+		gbl_filtermenu_interval_panel.columnWidths = new int[] {0, 0};
+		gbl_filtermenu_interval_panel.rowHeights = new int[] {0, 0, 0};
+		gbl_filtermenu_interval_panel.columnWeights = new double[]{0.0, 0.0};
+		gbl_filtermenu_interval_panel.rowWeights = new double[]{0.0, 0.0, 0.0};
 		filtermenu_interval_panel.setLayout(gbl_filtermenu_interval_panel);
 		
-		JLabel filtermenu_intervall_label = new JLabel("Choose time interval:");
+		JLabel filtermenu_interval_label = new JLabel("Choose time interval:");
 		GridBagConstraints gbc_filtermenu_intervall_label = new GridBagConstraints();
-		gbc_filtermenu_intervall_label.gridwidth = 3;
-		gbc_filtermenu_intervall_label.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_intervall_label.gridwidth = 2;
+		gbc_filtermenu_intervall_label.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_intervall_label.gridx = 0;
 		gbc_filtermenu_intervall_label.gridy = 0;
-		filtermenu_interval_panel.add(filtermenu_intervall_label, gbc_filtermenu_intervall_label);
+		filtermenu_interval_panel.add(filtermenu_interval_label, gbc_filtermenu_intervall_label);
 		
-		JRadioButton filtermenu_interval_radioButtonMonthly = new JRadioButton("Monthly");
-		GridBagConstraints gbc_filtermenu_interval_radioButtonMonthly = new GridBagConstraints();
-		gbc_filtermenu_interval_radioButtonMonthly.anchor = GridBagConstraints.WEST;
-		gbc_filtermenu_interval_radioButtonMonthly.insets = new Insets(0, 0, 0, 5);
-		gbc_filtermenu_interval_radioButtonMonthly.gridx = 2;
-		gbc_filtermenu_interval_radioButtonMonthly.gridy = 1;
-		filtermenu_interval_panel.add(filtermenu_interval_radioButtonMonthly, gbc_filtermenu_interval_radioButtonMonthly);
+		GridBagConstraints gbc_filtermenu_interval_radioButtonMonths = new GridBagConstraints();
+		gbc_filtermenu_interval_radioButtonMonths.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_interval_radioButtonMonths.anchor = GridBagConstraints.WEST;
+		gbc_filtermenu_interval_radioButtonMonths.gridx = 0;
+		gbc_filtermenu_interval_radioButtonMonths.gridy = 1;
+		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonMonths, gbc_filtermenu_interval_radioButtonMonths);
 		
-		JRadioButton filtermenu_interval_radioButtonWeekly = new JRadioButton("Weekly");
-		GridBagConstraints gbc_filtermenu_interval_radioButtonWeekly = new GridBagConstraints();
-		gbc_filtermenu_interval_radioButtonWeekly.anchor = GridBagConstraints.WEST;
-		gbc_filtermenu_interval_radioButtonWeekly.insets = new Insets(0, 0, 0, 5);
-		gbc_filtermenu_interval_radioButtonWeekly.gridx = 1;
-		gbc_filtermenu_interval_radioButtonWeekly.gridy = 1;
-		filtermenu_interval_panel.add(filtermenu_interval_radioButtonWeekly, gbc_filtermenu_interval_radioButtonWeekly);
+		GridBagConstraints gbc_filtermenu_interval_radioButtonWeeks = new GridBagConstraints();
+		gbc_filtermenu_interval_radioButtonWeeks.anchor = GridBagConstraints.WEST;
+		gbc_filtermenu_interval_radioButtonWeeks.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_interval_radioButtonWeeks.gridx = 1;
+		gbc_filtermenu_interval_radioButtonWeeks.gridy = 1;
+		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonWeeks, gbc_filtermenu_interval_radioButtonWeeks);
 		
-		JRadioButton filtermenu_interval_radioButtonDaily = new JRadioButton("Daily");
-		GridBagConstraints gbc_filtermenu_interval_radioButtonDaily = new GridBagConstraints();
-		gbc_filtermenu_interval_radioButtonDaily.anchor = GridBagConstraints.WEST;
-		gbc_filtermenu_interval_radioButtonDaily.gridx = 0;
-		gbc_filtermenu_interval_radioButtonDaily.gridy = 1;
-		filtermenu_interval_radioButtonDaily.setSelected(true);;
-		filtermenu_interval_panel.add(filtermenu_interval_radioButtonDaily, gbc_filtermenu_interval_radioButtonDaily);
+		GridBagConstraints gbc_filtermenu_interval_radioButtonDays = new GridBagConstraints();
+		gbc_filtermenu_interval_radioButtonDays.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_interval_radioButtonDays.anchor = GridBagConstraints.WEST;
+		gbc_filtermenu_interval_radioButtonDays.gridx = 0;
+		gbc_filtermenu_interval_radioButtonDays.gridy = 2;
+		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonDays, gbc_filtermenu_interval_radioButtonDays);
 		
-		ButtonGroup filtermenu_interval_buttongroup = new ButtonGroup();
-		filtermenu_interval_buttongroup.add(filtermenu_interval_radioButtonDaily);
-		filtermenu_interval_buttongroup.add(filtermenu_interval_radioButtonWeekly);
-		filtermenu_interval_buttongroup.add(filtermenu_interval_radioButtonMonthly);
+		GridBagConstraints gbc_filtermenu_interval_radioButtonHours = new GridBagConstraints();
+		gbc_filtermenu_interval_radioButtonHours.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_interval_radioButtonHours.anchor = GridBagConstraints.WEST;
+		gbc_filtermenu_interval_radioButtonHours.gridx = 1;
+		gbc_filtermenu_interval_radioButtonHours.gridy = 2;
+		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonHours, gbc_filtermenu_interval_radioButtonHours);
+		
+		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonDays);
+		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonWeeks);
+		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonMonths);
+		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonHours);
 		
 		JPanel filtermenu_specific_dow_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_specific_dow_panel = new GridBagConstraints();
@@ -239,63 +295,49 @@ public class Mainframe extends JFrame {
 		gbl_filtermenu_specific_dow_panel.columnWeights = new double[]{0.0, 0.0, 0.0};
 		gbl_filtermenu_specific_dow_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
 		filtermenu_specific_dow_panel.setLayout(gbl_filtermenu_specific_dow_panel);
-		
-		JCheckBox checkBox_Mon = new JCheckBox("Mon");
-		checkBox_Mon.setSelected(true);
+				
 		GridBagConstraints gbc_checkBox_Mon = new GridBagConstraints();
 		gbc_checkBox_Mon.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Mon.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Mon.gridx = 0;
 		gbc_checkBox_Mon.gridy = 1;
 		filtermenu_specific_dow_panel.add(checkBox_Mon, gbc_checkBox_Mon);
-		
-		JCheckBox checkBox_Tue = new JCheckBox("Tue");
-		checkBox_Tue.setSelected(true);
+
 		GridBagConstraints gbc_checkBox_Tue = new GridBagConstraints();
 		gbc_checkBox_Tue.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Tue.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Tue.gridx = 1;
 		gbc_checkBox_Tue.gridy = 1;
 		filtermenu_specific_dow_panel.add(checkBox_Tue, gbc_checkBox_Tue);
-		
-		JCheckBox checkBox_Wed = new JCheckBox("Wed");
-		checkBox_Wed.setSelected(true);
+
 		GridBagConstraints gbc_checkBox_Wed = new GridBagConstraints();
 		gbc_checkBox_Wed.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Wed.insets = new Insets(0, 0, 5, 0);
 		gbc_checkBox_Wed.gridx = 2;
 		gbc_checkBox_Wed.gridy = 1;
 		filtermenu_specific_dow_panel.add(checkBox_Wed, gbc_checkBox_Wed);
-		
-		JCheckBox checkBox_Thu_ = new JCheckBox("Thu");
-		checkBox_Thu_.setSelected(true);
+
 		GridBagConstraints gbc_checkBox_Thu_ = new GridBagConstraints();
 		gbc_checkBox_Thu_.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Thu_.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Thu_.gridx = 0;
 		gbc_checkBox_Thu_.gridy = 2;
-		filtermenu_specific_dow_panel.add(checkBox_Thu_, gbc_checkBox_Thu_);
-		
-		JCheckBox checkBox_Fri = new JCheckBox("Fri");
-		checkBox_Fri.setSelected(true);
+		filtermenu_specific_dow_panel.add(checkBox_Thu, gbc_checkBox_Thu_);
+
 		GridBagConstraints gbc_checkBox_Fri = new GridBagConstraints();
 		gbc_checkBox_Fri.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Fri.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Fri.gridx = 1;
 		gbc_checkBox_Fri.gridy = 2;
 		filtermenu_specific_dow_panel.add(checkBox_Fri, gbc_checkBox_Fri);
-		
-		JCheckBox checkBox_Sat = new JCheckBox("Sat");
-		checkBox_Sat.setSelected(true);
+
 		GridBagConstraints gbc_checkBox_Sat = new GridBagConstraints();
 		gbc_checkBox_Sat.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Sat.insets = new Insets(0, 0, 5, 0);
 		gbc_checkBox_Sat.gridx = 2;
 		gbc_checkBox_Sat.gridy = 2;
 		filtermenu_specific_dow_panel.add(checkBox_Sat, gbc_checkBox_Sat);
-		
-		JCheckBox checkBox_Sun = new JCheckBox("Sun");
-		checkBox_Sun.setSelected(true);
+
 		GridBagConstraints gbc_checkBox_Sun = new GridBagConstraints();
 		gbc_checkBox_Sun.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Sun.insets = new Insets(0, 0, 0, 5);
@@ -363,24 +405,22 @@ public class Mainframe extends JFrame {
 				gbc_filtermenu_dates_label.gridy = 0;
 				filtermenu_dates_panel.add(filtermenu_dates_label, gbc_filtermenu_dates_label);
 		
-				JCalendarButton filtermenu_dates_leftCalendarButton = new JCalendarButton();
-				filtermenu_dates_leftCalendarButton.setText("From");
+				this.filtermenu_dates_leftCalendarButton.setText("From");
 				GridBagConstraints gbc_filtermenu_dates_leftCalendarButton = new GridBagConstraints();
 				gbc_filtermenu_dates_leftCalendarButton.fill = GridBagConstraints.BOTH;
 				gbc_filtermenu_dates_leftCalendarButton.insets = new Insets(0, 3, 3, 5);
 				gbc_filtermenu_dates_leftCalendarButton.gridx = 0;
 				gbc_filtermenu_dates_leftCalendarButton.gridy = 1;
-				filtermenu_dates_panel.add(filtermenu_dates_leftCalendarButton, gbc_filtermenu_dates_leftCalendarButton);
-		
-				JCalendarButton filtermenu_dates_rightCalendarButton = new JCalendarButton();
-				filtermenu_dates_rightCalendarButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
-				filtermenu_dates_rightCalendarButton.setText("To");
+				filtermenu_dates_panel.add(this.filtermenu_dates_leftCalendarButton, gbc_filtermenu_dates_leftCalendarButton);
+				
+				this.filtermenu_dates_rightCalendarButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+				this.filtermenu_dates_rightCalendarButton.setText("To");
 				GridBagConstraints gbc_filtermenu_dates_rightCalendarButton = new GridBagConstraints();
 				gbc_filtermenu_dates_rightCalendarButton.insets = new Insets(0, 3, 3, 3);
 				gbc_filtermenu_dates_rightCalendarButton.fill = GridBagConstraints.BOTH;
 				gbc_filtermenu_dates_rightCalendarButton.gridx = 1;
 				gbc_filtermenu_dates_rightCalendarButton.gridy = 1;
-				filtermenu_dates_panel.add(filtermenu_dates_rightCalendarButton, gbc_filtermenu_dates_rightCalendarButton);
+				filtermenu_dates_panel.add(this.filtermenu_dates_rightCalendarButton, gbc_filtermenu_dates_rightCalendarButton);
 		
 		JMenuBar menuBar = new JMenuBar();
 		GridBagConstraints gbc_menuBar = new GridBagConstraints();
@@ -391,10 +431,8 @@ public class Mainframe extends JFrame {
 		JMenu fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
 		
-		JMenuItem fileMenu_item_load = new JMenuItem("Load");
 		fileMenu.add(fileMenu_item_load);
-		
-		JMenuItem fileMenu_item_exit = new JMenuItem("Exit");
+
 		fileMenu.add(fileMenu_item_exit);
 		
 		this.setJMenuBar(menuBar);
@@ -412,7 +450,17 @@ public class Mainframe extends JFrame {
 		fileMenu_item_load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+				if (e.getSource() == Mainframe.this.fileMenu_item_load) {
+					int returnVal = Mainframe.this.fileChooser.showOpenDialog(Mainframe.this);
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						File file = Mainframe.this.fileChooser.getSelectedFile();
+						//This is where a real application would open the file.
+//						log.append("Opening: " + file.getName() + "." + newline);
+					} else {
+//						log.append("Open command cancelled by user." + newline);
+					}
+			    }
+				Mainframe.this.controller.loadData(Mainframe.this.fileChooser.getSelectedFile().getPath());
 			}
 		});
 		
@@ -423,21 +471,21 @@ public class Mainframe extends JFrame {
 			}
 		});
 		
-		filtermenu_interval_radioButtonDaily.addActionListener(new ActionListener() {
+		filtermenu_interval_radioButtonDays.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			}
 		});
 		
-		filtermenu_interval_radioButtonWeekly.addActionListener(new ActionListener() {
+		filtermenu_interval_radioButtonWeeks.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			}
 		});
 		
-		filtermenu_interval_radioButtonMonthly.addActionListener(new ActionListener() {
+		filtermenu_interval_radioButtonMonths.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -461,18 +509,16 @@ public class Mainframe extends JFrame {
 		filtermenu_buttons_applyButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				System.out.println("Apply button.");
+				Mainframe.this.controller.applySettings();
 			}
 		});
 		
 		filtermenu_buttons_defaultButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				System.out.println("Default button.");
-				
-				//loadDefaul
+				Mainframe.this.controller.defaultSettings();
 			}
 		});
 	}

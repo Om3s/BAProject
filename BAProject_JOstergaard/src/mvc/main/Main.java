@@ -7,13 +7,14 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
+import mvc.controller.MainframeController;
 import mvc.controller.MapController;
 import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
 
 public class Main {
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		CrimeCaseDatabase dataBase;
 		dataBase = new CrimeCaseDatabase("dat\\Case_Data_from_San_Francisco_311__SF311_.csv");
 		
@@ -28,13 +29,15 @@ public class Main {
 		
 		System.out.println("Create UI...");
 		Mainframe mFrame = new Mainframe(map);
+		MainframeController mFrameController = new MainframeController(mFrame, dataBase);
+		mFrame.setController(mFrameController);
 		mFrame.setVisible(true);
 		
 		mFrame.repaint();
 		map.updateUI();
 		System.out.println("All Done, program is running.");
 		
-		System.exit(0); //testing
+//		System.exit(0); //testing
 	}
 
 }
