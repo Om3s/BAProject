@@ -30,6 +30,10 @@ import mvc.controller.MainframeController;
 import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
+import com.visutools.nav.bislider.BiSlider;
+import com.visutools.nav.bislider.ContentPainterEvent;
+import com.visutools.nav.bislider.ContentPainterListener;
+
 import java.awt.Font;
 
 import javax.swing.JScrollBar;
@@ -42,12 +46,22 @@ import javax.swing.JCheckBox;
 import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Mainframe extends JFrame {
 	private JMapViewer geoMap;
@@ -71,6 +85,10 @@ public class Mainframe extends JFrame {
 	public final JCalendarButton filtermenu_dates_leftCalendarButton, filtermenu_dates_rightCalendarButton;
 	public final JLabel timeline_panel_fromDate_label;
 	public final JLabel timeline_panel_toDate_label;
+	public final BiSlider timeLineBiSlider;
+	public final JButton filtermenu_buttons_applyButton;
+	public final JButton filtermenu_buttons_defaultButton;
+	public final JComboBox filtermenu_comboBox_category;
 	
 	
 	public Mainframe(JMapViewer map){
@@ -100,6 +118,13 @@ public class Mainframe extends JFrame {
 		//MenuItems:
 		this.fileMenu_item_load = new JMenuItem("Load");
 		this.fileMenu_item_exit = new JMenuItem("Exit");
+		//Timeline:
+		this.timeLineBiSlider = new BiSlider();
+		//Apply/Default Buttons:
+		this.filtermenu_buttons_applyButton = new JButton("Apply");
+		this.filtermenu_buttons_defaultButton = new JButton("Default");
+		//Combobox Categories:
+		this.filtermenu_comboBox_category = new JComboBox();
 		
 		this.init();
 	}
@@ -114,7 +139,7 @@ public class Mainframe extends JFrame {
 		int screenWidth, screenHeight, frameWidth, frameHeight;
 		screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		frameWidth = (int) (screenWidth / 3);
+		frameWidth = (int) (screenWidth / 2);
 		frameHeight = (int) (frameWidth * 0.75);
 		this.setSize(frameWidth, frameHeight);
 		this.setLocation((int)((screenWidth / 2) - (frameWidth / 2)), (int)((screenHeight / 2) - (frameHeight / 2 )));
@@ -139,9 +164,9 @@ public class Mainframe extends JFrame {
 		getContentPane().add(analysis_panel, gbc_analysis_panel);
 		GridBagLayout gbl_analysis_panel = new GridBagLayout();
 		gbl_analysis_panel.columnWidths = new int[]{0};
-		gbl_analysis_panel.rowHeights = new int[]{0, 0, 0};
+		gbl_analysis_panel.rowHeights = new int[] {0, 0};
 		gbl_analysis_panel.columnWeights = new double[]{1.0};
-		gbl_analysis_panel.rowWeights = new double[]{0.6, 0.35, 0.05};
+		gbl_analysis_panel.rowWeights = new double[]{0.6, 0.35};
 		analysis_panel.setLayout(gbl_analysis_panel);
 		
 		JPanel geomap_panel = new JPanel();
@@ -149,6 +174,7 @@ public class Mainframe extends JFrame {
 		geomap_panel.setForeground(Color.BLACK);
 		geomap_panel.setToolTipText("GeoMap for Hotspot visualization");
 		GridBagConstraints gbc_geomap_panel = new GridBagConstraints();
+		gbc_geomap_panel.weighty = 1.0;
 		gbc_geomap_panel.insets = new Insets(0, 0, 5, 0);
 		gbc_geomap_panel.fill = GridBagConstraints.BOTH;
 		gbc_geomap_panel.gridx = 0;
@@ -158,43 +184,13 @@ public class Mainframe extends JFrame {
 		GridLayout gl_geomap_panel = new GridLayout();
 		geomap_panel.setLayout(gl_geomap_panel);
 		
-		JPanel trend_panel = new JPanel();
-		trend_panel.setBackground(Color.CYAN);
-		GridBagConstraints gbc_trend_panel = new GridBagConstraints();
-		gbc_trend_panel.insets = new Insets(0, 0, 5, 0);
-		gbc_trend_panel.fill = GridBagConstraints.BOTH;
-		gbc_trend_panel.gridx = 0;
-		gbc_trend_panel.gridy = 1;
-		analysis_panel.add(trend_panel, gbc_trend_panel);
-		GridBagLayout gbl_trend_panel = new GridBagLayout();
-		gbl_trend_panel.columnWidths = new int[]{0};
-		gbl_trend_panel.rowHeights = new int[]{0};
-		gbl_trend_panel.columnWeights = new double[]{1.0};
-		gbl_trend_panel.rowWeights = new double[]{1.0};
-		trend_panel.setLayout(gbl_trend_panel);
-		
-		//Placeholder Textfield for scrollpane
-		JTextArea testTextfield = new JTextArea();
-		testTextfield.setForeground(new Color(165, 42, 42));
-		testTextfield.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		testTextfield.setBackground(new Color(220, 220, 220));
-		testTextfield.setText("Test_Textfield, a placeholder for the scrollpane.");
-		
-		JScrollPane trend_panel_scrollpane = new JScrollPane(testTextfield);
-		trend_panel_scrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.anchor = GridBagConstraints.NORTH;
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 0;
-		trend_panel.add(trend_panel_scrollpane, gbc_scrollPane);
-		
 		JPanel timeline_panel = new JPanel();
 		timeline_panel.setBackground(Color.BLUE);
 		GridBagConstraints gbc_timeline_panel = new GridBagConstraints();
+		gbc_timeline_panel.weighty = 0.5;
 		gbc_timeline_panel.fill = GridBagConstraints.BOTH;
 		gbc_timeline_panel.gridx = 0;
-		gbc_timeline_panel.gridy = 2;
+		gbc_timeline_panel.gridy = 1;
 		analysis_panel.add(timeline_panel, gbc_timeline_panel);
 		timeline_panel.setLayout(new BorderLayout(0, 0));
 		
@@ -202,9 +198,7 @@ public class Mainframe extends JFrame {
 		timeline_panel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BorderLayout(0, 0));
 		
-		JScrollBar scrollBar = new JScrollBar();
-		panel.add(scrollBar);
-		scrollBar.setOrientation(JScrollBar.HORIZONTAL);
+		panel.add(this.timeLineBiSlider);
 		
 		panel.add(timeline_panel_fromDate_label, BorderLayout.WEST);
 		panel.add(timeline_panel_toDate_label, BorderLayout.EAST);
@@ -230,7 +224,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_interval_panel.gridwidth = 2;
 		gbc_filtermenu_interval_panel.fill = GridBagConstraints.BOTH;
 		gbc_filtermenu_interval_panel.gridx = 0;
-		gbc_filtermenu_interval_panel.gridy = 1;
+		gbc_filtermenu_interval_panel.gridy = 2;
 		filtermenu_panel.add(filtermenu_interval_panel, gbc_filtermenu_interval_panel);
 		GridBagLayout gbl_filtermenu_interval_panel = new GridBagLayout();
 		gbl_filtermenu_interval_panel.columnWidths = new int[] {0, 0};
@@ -287,7 +281,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_specific_dow_panel.gridwidth = 2;
 		gbc_filtermenu_specific_dow_panel.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_specific_dow_panel.gridx = 0;
-		gbc_filtermenu_specific_dow_panel.gridy = 2;
+		gbc_filtermenu_specific_dow_panel.gridy = 3;
 		filtermenu_panel.add(filtermenu_specific_dow_panel, gbc_filtermenu_specific_dow_panel);
 		GridBagLayout gbl_filtermenu_specific_dow_panel = new GridBagLayout();
 		gbl_filtermenu_specific_dow_panel.columnWidths = new int[] {0, 0, 0};
@@ -364,13 +358,10 @@ public class Mainframe extends JFrame {
 		filtermenu_panel.add(filtermenu_buttons_panel, gbc_filtermenu_buttons_panel);
 		filtermenu_buttons_panel.setLayout(new GridLayout(1, 2, 0, 0));
 		
-		JButton filtermenu_buttons_applyButton = new JButton("Apply");
-		filtermenu_buttons_panel.add(filtermenu_buttons_applyButton);
 		
-		JButton filtermenu_buttons_defaultButton = new JButton("Default");
+		filtermenu_buttons_panel.add(filtermenu_buttons_applyButton);
 		filtermenu_buttons_panel.add(filtermenu_buttons_defaultButton);
 		
-		JComboBox filtermenu_comboBox_category = new JComboBox();
 		((JLabel)filtermenu_comboBox_category.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		filtermenu_comboBox_category.addItem("- All Categories -");
 		GridBagConstraints gbc_filtermenu_comboBox_category = new GridBagConstraints();
@@ -388,7 +379,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_dates_panel.gridwidth = 2;
 		gbc_filtermenu_dates_panel.insets = new Insets(0, 3, 3, 3);
 		gbc_filtermenu_dates_panel.gridx = 0;
-		gbc_filtermenu_dates_panel.gridy = 3;
+		gbc_filtermenu_dates_panel.gridy = 1;
 		filtermenu_panel.add(filtermenu_dates_panel, gbc_filtermenu_dates_panel);
 		GridBagLayout gbl_filtermenu_dates_panel = new GridBagLayout();
 		gbl_filtermenu_dates_panel.columnWidths = new int[] {0, 0};
@@ -440,14 +431,14 @@ public class Mainframe extends JFrame {
 		
 		
 		// =================== EVENTHANDLER: =================== 
-		fileMenu_item_exit.addActionListener(new ActionListener() {
+		this.fileMenu_item_exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
 		
-		fileMenu_item_load.addActionListener(new ActionListener() {
+		this.fileMenu_item_load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == Mainframe.this.fileMenu_item_load) {
@@ -464,49 +455,55 @@ public class Mainframe extends JFrame {
 			}
 		});
 		
-		filtermenu_comboBox_category.addActionListener(new ActionListener() {
+		this.filtermenu_comboBox_category.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			}
 		});
 		
-		filtermenu_interval_radioButtonDays.addActionListener(new ActionListener() {
+		this.filtermenu_interval_radioButtonDays.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			}
 		});
 		
-		filtermenu_interval_radioButtonWeeks.addActionListener(new ActionListener() {
+		this.filtermenu_interval_radioButtonWeeks.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			}
 		});
 		
-		filtermenu_interval_radioButtonMonths.addActionListener(new ActionListener() {
+		this.filtermenu_interval_radioButtonMonths.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			}
 		});
 		
-		filtermenu_dates_leftCalendarButton.addActionListener(new ActionListener() {
+		this.filtermenu_dates_leftCalendarButton.addPropertyChangeListener(new PropertyChangeListener() {
+			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof Date) {
+					Mainframe.this.controller.fromDateAction((Date)evt.getNewValue());
+				} 
 			}
 		});
 		
-		filtermenu_dates_rightCalendarButton.addActionListener(new ActionListener() {
+		this.filtermenu_dates_rightCalendarButton.addPropertyChangeListener(new PropertyChangeListener() {
+			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof Date) {
+					Mainframe.this.controller.toDateAction((Date)evt.getNewValue());
+				}
 			}
 		});
 		
-		filtermenu_buttons_applyButton.addActionListener(new ActionListener() {
+		this.filtermenu_buttons_applyButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Apply button.");
@@ -514,11 +511,57 @@ public class Mainframe extends JFrame {
 			}
 		});
 		
-		filtermenu_buttons_defaultButton.addActionListener(new ActionListener() {
+		this.filtermenu_buttons_defaultButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Default button.");
 				Mainframe.this.controller.defaultSettings();
+			}
+		});
+		
+		this.timeLineBiSlider.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		this.timeLineBiSlider.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				BiSlider src = (BiSlider) e.getSource();
+				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
 			}
 		});
 	}
