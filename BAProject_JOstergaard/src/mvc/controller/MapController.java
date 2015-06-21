@@ -36,6 +36,12 @@ public class MapController extends DefaultMapController {
 		for(CaseReport cR : reports){
 			this.currentPoints.add(cR.getPoint());
 		}
+		for(GeoPoint p : this.currentPoints){
+			p.setVisible(false);
+			this.map.addMapMarker(p);
+		}
+		System.out.println("Map loaded "+this.currentPoints.size()+" points.");
+		this.map.updateUI();
 	}
 	
 	public void setShowCurrentPoints(boolean showThem){

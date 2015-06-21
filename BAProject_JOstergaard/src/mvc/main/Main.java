@@ -23,12 +23,12 @@ public class Main {
 		map.setDisplayPositionByLatLon(37.7, -122, 7);
 		
 		System.out.println("Create Controller...");
-		DefaultMapController controller = new MapController(map, dataBase);
-		controller.setMovementMouseButton(MouseEvent.BUTTON2);
-		controller.setDoubleClickZoomEnabled(false);
+		DefaultMapController geoMapController = new MapController(map, dataBase);
+		geoMapController.setMovementMouseButton(MouseEvent.BUTTON2);
+		geoMapController.setDoubleClickZoomEnabled(false);
 		
 		System.out.println("Create UI...");
-		Mainframe mFrame = new Mainframe(map);
+		Mainframe mFrame = new Mainframe(map, (MapController)geoMapController);
 		MainframeController mFrameController = new MainframeController(mFrame, dataBase);
 		mFrame.setController(mFrameController);
 		mFrame.setVisible(true);

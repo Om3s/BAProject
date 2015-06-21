@@ -147,7 +147,7 @@ public class CrimeCaseDatabase {
 	public void selectAllCasesBetweenTwoDates(Date fromDate, Date toDate) throws IOException{
 		this.clearCurrentData();
 		Query query = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
-		TopDocs docs = this.indexSearcher.search(query, 5);
+		TopDocs docs = this.indexSearcher.search(query, 500);
 		System.out.println(query);
 		System.out.println("Total hits: " + docs.totalHits);
 		Document doc;

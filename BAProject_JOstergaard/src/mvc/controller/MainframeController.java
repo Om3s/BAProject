@@ -1,13 +1,12 @@
 package mvc.controller;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.event.ChangeListener;
 
 import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
@@ -15,22 +14,22 @@ import mvc.view.Mainframe;
 public class MainframeController {
 	private Mainframe mainframe;
 	private CrimeCaseDatabase cCaseDatabase;
-	private Date defaultFromDate;
-	private Date defaultToDate;
+	private Date globalFromDate, globalToDate, currentFromDate, currentToDate;
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
+	private byte timelineDateSteps;
+	private MapController geoMapController;
 	
 	//Timeline:
 	private int timelineSmallestTimeInterval = 1;
-	private int timelineMaxValue = 100;
-	private int timelineLowerValue = 0;
-	private int timelineHigherValue = 5;
+	private int timelineMaxValue, timelineLowerValue, timelineHigherValue;
 	
 	
 	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase) throws ParseException{
 		this.mainframe = frame;
 		this.cCaseDatabase = dataBase;
-		this.defaultFromDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("01/01/2011 12:00:01 AM");
-		this.defaultToDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("02/01/2011 23:59:99 PM");
+		this.globalFromDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("01/01/2011 12:00:01 AM");
+		this.globalToDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("02/01/2011 23:59:99 PM");
+		this.geoMapController = this.mainframe.getGeoMapController();
 		
 		this.init();
 	}
@@ -44,6 +43,7 @@ public class MainframeController {
 	private void init() throws ParseException{
 		//Radiobutton
 		this.mainframe.filtermenu_interval_radioButtonHours.setSelected(true);
+		this.timelineDateSteps = 0; // hours
 		//Day of Week Checkboxes:
 		this.mainframe.checkBox_Mon.setSelected(true);
 		this.mainframe.checkBox_Tue.setSelected(true);
@@ -53,8 +53,8 @@ public class MainframeController {
 		this.mainframe.checkBox_Sat.setSelected(true);
 		this.mainframe.checkBox_Sun.setSelected(true);
 		//calendarbuttons:
-		this.mainframe.filtermenu_dates_leftCalendarButton.setTargetDate(defaultFromDate);
-		this.mainframe.filtermenu_dates_rightCalendarButton.setTargetDate(defaultToDate);
+		this.mainframe.filtermenu_dates_leftCalendarButton.setTargetDate(globalFromDate);
+		this.mainframe.filtermenu_dates_rightCalendarButton.setTargetDate(globalToDate);
 		String fromDateString = this.standardGUIDateOutputFormat.format(this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate());
 		String toDateString = this.standardGUIDateOutputFormat.format(this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate());
 		this.mainframe.filtermenu_dates_rightCalendarButton.setText(toDateString);
@@ -74,14 +74,18 @@ public class MainframeController {
 		int timeUnitDiffs;
 		if(this.mainframe.filtermenu_interval_radioButtonHours.isSelected()){
 			timeUnitDiffs = (int)TimeUnit.HOURS.convert(diffInMillis, TimeUnit.MILLISECONDS) + 1;
+			this.timelineDateSteps = 0;
 			System.out.println("Hours difference: "+ timeUnitDiffs);
 		} else if (this.mainframe.filtermenu_interval_radioButtonDays.isSelected()) {
 			timeUnitDiffs = (int)TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS) + 1;
+			this.timelineDateSteps = 1;
 			System.out.println("Days difference: "+ timeUnitDiffs);
 		} else if (this.mainframe.filtermenu_interval_radioButtonWeeks.isSelected()) {
 			timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 7) + 1;
+			this.timelineDateSteps = 2;
 			System.out.println("Weeks difference: "+ timeUnitDiffs);
 		} else {
+			this.timelineDateSteps = 3;
 			timeUnitDiffs = -1;
 		}
 		this.timelineMaxValue = timeUnitDiffs;
@@ -92,6 +96,7 @@ public class MainframeController {
 		this.mainframe.timeLineBiSlider.setMaximumColoredValue(this.timelineHigherValue);
 		this.mainframe.timeLineBiSlider.setMinimumColoredValue(this.timelineLowerValue);
 		this.mainframe.timeLineBiSlider.setSegmentSize(this.timelineSmallestTimeInterval);
+		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 	}
 	
 	public void applySettings(){
@@ -158,8 +163,41 @@ public class MainframeController {
 			this.timelineLowerValue = (int) (minColorValue+0.5);
 			this.timelineHigherValue = (int) (maxColorValue+0.5);
 			System.out.println("Min: "+this.timelineLowerValue+", Max: "+this.timelineHigherValue);
+			this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
+			try {
+				System.out.println("fromDate: "+this.currentFromDate+" , toDate: "+this.currentToDate);
+				this.cCaseDatabase.selectAllCasesBetweenTwoDates(this.currentFromDate, this.currentToDate);
+				this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());;
+				this.geoMapController.setShowCurrentPoints(true);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
+	}
+	
+	private void refreshCurrentDates(int minValue, int maxValue){
+		Calendar temp = Calendar.getInstance();
+		if(this.timelineDateSteps == 0){ //hourly
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.HOUR_OF_DAY, (minValue-1));
+			this.currentFromDate = new Date(temp.getTimeInMillis());
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.HOUR_OF_DAY, (maxValue-1));
+			this.currentToDate = new Date(temp.getTimeInMillis());
+		} else if(this.timelineDateSteps == 1){ //daily
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.DATE, (minValue-1));
+			this.currentFromDate = new Date(temp.getTimeInMillis());
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.DATE, (maxValue-1));
+			this.currentToDate = new Date(temp.getTimeInMillis());
+		} else if(this.timelineDateSteps == 2){ //weekly
+			
+		} else { //monthly
+			
+		}
 	}
 	
 	private boolean hasTimeLineChanged(int minColorValue, int maxColorValue){

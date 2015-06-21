@@ -21,39 +21,24 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
 
 import mvc.controller.MainframeController;
+import mvc.controller.MapController;
 
 import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
+import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import com.visutools.nav.bislider.BiSlider;
-import com.visutools.nav.bislider.ContentPainterEvent;
-import com.visutools.nav.bislider.ContentPainterListener;
 
-import java.awt.Font;
-
-import javax.swing.JScrollBar;
-import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
 
-import java.awt.FlowLayout;
-
-import javax.swing.BoxLayout;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -70,6 +55,7 @@ public class Mainframe extends JFrame {
 	private final JFileChooser fileChooser;
 	private final JMenuItem fileMenu_item_load;
 	private final JMenuItem fileMenu_item_exit;
+	private MapController geoMapController;
 	public final ButtonGroup filtermenu_interval_buttongroup;
 	public final JRadioButton filtermenu_interval_radioButtonMonths;
 	public final JRadioButton filtermenu_interval_radioButtonWeeks;
@@ -91,9 +77,10 @@ public class Mainframe extends JFrame {
 	public final JComboBox filtermenu_comboBox_category;
 	
 	
-	public Mainframe(JMapViewer map){
+	public Mainframe(JMapViewer map, MapController geoMapController){
 		super();
 		this.geoMap = map;
+		this.geoMapController = geoMapController;
 		//radiobuttons:
 		this.filtermenu_interval_buttongroup = new ButtonGroup();
 		this.filtermenu_interval_radioButtonMonths = new JRadioButton("Months");
@@ -564,5 +551,9 @@ public class Mainframe extends JFrame {
 				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
 			}
 		});
+	}
+
+	public MapController getGeoMapController() {
+		return geoMapController;
 	}
 }
