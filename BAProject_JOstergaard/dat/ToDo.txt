@@ -8,3 +8,8 @@
 	- Reset button
 - Entsprechenden Datensatz auf Karte zeichnen lassen
 - Heatmap visualisierung umsetzen.
+
+UI element look and feel UI
+basic ui javadoc
+heat map - gauss kernel (gauss interpolation kleines pic)
+term enum
