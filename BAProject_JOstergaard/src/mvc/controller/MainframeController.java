@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,8 @@ public class MainframeController {
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private byte timelineDateSteps;
 	private MapController geoMapController;
+	private int[] weekdays;
+	private String currentCategory;
 	
 	//Timeline:
 	private int timelineSmallestTimeInterval = 1;
@@ -65,6 +68,8 @@ public class MainframeController {
 		this.refreshTimelineAttributes();
 		this.mainframe.timeLineBiSlider.setPrecise(true);
 		this.mainframe.timeLineBiSlider.setUniformSegment(true);
+		//Category
+		this.currentCategory = "All categories";
 	}
 	
 	private void refreshTimelineAttributes(){
@@ -85,8 +90,8 @@ public class MainframeController {
 			this.timelineDateSteps = 2;
 			System.out.println("Weeks difference: "+ timeUnitDiffs);
 		} else {
+			timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 30);
 			this.timelineDateSteps = 3;
-			timeUnitDiffs = -1;
 		}
 		this.timelineMaxValue = timeUnitDiffs;
 		this.timelineSmallestTimeInterval = 1;
@@ -100,9 +105,55 @@ public class MainframeController {
 	}
 	
 	public void applySettings(){
+		this.refreshGlobalDates();
 		this.refreshTimelineAttributes();
+		this.refreshWeekdays();
+		this.refreshCurrentCategory();
+		
+		//Test:
+//		try {
+//			this.cCaseDatabase.selectCategory(this.currentCategory);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
+	private void refreshGlobalDates() {
+		this.globalFromDate = this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate();
+		this.globalToDate = this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate();
+	}
+
+	private void refreshWeekdays() {
+		ArrayList<Integer> tempWeekdayList = new ArrayList<Integer>();
+		if(this.mainframe.checkBox_Sun.isSelected()){
+			tempWeekdayList.add(1);
+		}
+		if(this.mainframe.checkBox_Mon.isSelected()){
+			tempWeekdayList.add(2);
+		}
+		if(this.mainframe.checkBox_Tue.isSelected()){
+			tempWeekdayList.add(3);
+		}
+		if(this.mainframe.checkBox_Wed.isSelected()){
+			tempWeekdayList.add(4);
+		}
+		if(this.mainframe.checkBox_Thu.isSelected()){
+			tempWeekdayList.add(5);
+		}
+		if(this.mainframe.checkBox_Fri.isSelected()){
+			tempWeekdayList.add(6);
+		}
+		if(this.mainframe.checkBox_Sat.isSelected()){
+			tempWeekdayList.add(7);
+		}
+		Integer[] tempArray = ((Integer[]) tempWeekdayList.toArray(new Integer[0]));
+		this.weekdays = new int[tempArray.length];
+		for(int i = 0; i<tempArray.length-1; i++){
+			this.weekdays[i] = tempArray[i];
+		}
+	}
+
 	public void defaultSettings(){
 		try {
 			this.init();
@@ -162,12 +213,16 @@ public class MainframeController {
 		if(this.hasTimeLineChanged((int) (minColorValue+0.5), (int) (maxColorValue+0.5))){
 			this.timelineLowerValue = (int) (minColorValue+0.5);
 			this.timelineHigherValue = (int) (maxColorValue+0.5);
-			System.out.println("Min: "+this.timelineLowerValue+", Max: "+this.timelineHigherValue);
+//			System.out.println("Min: "+this.timelineLowerValue+", Max: "+this.timelineHigherValue);
 			this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 			try {
 				System.out.println("fromDate: "+this.currentFromDate+" , toDate: "+this.currentToDate);
-				this.cCaseDatabase.selectAllCasesBetweenTwoDates(this.currentFromDate, this.currentToDate);
-				this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());;
+				if(this.mainframe.filtermenu_interval_radioButtonHours.isSelected() || this.mainframe.filtermenu_interval_radioButtonDays.isSelected() || (this.mainframe.checkBox_Mon.isSelected() && this.mainframe.checkBox_Tue.isSelected() && this.mainframe.checkBox_Wed.isSelected() && this.mainframe.checkBox_Thu.isSelected() && this.mainframe.checkBox_Fri.isSelected() && this.mainframe.checkBox_Sat.isSelected() && this.mainframe.checkBox_Sun.isSelected())){
+					this.cCaseDatabase.selectAllCasesBetweenTwoDates(this.currentFromDate, this.currentToDate, this.currentCategory);
+				} else { // UNDER CONSTRUCTION - NOT TESTED
+					this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
+				}
+				this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());
 				this.geoMapController.setShowCurrentPoints(true);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -194,9 +249,19 @@ public class MainframeController {
 			temp.add(Calendar.DATE, (maxValue-1));
 			this.currentToDate = new Date(temp.getTimeInMillis());
 		} else if(this.timelineDateSteps == 2){ //weekly
-			
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.DATE, ((minValue-1)*7));
+			this.currentFromDate = new Date(temp.getTimeInMillis());
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.DATE, ((maxValue-1)*7));
+			this.currentToDate = new Date(temp.getTimeInMillis());
 		} else { //monthly
-			
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.MONTH, (minValue-1));
+			this.currentFromDate = new Date(temp.getTimeInMillis());
+			temp.setTime(globalFromDate);
+			temp.add(Calendar.MONTH, (maxValue-1));
+			this.currentToDate = new Date(temp.getTimeInMillis());
 		}
 	}
 	
@@ -206,5 +271,9 @@ public class MainframeController {
 		} else {
 			return true;
 		}
+	}
+
+	public void refreshCurrentCategory() {
+		this.currentCategory = (String) this.mainframe.filtermenu_comboBox_category.getSelectedItem();
 	}
 }

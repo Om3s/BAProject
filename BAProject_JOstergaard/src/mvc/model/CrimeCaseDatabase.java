@@ -16,16 +16,21 @@ import org.apache.lucene.document.DoubleField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -41,11 +46,13 @@ public class CrimeCaseDatabase {
 	private ArrayList<CaseReport> currentData;
 	private IndexSearcher indexSearcher = null;
 	private StandardAnalyzer standardAnalyzer = null;
+	private ArrayList<String> categories;
 	
 	public CrimeCaseDatabase(String path) throws IOException {
 		
 		this.currentData = new ArrayList<CaseReport>();
 		this.standardAnalyzer = new StandardAnalyzer();
+		this.categories = new ArrayList<String>();
 		
 //		this.reindexCSV(path); //testing
 		
@@ -58,6 +65,7 @@ public class CrimeCaseDatabase {
 		}
 		
 		// Testing:
+//		this.readCategoriesFromIndex();
 		String fromDateTest = "01/01/2008 12:00:01 AM";
 		String toDateTest = "03/01/2008 23:59:99 PM";
 //		try {
@@ -68,7 +76,7 @@ public class CrimeCaseDatabase {
 		
 		try {
 			int[] weekdays = {1,2,3,4,5,6,7};
-			this.selectWeekdaysCasesBetweenDatesToCurrentData(new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(fromDateTest), new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(toDateTest), weekdays);
+			this.selectWeekdaysCasesBetweenDatesToCurrentData(new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(fromDateTest), new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse(toDateTest), weekdays, "all");
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,6 +85,33 @@ public class CrimeCaseDatabase {
 //		for(CaseReport cR : this.currentData){
 //			System.out.println(cR);
 //		}
+	}
+	
+	@SuppressWarnings("unused")
+	private void readCategoriesFromIndex() throws IOException{
+		System.out.println("Read Categories: ");
+		MatchAllDocsQuery query = new MatchAllDocsQuery();
+		TopDocs docs = this.indexSearcher.search(query, 1200000);
+		System.out.println(docs.scoreDocs.length);
+		boolean alreadyExist = false;
+		String tempString;
+		for(ScoreDoc sDoc : docs.scoreDocs){
+			tempString = indexSearcher.doc(sDoc.doc).get("category");
+			for(String category : this.categories){
+				if(tempString.equals(category)){
+					alreadyExist = true;
+				}
+			}
+			if(!alreadyExist){
+				this.categories.add(tempString);
+			}
+			alreadyExist = false;
+		}
+		System.out.println("\nCategories: "+this.categories.size());
+		for(String s : this.categories){
+			System.out.println(s);
+		}
+		System.out.println("------\n");
 	}
 	
 	public void reindexCSV(String path){
@@ -113,7 +148,7 @@ public class CrimeCaseDatabase {
 					doc.add(new LongField("dateOpened", dateOpenedAsLong, Field.Store.YES));
 					doc.add(new LongField("dateClosed", dateClosedAsLong, Field.Store.YES));
 					doc.add(new TextField("address", nextLine[9], Field.Store.YES));
-					doc.add(new TextField("category", nextLine[6], Field.Store.YES));
+					doc.add(new StringField("category", nextLine[6], Field.Store.YES));
 					String[] coordinateStrings = nextLine[12].substring(1, nextLine[12].length()-1).split(",");
 					doc.add(new DoubleField("lat", Double.valueOf(coordinateStrings[0]), Field.Store.YES));
 					doc.add(new DoubleField("lon", Double.valueOf(coordinateStrings[1]), Field.Store.YES));
@@ -135,6 +170,20 @@ public class CrimeCaseDatabase {
 		System.out.println(emptyEntries+" empty entries in CSV found and ignored");
 	}
 	
+	// For testing purposes
+	public void selectCategory(String category) throws IOException{
+		this.clearCurrentData();
+		Query query = new TermQuery(new Term("category", category));
+		TopDocs docs = this.indexSearcher.search(query, 1500);
+		System.out.println(query);
+		System.out.println("Total hits: " + docs.totalHits);
+		Document doc;
+		for(ScoreDoc sDoc : docs.scoreDocs){
+			 doc = indexSearcher.doc(sDoc.doc);
+			 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("address"), doc.get("category"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")"));
+		}
+	}
+	
 	/**
 	 * 
 	 * Selects all CrimeReports and puts them to the currentData list
@@ -144,11 +193,17 @@ public class CrimeCaseDatabase {
 	 * @param toDate
 	 * @throws IOException 
 	 */
-	public void selectAllCasesBetweenTwoDates(Date fromDate, Date toDate) throws IOException{
+	public void selectAllCasesBetweenTwoDates(Date fromDate, Date toDate, String category) throws IOException{
 		this.clearCurrentData();
-		Query query = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
-		TopDocs docs = this.indexSearcher.search(query, 1500);
-		System.out.println(query);
+		BooleanQuery boolQuery = new BooleanQuery();
+		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
+		if(!category.equals("All categories")){
+			Query query2 = new TermQuery(new Term("category", category));
+			boolQuery.add(query2, BooleanClause.Occur.MUST);
+		}
+		boolQuery.add(query1, BooleanClause.Occur.MUST);
+		TopDocs docs = this.indexSearcher.search(boolQuery, 1500);
+		System.out.println(boolQuery);
 		System.out.println("Total hits: " + docs.totalHits);
 		Document doc;
 		for(ScoreDoc sDoc : docs.scoreDocs){
@@ -171,12 +226,16 @@ public class CrimeCaseDatabase {
 	 * @param weekdays specifies which weekdays we want to look at (Sunday[1],Monday[2],...,Saturday[7])
 	 * @throws IOException 
 	 */
-	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, int[] weekdays) throws IOException {
+	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, int[] weekdays, String category) throws IOException {
 		this.clearCurrentData();
 		for(int day : weekdays){
 			BooleanQuery boolQuery = new BooleanQuery();
 			Query query1 = NumericRangeQuery.newIntRange("dayOfWeek", day, day, true, true);
 			Query query2 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
+			if(!category.equals("All categories")){
+				Query query3 = new TermQuery(new Term("category", category));
+				boolQuery.add(query3, BooleanClause.Occur.MUST);
+			}
 			boolQuery.add(query1, BooleanClause.Occur.MUST);
 			boolQuery.add(query2, BooleanClause.Occur.MUST);
 			TopDocs docs = this.indexSearcher.search(boolQuery, 100);

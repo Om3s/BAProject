@@ -1,15 +1,33 @@
-- Zeitleiste (Von - Bis Filter rechts und links von der Leiste oder im Filtermenü)
-- Filtermenü:
-	- Monatliche/Wöchentliche/Tägliche Betrachtung (pro Zeitleistenraster)
-	- Feld mit selektierbaren Wochentagen, sodass nur diese betrachtet werden. (Mehrfachselektion möglich)
-	- Dropdownmenü mit allen Crime Categories (Standardauswahl "All Categories")
-	- Von - Bis Daten für die Zeitleiste (evtl. mit graphischen Kalender, um Usereingabefehler zu vermeiden)
-	- Apply button
-	- Reset button
-- Entsprechenden Datensatz auf Karte zeichnen lassen
-- Heatmap visualisierung umsetzen.
-
 UI element look and feel UI
 basic ui javadoc
-heat map - gauss kernel (gauss interpolation kleines pic)
+heat map - gauss kernel (gauss interpolation, kleines pic)
 term enum
+
+Categories:
+SFHA Requests
+Abandoned Vehicle
+Street and Sidewalk Cleaning
+Litter Receptacles
+Sign Repair
+Residential Building Request
+Graffiti Public Property
+Streetlights
+Damaged Property
+Street Defects
+Blocked Street or SideWalk
+Tree Maintenance
+MUNI Feedback
+Illegal Postings
+Color Curb
+General Requests
+Sewer Issues
+Rec and Park Requests
+Temporary Sign Request
+Graffiti Private Property
+311 External Request
+Sidewalk or Curb
+Catch Basin Maintenance
+Interdepartmental Request
+DPW Volunteer Programs
+Unpermitted Cab Complaint
+Construction Zone Permits
