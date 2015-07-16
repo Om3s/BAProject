@@ -7,8 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
+import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
 
@@ -17,9 +19,10 @@ public class MainframeController {
 	private CrimeCaseDatabase cCaseDatabase;
 	private Date globalFromDate, globalToDate, currentFromDate, currentToDate;
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat standardGUIDateTimeOutputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private byte timelineDateSteps;
 	private MapController geoMapController;
-	private int[] weekdays;
+	private int[] weekdays = {1,2,3,4,5,6,7};
 	private String currentCategory;
 	
 	//Timeline:
@@ -70,6 +73,9 @@ public class MainframeController {
 		this.mainframe.timeLineBiSlider.setUniformSegment(true);
 		//Category
 		this.currentCategory = "All categories";
+		//Weekdays:
+		this.refreshWeekdays();
+		this.timeLineChanged(0, 1);
 	}
 	
 	private void refreshTimelineAttributes(){
@@ -90,14 +96,21 @@ public class MainframeController {
 			this.timelineDateSteps = 2;
 			System.out.println("Weeks difference: "+ timeUnitDiffs);
 		} else {
-			timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 30);
+			Calendar startCalendar = new GregorianCalendar();
+			Calendar endCalendar = new GregorianCalendar();
+			startCalendar.setTime(fromDate);
+			endCalendar.setTime(toDate);
+			timeUnitDiffs = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+			System.out.println(timeUnitDiffs);
+			timeUnitDiffs = (timeUnitDiffs * 12) + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+			System.out.println(timeUnitDiffs);
 			this.timelineDateSteps = 3;
 		}
 		this.timelineMaxValue = timeUnitDiffs;
 		this.timelineSmallestTimeInterval = 1;
-		this.timelineHigherValue = 2;
-		this.timelineLowerValue = 1;
-		this.mainframe.timeLineBiSlider.setValues(1, this.timelineMaxValue);
+		this.timelineHigherValue = 1;
+		this.timelineLowerValue = 0;
+		this.mainframe.timeLineBiSlider.setValues(0, this.timelineMaxValue);
 		this.mainframe.timeLineBiSlider.setMaximumColoredValue(this.timelineHigherValue);
 		this.mainframe.timeLineBiSlider.setMinimumColoredValue(this.timelineLowerValue);
 		this.mainframe.timeLineBiSlider.setSegmentSize(this.timelineSmallestTimeInterval);
@@ -109,14 +122,7 @@ public class MainframeController {
 		this.refreshTimelineAttributes();
 		this.refreshWeekdays();
 		this.refreshCurrentCategory();
-		
-		//Test:
-//		try {
-//			this.cCaseDatabase.selectCategory(this.currentCategory);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		this.timeLineChanged(0, 1);
 	}
 	
 	private void refreshGlobalDates() {
@@ -149,8 +155,10 @@ public class MainframeController {
 		}
 		Integer[] tempArray = ((Integer[]) tempWeekdayList.toArray(new Integer[0]));
 		this.weekdays = new int[tempArray.length];
-		for(int i = 0; i<tempArray.length-1; i++){
+		System.out.println(this.weekdays.length);
+		for(int i = 0; i<tempArray.length; i++){
 			this.weekdays[i] = tempArray[i];
+			System.out.println(i + " : " + this.weekdays[i]);
 		}
 	}
 
@@ -199,33 +207,25 @@ public class MainframeController {
 		String newDateText = this.standardGUIDateOutputFormat.format(newDate);
 		this.mainframe.filtermenu_dates_leftCalendarButton.setTargetDate(newDate);
 		this.mainframe.filtermenu_dates_leftCalendarButton.setText(newDateText);
-		this.mainframe.timeline_panel_fromDate_label.setText(newDateText);
 	}
 	
 	private void setToDate(Date newDate){
 		String newDateText = this.standardGUIDateOutputFormat.format(newDate);
 		this.mainframe.filtermenu_dates_rightCalendarButton.setTargetDate(newDate);
 		this.mainframe.filtermenu_dates_rightCalendarButton.setText(newDateText);
-		this.mainframe.timeline_panel_toDate_label.setText(newDateText);
 	}
 	
 	public void timeLineChanged(double minColorValue, double maxColorValue){
 		if(this.hasTimeLineChanged((int) (minColorValue+0.5), (int) (maxColorValue+0.5))){
 			this.timelineLowerValue = (int) (minColorValue+0.5);
 			this.timelineHigherValue = (int) (maxColorValue+0.5);
-//			System.out.println("Min: "+this.timelineLowerValue+", Max: "+this.timelineHigherValue);
 			this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 			try {
 				System.out.println("fromDate: "+this.currentFromDate+" , toDate: "+this.currentToDate);
-				if(this.mainframe.filtermenu_interval_radioButtonHours.isSelected() || this.mainframe.filtermenu_interval_radioButtonDays.isSelected() || (this.mainframe.checkBox_Mon.isSelected() && this.mainframe.checkBox_Tue.isSelected() && this.mainframe.checkBox_Wed.isSelected() && this.mainframe.checkBox_Thu.isSelected() && this.mainframe.checkBox_Fri.isSelected() && this.mainframe.checkBox_Sat.isSelected() && this.mainframe.checkBox_Sun.isSelected())){
-					this.cCaseDatabase.selectAllCasesBetweenTwoDates(this.currentFromDate, this.currentToDate, this.currentCategory);
-				} else { // UNDER CONSTRUCTION - NOT TESTED
-					this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
-				}
+				this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
 				this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());
 				this.geoMapController.setShowCurrentPoints(true);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -234,35 +234,42 @@ public class MainframeController {
 	
 	private void refreshCurrentDates(int minValue, int maxValue){
 		Calendar temp = Calendar.getInstance();
+		SimpleDateFormat tempDateFormat = this.standardGUIDateOutputFormat;
 		if(this.timelineDateSteps == 0){ //hourly
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.HOUR_OF_DAY, (minValue-1));
+			temp.add(Calendar.HOUR_OF_DAY, (minValue));
 			this.currentFromDate = new Date(temp.getTimeInMillis());
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.HOUR_OF_DAY, (maxValue-1));
+			temp.add(Calendar.HOUR_OF_DAY, (maxValue));
+			tempDateFormat = this.standardGUIDateTimeOutputFormat;
 			this.currentToDate = new Date(temp.getTimeInMillis());
 		} else if(this.timelineDateSteps == 1){ //daily
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.DATE, (minValue-1));
+			temp.add(Calendar.DATE, (minValue));
 			this.currentFromDate = new Date(temp.getTimeInMillis());
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.DATE, (maxValue-1));
+			temp.add(Calendar.DATE, (maxValue));
 			this.currentToDate = new Date(temp.getTimeInMillis());
 		} else if(this.timelineDateSteps == 2){ //weekly
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.DATE, ((minValue-1)*7));
+			temp.add(Calendar.DATE, ((minValue)*7));
 			this.currentFromDate = new Date(temp.getTimeInMillis());
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.DATE, ((maxValue-1)*7));
+			temp.add(Calendar.DATE, ((maxValue)*7));
 			this.currentToDate = new Date(temp.getTimeInMillis());
 		} else { //monthly
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.MONTH, (minValue-1));
+			temp.add(Calendar.MONTH, (minValue));
 			this.currentFromDate = new Date(temp.getTimeInMillis());
 			temp.setTime(globalFromDate);
-			temp.add(Calendar.MONTH, (maxValue-1));
+			temp.add(Calendar.MONTH, (maxValue));
 			this.currentToDate = new Date(temp.getTimeInMillis());
 		}
+		//refresh TimeLine GUI elements:
+		String newDateText = tempDateFormat.format(this.currentFromDate);
+		this.mainframe.timeline_panel_fromDate_label.setText(newDateText);
+		newDateText = tempDateFormat.format(this.currentToDate);
+		this.mainframe.timeline_panel_toDate_label.setText(newDateText);
 	}
 	
 	private boolean hasTimeLineChanged(int minColorValue, int maxColorValue){

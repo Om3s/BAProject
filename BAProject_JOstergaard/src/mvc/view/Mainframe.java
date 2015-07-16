@@ -560,8 +560,8 @@ public class Mainframe extends JFrame {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+				BiSlider src = (BiSlider) e.getSource();
+				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
 			}
 		});
 		
