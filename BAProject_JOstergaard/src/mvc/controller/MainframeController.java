@@ -75,6 +75,7 @@ public class MainframeController {
 		this.currentCategory = "All categories";
 		//Weekdays:
 		this.refreshWeekdays();
+		this.timelineLowerValue = -1; //definetly change HACK
 		this.timeLineChanged(0, 1);
 	}
 	
@@ -102,7 +103,7 @@ public class MainframeController {
 			endCalendar.setTime(toDate);
 			timeUnitDiffs = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
 			System.out.println(timeUnitDiffs);
-			timeUnitDiffs = (timeUnitDiffs * 12) + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+			timeUnitDiffs = (timeUnitDiffs * 12) + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH) + 1;
 			System.out.println(timeUnitDiffs);
 			this.timelineDateSteps = 3;
 		}
@@ -122,6 +123,7 @@ public class MainframeController {
 		this.refreshTimelineAttributes();
 		this.refreshWeekdays();
 		this.refreshCurrentCategory();
+		this.timelineLowerValue = -1; //definetly change HACK
 		this.timeLineChanged(0, 1);
 	}
 	
