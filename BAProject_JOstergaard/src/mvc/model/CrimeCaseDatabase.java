@@ -32,6 +32,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -203,5 +204,24 @@ public class CrimeCaseDatabase {
 
 	public ArrayList<CaseReport> getCurrentData() {
 		return this.currentData;
+	}
+	
+	public int countCaseReportsFromTo(Date fromDate, Date toDate, int[] weekdays, String category) throws IOException{
+		int totalHits = 0;
+		for(int day : weekdays){
+			TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
+			BooleanQuery boolQuery = new BooleanQuery();
+			Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
+			Query query2 = NumericRangeQuery.newIntRange("dayOfWeek", day, day, true, true);
+			boolQuery.add(query1, BooleanClause.Occur.MUST);
+			boolQuery.add(query2, BooleanClause.Occur.MUST);
+			if(!category.equals("All categories")){
+				Query query3 = new TermQuery(new Term("category", category));
+				boolQuery.add(query3, BooleanClause.Occur.MUST);
+			}
+			this.indexSearcher.search(boolQuery, hitCountCollector);
+			totalHits += hitCountCollector.getTotalHits();
+		}
+		return totalHits;
 	}
 }

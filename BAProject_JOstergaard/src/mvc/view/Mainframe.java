@@ -26,6 +26,9 @@ import mvc.controller.MainframeController;
 import mvc.controller.MapController;
 
 import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
@@ -75,6 +78,9 @@ public class Mainframe extends JFrame {
 	public final JButton filtermenu_buttons_applyButton;
 	public final JButton filtermenu_buttons_defaultButton;
 	public final JComboBox filtermenu_comboBox_category;
+	public ChartPanel innerChartPanel;
+	public JFreeChart barChart;
+	public final JPanel gui_chart_panel;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -112,6 +118,8 @@ public class Mainframe extends JFrame {
 		this.filtermenu_buttons_defaultButton = new JButton("Default");
 		//Combobox Categories:
 		this.filtermenu_comboBox_category = new JComboBox();
+		//ChartPanel
+		this.gui_chart_panel = new JPanel();
 		
 		this.init();
 	}
@@ -151,9 +159,9 @@ public class Mainframe extends JFrame {
 		getContentPane().add(analysis_panel, gbc_analysis_panel);
 		GridBagLayout gbl_analysis_panel = new GridBagLayout();
 		gbl_analysis_panel.columnWidths = new int[]{0};
-		gbl_analysis_panel.rowHeights = new int[] {0, 0};
+		gbl_analysis_panel.rowHeights = new int[] {0, 0, 0};
 		gbl_analysis_panel.columnWeights = new double[]{1.0};
-		gbl_analysis_panel.rowWeights = new double[]{0.6, 0.35};
+		gbl_analysis_panel.rowWeights = new double[]{0.6, 0.35, 1.0};
 		analysis_panel.setLayout(gbl_analysis_panel);
 		
 		JPanel geomap_panel = new JPanel();
@@ -161,7 +169,7 @@ public class Mainframe extends JFrame {
 		geomap_panel.setForeground(Color.BLACK);
 		geomap_panel.setToolTipText("GeoMap for Hotspot visualization");
 		GridBagConstraints gbc_geomap_panel = new GridBagConstraints();
-		gbc_geomap_panel.weighty = 1.0;
+		gbc_geomap_panel.weighty = 0.85;
 		gbc_geomap_panel.insets = new Insets(0, 0, 5, 0);
 		gbc_geomap_panel.fill = GridBagConstraints.BOTH;
 		gbc_geomap_panel.gridx = 0;
@@ -174,7 +182,8 @@ public class Mainframe extends JFrame {
 		JPanel timeline_panel = new JPanel();
 		timeline_panel.setBackground(Color.BLUE);
 		GridBagConstraints gbc_timeline_panel = new GridBagConstraints();
-		gbc_timeline_panel.weighty = 0.5;
+		gbc_timeline_panel.insets = new Insets(0, 0, 5, 0);
+		gbc_timeline_panel.weighty = 0.05;
 		gbc_timeline_panel.fill = GridBagConstraints.BOTH;
 		gbc_timeline_panel.gridx = 0;
 		gbc_timeline_panel.gridy = 1;
@@ -190,6 +199,13 @@ public class Mainframe extends JFrame {
 		panel.add(timeline_panel_fromDate_label, BorderLayout.WEST);
 		panel.add(timeline_panel_toDate_label, BorderLayout.EAST);
 		
+		GridBagConstraints gbc_chart_panel = new GridBagConstraints();
+		gbc_chart_panel.weighty = 0.1;
+		gbc_chart_panel.fill = GridBagConstraints.BOTH;
+		gbc_chart_panel.gridx = 0;
+		gbc_chart_panel.gridy = 2;
+		analysis_panel.add(this.gui_chart_panel, gbc_chart_panel);
+						
 		JPanel filtermenu_panel = new JPanel();
 		filtermenu_panel.setBackground(Color.LIGHT_GRAY);
 		GridBagConstraints gbc_filtermenu_panel = new GridBagConstraints();

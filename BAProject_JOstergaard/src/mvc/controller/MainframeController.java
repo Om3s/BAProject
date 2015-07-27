@@ -1,6 +1,8 @@
 package mvc.controller;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,6 +11,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
@@ -28,6 +35,9 @@ public class MainframeController {
 	//Timeline:
 	private int timelineSmallestTimeInterval = 1;
 	private int timelineMaxValue, timelineLowerValue, timelineHigherValue;
+	
+	//Chart:
+	private String intervalName = null;
 	
 	
 	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase) throws ParseException{
@@ -77,6 +87,8 @@ public class MainframeController {
 		this.refreshWeekdays();
 		this.timelineLowerValue = -1; //definetly change HACK
 		this.timeLineChanged(0, 1);
+		//Chart:
+		this.refreshChart();
 	}
 	
 	private void refreshTimelineAttributes(){
@@ -87,15 +99,15 @@ public class MainframeController {
 		if(this.mainframe.filtermenu_interval_radioButtonHours.isSelected()){
 			timeUnitDiffs = (int)TimeUnit.HOURS.convert(diffInMillis, TimeUnit.MILLISECONDS) + 1;
 			this.timelineDateSteps = 0;
-			System.out.println("Hours difference: "+ timeUnitDiffs);
+			this.intervalName = "Hours";
 		} else if (this.mainframe.filtermenu_interval_radioButtonDays.isSelected()) {
 			timeUnitDiffs = (int)TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS) + 1;
 			this.timelineDateSteps = 1;
-			System.out.println("Days difference: "+ timeUnitDiffs);
+			this.intervalName = "Days";
 		} else if (this.mainframe.filtermenu_interval_radioButtonWeeks.isSelected()) {
 			timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 7) + 1;
 			this.timelineDateSteps = 2;
-			System.out.println("Weeks difference: "+ timeUnitDiffs);
+			this.intervalName = "Weeks";
 		} else {
 			Calendar startCalendar = new GregorianCalendar();
 			Calendar endCalendar = new GregorianCalendar();
@@ -106,6 +118,7 @@ public class MainframeController {
 			timeUnitDiffs = (timeUnitDiffs * 12) + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH) + 1;
 			System.out.println(timeUnitDiffs);
 			this.timelineDateSteps = 3;
+			this.intervalName = "Months";
 		}
 		this.timelineMaxValue = timeUnitDiffs;
 		this.timelineSmallestTimeInterval = 1;
@@ -125,6 +138,7 @@ public class MainframeController {
 		this.refreshCurrentCategory();
 		this.timelineLowerValue = -1; //definetly change HACK
 		this.timeLineChanged(0, 1);
+		this.refreshChart();
 	}
 	
 	private void refreshGlobalDates() {
@@ -284,5 +298,51 @@ public class MainframeController {
 
 	public void refreshCurrentCategory() {
 		this.currentCategory = (String) this.mainframe.filtermenu_comboBox_category.getSelectedItem();
+	}
+	
+	public void refreshChart(){
+		this.mainframe.gui_chart_panel.removeAll();
+		this.mainframe.gui_chart_panel.revalidate();
+		//Create ChartData:
+		
+		//Create Chart:
+		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, "Counts", this.createDataset());
+		this.mainframe.barChart.removeLegend();
+		this.mainframe.innerChartPanel = new ChartPanel(this.mainframe.barChart);
+		this.mainframe.gui_chart_panel.setLayout(new BorderLayout());
+		this.mainframe.gui_chart_panel.add(this.mainframe.innerChartPanel);
+		this.mainframe.gui_chart_panel.repaint();
+		//Remove Mouselisteners:
+		MouseListener[] mListeners = this.mainframe.innerChartPanel.getMouseListeners();
+		for(MouseListener mL : mListeners){
+			this.mainframe.innerChartPanel.removeMouseListener(mL);
+		}
+	}
+	
+	private CategoryDataset createDataset(){
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		int count = 0;
+		for(int i=1; i <= this.timelineMaxValue; i++){
+			this.refreshCurrentDates(i-1, i);
+			try {
+				count = this.cCaseDatabase.countCaseReportsFromTo(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			dataset.addValue(count, String.valueOf(i), "");
+		}
+		if(this.timelineDateSteps == 0) { //hours
+			
+		} else if(this.timelineDateSteps == 1){ //days
+			
+		} else if(this.timelineDateSteps == 2){ //weeks
+			
+		} else { //months
+			
+		}
+		
+		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
+		
+		return dataset;
 	}
 }
