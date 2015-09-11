@@ -2,6 +2,7 @@ package mvc.controller;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
@@ -23,7 +24,6 @@ public class MapController extends DefaultMapController {
 	
 	public void init(){
 		for(CaseReport cR : dataBase.getCurrentData()){
-			cR.getPoint().setVisible(true);
 			this.map.addMapMarker(cR.getPoint());
 		}
 		this.map.updateUI();
@@ -33,7 +33,21 @@ public class MapController extends DefaultMapController {
 		this.setShowCurrentPoints(false);
 		this.map.removeAllMapMarkers();
 		this.currentPoints.clear();
+		
+		Calendar cal = Calendar.getInstance();
+		int dayOfWeek = 0;
 		for(CaseReport cR : reports){
+			cal.setTime(cR.getDateOpened());
+			dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+			switch (dayOfWeek) {
+				case 1: cR.getPoint().setBackColor(Color.BLUE); break; //sunday
+				case 2: cR.getPoint().setBackColor(Color.YELLOW); break; //monday
+				case 3: cR.getPoint().setBackColor(Color.CYAN); break; //tuesday
+				case 4: cR.getPoint().setBackColor(Color.MAGENTA); break; //wednesday
+				case 5: cR.getPoint().setBackColor(Color.ORANGE); break; //thursday
+				case 6: cR.getPoint().setBackColor(Color.RED); break; //friday
+				case 7: cR.getPoint().setBackColor(Color.GREEN); break; //saturday
+			}
 			this.currentPoints.add(cR.getPoint());
 		}
 		for(GeoPoint p : this.currentPoints){
