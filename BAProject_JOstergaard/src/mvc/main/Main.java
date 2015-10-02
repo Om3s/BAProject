@@ -20,7 +20,7 @@ public class Main {
 		
 		System.out.println("Create Map...");
 		JMapViewer map = new JMapViewer();
-		map.setDisplayPositionByLatLon(37.7, -122, 7);
+		map.setDisplayPositionByLatLon(37.73, -122.45, 11);
 		
 		System.out.println("Create Controller...");
 		DefaultMapController geoMapController = new MapController(map, dataBase);
