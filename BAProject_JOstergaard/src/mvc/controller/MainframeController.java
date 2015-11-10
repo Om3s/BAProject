@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 
@@ -321,7 +323,8 @@ public class MainframeController {
 	
 	private CategoryDataset createDataset(){
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		int count = 0;
+		int count = 0, dayOfWeek;
+		Calendar cal = Calendar.getInstance();
 		for(int i=1; i <= this.timelineMaxValue; i++){
 			this.refreshCurrentDates(i-1, i);
 			try {
@@ -329,12 +332,26 @@ public class MainframeController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			dataset.addValue(count, String.valueOf(i), "");
+			if(this.timelineDateSteps == 1 ){
+				cal.setTime(this.currentFromDate);
+				dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+				dataset.addValue(count, String.valueOf(dayOfWeek), "");
+			} else {
+				dataset.addValue(count, String.valueOf(i), "");
+			}
+			
 		}
 		if(this.timelineDateSteps == 0) { //hours
 			
 		} else if(this.timelineDateSteps == 1){ //days
-			
+			BarRenderer br = (BarRenderer) this.mainframe.barChart.getCategoryPlot().getRenderer();
+			br.setSeriesPaint(1, Color.BLUE);
+			br.setSeriesPaint(2, Color.YELLOW);
+			br.setSeriesPaint(3, Color.CYAN);
+			br.setSeriesPaint(4, Color.MAGENTA);
+			br.setSeriesPaint(5, Color.ORANGE);
+			br.setSeriesPaint(6, Color.RED);
+			br.setSeriesPaint(7, Color.GREEN);
 		} else if(this.timelineDateSteps == 2){ //weeks
 			
 		} else { //months
