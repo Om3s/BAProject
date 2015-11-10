@@ -11,6 +11,8 @@ import java.util.List;
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
 import mvc.model.GeoPoint;
+
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
@@ -79,45 +81,41 @@ public class MapController extends DefaultMapController {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1){
-			Point p = e.getPoint();
+	  		Coordinate geoClickPos = this.map.getPosition(e.getPoint());
+			Point p = this.map.getMapPosition(geoClickPos);
 			double X = p.x;
 			double Y = p.y;
 	  		System.out.println("Left-Click at X="+X+", Y="+Y);
-	  		List<MapMarker> ar = map.getMapMarkerList();
-	  	    Iterator<MapMarker> i = ar.iterator();
+	  		System.out.println("Left-Click at X="+geoClickPos.getLat()+", Y="+geoClickPos.getLon());
+	  	    Iterator<GeoPoint> i = this.currentPoints.iterator();
 	  	    double centerX, centerY,shortestDistance=Double.MAX_VALUE;
 	  	    Point markerPosition = null;
-	  	    int y=0;
 	  	    this.clearSelectedMapMarker();
+	  	    MapMarkerDot mapMarker;
+	  	    double newDistance;
 	  	    while (i.hasNext()) {
 
-	  	        MapMarkerDot mapMarker = (MapMarkerDot) i.next();
+	  	        mapMarker = (MapMarkerDot) i.next();
 
 	  	        if(mapMarker != null){
 	  	        	
-	  	        	markerPosition = map.getMapPosition(mapMarker.getLat(), mapMarker.getLon());
-	  	        	if(markerPosition == null){
-	  	        		System.out.println("MarkerPosition OUT OF SIGHT");
+	  	        	newDistance = this.distance(mapMarker.getCoordinate(), geoClickPos);
+	  	        	
+	  	        	if (newDistance < shortestDistance){
+	  	        		shortestDistance = newDistance;
+  	            		this.clearSelectedMapMarker();
+  	            		this.selectedMapMarker = mapMarker;
+  	            		mapMarker.setBackColor(Color.PINK);
 	  	        	}
-	  	            centerX =  markerPosition.getX();
-	  	            centerY = markerPosition.getY();
-
-	  	            // calculate the radius from the touch to the center of the dot
-	  	            double radCircle  = Math.sqrt( (((centerX-X)*(centerX-X)) + (centerY-Y)*(centerY-Y)));
-
-	  	            // if the radius is smaller then 23 (radius of a ball is 5), then it must be on the dot
-	  	            if (radCircle < 8){
-	  	            	if(radCircle<shortestDistance){
-	  	            		this.clearSelectedMapMarker();
-	  	            		this.selectedMapMarker = mapMarker;
-	  	            		mapMarker.setBackColor(Color.PINK);
-	  	            	}
-	  	            }
-		  	        y++;
 	  	        }
 	  	    }
-	  	    System.out.println(y);
-	  	    this.map.repaint();
+	  	    markerPosition = this.map.getMapPosition(this.selectedMapMarker.getCoordinate());
+	  	    centerX =  markerPosition.getX();
+	  	    centerY = markerPosition.getY();
+	  	    double radCircle  = Math.sqrt( (((centerX-X)*(centerX-X)) + (centerY-Y)*(centerY-Y)));
+	  	    if (radCircle > 8){
+	  	    	this.clearSelectedMapMarker();
+	  	    }
 		} else if(e.getButton() == MouseEvent.BUTTON2){
 			Point p = e.getPoint();
 			int X = p.x;
@@ -129,6 +127,11 @@ public class MapController extends DefaultMapController {
 			int Y = p.y;
 	  		System.out.println("Right-Click at X="+X+", Y="+Y);
 		}
+  	    this.map.repaint();
+	}
+	
+	private double distance(Coordinate c1, Coordinate c2){
+		return (c1.getLat()-c2.getLat())*(c1.getLat()-c2.getLat())+(c1.getLon()-c2.getLon())*(c1.getLon()-c2.getLon());
 	}
 
 	private void clearSelectedMapMarker() {
