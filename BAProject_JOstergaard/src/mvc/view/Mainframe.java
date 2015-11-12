@@ -133,6 +133,7 @@ public class Mainframe extends JFrame {
 		this.fileMenu_item_exit = new JMenuItem("Exit");
 		//Timeline:
 		this.timeLineBiSlider = new BiSlider();
+		this.timeLineBiSlider.setMinimumSize(new Dimension(350, 20));
 		//Apply/Default Buttons:
 		this.filtermenu_buttons_applyButton = new JButton("Apply");
 		this.filtermenu_buttons_defaultButton = new JButton("Default");
@@ -159,20 +160,21 @@ public class Mainframe extends JFrame {
 		frameHeight = (int) (frameWidth * 0.75);
 		this.setSize(frameWidth, frameHeight);
 		this.setLocation((int)((screenWidth / 2) - (frameWidth / 2)), (int)((screenHeight / 2) - (frameHeight / 2 )));
-		this.setMinimumSize(new Dimension(640, 480));
+		this.setMinimumSize(new Dimension(800, 450));
 		
 		
 		
 		// =================== GUI LAYOUT: =================== 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {0, 0, 0};
+		gridBagLayout.columnWidths = new int[] {100, 200, 200, 100};
 		gridBagLayout.rowHeights = new int[] {0};
-		gridBagLayout.columnWeights = new double[]{1.0, 0.2, 0.0};
+		gridBagLayout.columnWeights = new double[]{1.0, 0.2, 0.0, 0.0};
 		gridBagLayout.rowWeights = new double[]{1.0};
 		getContentPane().setLayout(gridBagLayout);
 		
 		JPanel analysis_panel = new JPanel();
 		GridBagConstraints gbc_analysis_panel = new GridBagConstraints();
+		gbc_analysis_panel.gridwidth = 2;
 		gbc_analysis_panel.weightx = 1.0;
 		gbc_analysis_panel.insets = new Insets(0, 0, 5, 5);
 		gbc_analysis_panel.fill = GridBagConstraints.BOTH;
@@ -233,7 +235,7 @@ public class Mainframe extends JFrame {
 		GridBagConstraints gbc_filtermenu_panel = new GridBagConstraints();
 		gbc_filtermenu_panel.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_panel.fill = GridBagConstraints.BOTH;
-		gbc_filtermenu_panel.gridx = 2;
+		gbc_filtermenu_panel.gridx = 3;
 		gbc_filtermenu_panel.gridy = 0;
 		getContentPane().add(filtermenu_panel, gbc_filtermenu_panel);
 		GridBagLayout gbl_filtermenu_panel = new GridBagLayout();
@@ -468,9 +470,10 @@ public class Mainframe extends JFrame {
 				
 				this.reportList_panel = new JPanel();
 				GridBagConstraints gbc_reportList_panel = new GridBagConstraints();
+				gbc_reportList_panel.anchor = GridBagConstraints.WEST;
+				gbc_reportList_panel.fill = GridBagConstraints.BOTH;
 				gbc_reportList_panel.weightx = 0.5;
 				gbc_reportList_panel.insets = new Insets(0, 0, 0, 5);
-				gbc_reportList_panel.fill = GridBagConstraints.BOTH;
 				gbc_reportList_panel.gridx = 0;
 				gbc_reportList_panel.gridy = 0;
 				getContentPane().add(reportList_panel, gbc_reportList_panel);
@@ -487,6 +490,7 @@ public class Mainframe extends JFrame {
 				
 				this.selectedCaseDetails_textArea = new JTextArea();
 				this.selectedCaseDetails_textArea.setMaximumSize(new Dimension(2000, 400));
+				this.selectedCaseDetails_textArea.setMinimumSize(new Dimension(300, 10));
 				this.reportList_panel.add(selectedCaseDetails_textArea);
 		
 		JMenuBar menuBar = new JMenuBar();
