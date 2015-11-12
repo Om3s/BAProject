@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 
 
@@ -16,20 +18,24 @@ import java.awt.Insets;
 import java.awt.Color;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 
 import mvc.controller.MainframeController;
 import mvc.controller.MapController;
+import mvc.model.CaseReport;
+import mvc.model.MyJList;
 
 import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import com.visutools.nav.bislider.BiSlider;
@@ -51,9 +57,19 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.JScrollPane;
+import javax.swing.JList;
+import javax.swing.JTextField;
+
+import java.awt.FlowLayout;
+
+import javax.swing.BoxLayout;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.SwingConstants;
+
 public class Mainframe extends JFrame {
-	private JMapViewer geoMap;
-	private ArrayList<Integer> activeWeekdays;
+	public JMapViewer geoMap;
 	private MainframeController controller;
 	private final JFileChooser fileChooser;
 	private final JMenuItem fileMenu_item_load;
@@ -77,10 +93,14 @@ public class Mainframe extends JFrame {
 	public final BiSlider timeLineBiSlider;
 	public final JButton filtermenu_buttons_applyButton;
 	public final JButton filtermenu_buttons_defaultButton;
-	public final JComboBox filtermenu_comboBox_category;
+	public final JComboBox<String> filtermenu_comboBox_category;
 	public ChartPanel innerChartPanel;
 	public JFreeChart barChart;
 	public final JPanel gui_chart_panel;
+	private JPanel reportList_panel;
+	public MyJList<CaseReport> reportList;
+	public DefaultListModel<CaseReport> reportListModel;
+	public JTextArea selectedCaseDetails_textArea;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -132,9 +152,10 @@ public class Mainframe extends JFrame {
 		// =================== WINDOW SETTINGS: =================== 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		int screenWidth, screenHeight, frameWidth, frameHeight;
-		screenWidth = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-		screenHeight = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		frameWidth = (int) (screenWidth / 2);
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		screenWidth = gd.getDisplayMode().getWidth(); 
+		screenHeight = gd.getDisplayMode().getHeight();
+		frameWidth = (int) (screenWidth / 1.75);
 		frameHeight = (int) (frameWidth * 0.75);
 		this.setSize(frameWidth, frameHeight);
 		this.setLocation((int)((screenWidth / 2) - (frameWidth / 2)), (int)((screenHeight / 2) - (frameHeight / 2 )));
@@ -144,17 +165,18 @@ public class Mainframe extends JFrame {
 		
 		// =================== GUI LAYOUT: =================== 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0};
-		gridBagLayout.columnWeights = new double[]{0.8, 0.2};
-		gridBagLayout.rowWeights = new double[]{1.0, 0.0};
+		gridBagLayout.columnWidths = new int[] {0, 0, 0};
+		gridBagLayout.rowHeights = new int[] {0};
+		gridBagLayout.columnWeights = new double[]{1.0, 0.2, 0.0};
+		gridBagLayout.rowWeights = new double[]{1.0};
 		getContentPane().setLayout(gridBagLayout);
 		
 		JPanel analysis_panel = new JPanel();
 		GridBagConstraints gbc_analysis_panel = new GridBagConstraints();
+		gbc_analysis_panel.weightx = 1.0;
 		gbc_analysis_panel.insets = new Insets(0, 0, 5, 5);
 		gbc_analysis_panel.fill = GridBagConstraints.BOTH;
-		gbc_analysis_panel.gridx = 0;
+		gbc_analysis_panel.gridx = 1;
 		gbc_analysis_panel.gridy = 0;
 		getContentPane().add(analysis_panel, gbc_analysis_panel);
 		GridBagLayout gbl_analysis_panel = new GridBagLayout();
@@ -209,8 +231,9 @@ public class Mainframe extends JFrame {
 		JPanel filtermenu_panel = new JPanel();
 		filtermenu_panel.setBackground(Color.LIGHT_GRAY);
 		GridBagConstraints gbc_filtermenu_panel = new GridBagConstraints();
+		gbc_filtermenu_panel.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_panel.fill = GridBagConstraints.BOTH;
-		gbc_filtermenu_panel.gridx = 1;
+		gbc_filtermenu_panel.gridx = 2;
 		gbc_filtermenu_panel.gridy = 0;
 		getContentPane().add(filtermenu_panel, gbc_filtermenu_panel);
 		GridBagLayout gbl_filtermenu_panel = new GridBagLayout();
@@ -442,6 +465,29 @@ public class Mainframe extends JFrame {
 				gbc_filtermenu_dates_rightCalendarButton.gridx = 1;
 				gbc_filtermenu_dates_rightCalendarButton.gridy = 1;
 				filtermenu_dates_panel.add(this.filtermenu_dates_rightCalendarButton, gbc_filtermenu_dates_rightCalendarButton);
+				
+				this.reportList_panel = new JPanel();
+				GridBagConstraints gbc_reportList_panel = new GridBagConstraints();
+				gbc_reportList_panel.weightx = 0.5;
+				gbc_reportList_panel.insets = new Insets(0, 0, 0, 5);
+				gbc_reportList_panel.fill = GridBagConstraints.BOTH;
+				gbc_reportList_panel.gridx = 0;
+				gbc_reportList_panel.gridy = 0;
+				getContentPane().add(reportList_panel, gbc_reportList_panel);
+				
+				this.reportListModel = new DefaultListModel<CaseReport>();
+				this.reportList_panel.setLayout(new BoxLayout(reportList_panel, BoxLayout.Y_AXIS));
+				this.reportList = new MyJList<CaseReport>(this.reportListModel);
+				this.reportList.setToolTipText("");
+				this.reportList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+				this.reportList.setLayoutOrientation(JList.VERTICAL);
+				this.reportList.setVisibleRowCount(-1);
+				JScrollPane reportList_scrollPane = new JScrollPane(reportList);
+				this.reportList_panel.add(reportList_scrollPane);
+				
+				this.selectedCaseDetails_textArea = new JTextArea();
+				this.selectedCaseDetails_textArea.setMaximumSize(new Dimension(2000, 400));
+				this.reportList_panel.add(selectedCaseDetails_textArea);
 		
 		JMenuBar menuBar = new JMenuBar();
 		GridBagConstraints gbc_menuBar = new GridBagConstraints();
@@ -592,6 +638,16 @@ public class Mainframe extends JFrame {
 			public void mouseDragged(MouseEvent e) {
 				BiSlider src = (BiSlider) e.getSource();
 				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
+			}
+		});
+		
+		this.reportList.addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(!e.getValueIsAdjusting()){
+					Mainframe.this.controller.onNewCaseSelection();
+				}
 			}
 		});
 	}

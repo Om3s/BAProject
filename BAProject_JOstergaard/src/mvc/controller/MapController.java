@@ -20,7 +20,8 @@ import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 public class MapController extends DefaultMapController {
 	private CrimeCaseDatabase dataBase;
 	private ArrayList<GeoPoint> currentPoints;
-	private MapMarker selectedMapMarker;
+	private GeoPoint selectedMapMarker;
+	private MainframeController mainFrameController;
 	
 	public MapController(JMapViewer map, CrimeCaseDatabase db) {
 		super(map);
@@ -90,11 +91,11 @@ public class MapController extends DefaultMapController {
 	  	    double centerX, centerY,shortestDistance=Double.MAX_VALUE;
 	  	    Point markerPosition = null;
 	  	    this.clearSelectedMapMarker();
-	  	    MapMarkerDot mapMarker;
+	  	    GeoPoint mapMarker = null;
 	  	    double newDistance;
 	  	    while (i.hasNext()) {
 
-	  	        mapMarker = (MapMarkerDot) i.next();
+	  	        mapMarker = (GeoPoint) i.next();
 
 	  	        if(mapMarker != null){
 	  	        	
@@ -104,7 +105,7 @@ public class MapController extends DefaultMapController {
 	  	        		shortestDistance = newDistance;
   	            		this.clearSelectedMapMarker();
   	            		this.selectedMapMarker = mapMarker;
-  	            		mapMarker.setBackColor(Color.PINK);
+  	            		this.selectedMapMarker.setBackColor(Color.PINK);
 	  	        	}
 	  	        }
 	  	    }
@@ -114,6 +115,8 @@ public class MapController extends DefaultMapController {
 	  	    double radCircle  = Math.sqrt( (((centerX-X)*(centerX-X)) + (centerY-Y)*(centerY-Y)));
 	  	    if (radCircle > 8){
 	  	    	this.clearSelectedMapMarker();
+	  	    } else {
+	  	    	this.mainFrameController.mainframe.reportList.setSelectedValue(this.selectedMapMarker.getRelatedCaseReport(), true);
 	  	    }
 		} else if(e.getButton() == MouseEvent.BUTTON2){
 			Point p = e.getPoint();
@@ -135,7 +138,14 @@ public class MapController extends DefaultMapController {
 
 	private void clearSelectedMapMarker() {
 		this.setDefaultColor(this.selectedMapMarker);
+		this.mainFrameController.mainframe.reportList.clearSelection();
 		this.selectedMapMarker = null;
+	}
+	
+	public void setSelectedMarker(GeoPoint mapMarker){
+		this.setDefaultColor(this.selectedMapMarker);
+		this.selectedMapMarker = mapMarker;
+		this.selectedMapMarker.setBackColor(Color.PINK);
 	}
 
 	private void setDefaultColor(MapMarker m) {
@@ -158,5 +168,9 @@ public class MapController extends DefaultMapController {
 				}
 			}
 		}
+	}
+	
+	public void setMainFrameController(MainframeController mFC){
+		this.mainFrameController = mFC;
 	}
 }

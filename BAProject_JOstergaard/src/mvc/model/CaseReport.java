@@ -12,7 +12,6 @@ public class CaseReport {
 	private String address, category;
 	private GeoPoint point;
 	private boolean currentSelected = false;
-	public String testString = "unchanged";
 	
 	public CaseReport(){
 		
@@ -29,6 +28,7 @@ public class CaseReport {
 		} else {
 			this.dateClosed = null;
 		}
+		this.point.setRelatedCaseReport(this);
 	}
 	
 	private GeoPoint fromStringToGeoPoint(String pointString){
@@ -38,7 +38,11 @@ public class CaseReport {
 	}
 	
 	public String toString(){
-		return "CaseReport[CaseID: "+this.caseID+", Opened: "+this.dateOpened+", Closed: "+this.dateClosed+", Address: "+this.address+", Category: "+this.category+", Point: ("+this.point.getLat()+", "+this.point.getLon()+")]";
+		return "CaseReport[CaseID: "+this.caseID+"]";
+	}
+	
+	public String toString2(){
+		return "CaseReport[CaseID: "+this.caseID+"%$sepa&%$Opened: "+this.dateOpened+"%$sepa&%$Closed: "+this.dateClosed+"%$sepa&%$Address: "+this.address+"%$sepa&%$Category: "+this.category+"%$sepa&%$Point: ("+this.point.getLat()+", "+this.point.getLon()+")]";
 	}
 	
 	public GeoPoint getPoint(){

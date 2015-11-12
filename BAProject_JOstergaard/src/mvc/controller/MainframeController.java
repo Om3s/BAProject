@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -24,7 +25,7 @@ import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
 
 public class MainframeController {
-	private Mainframe mainframe;
+	public Mainframe mainframe;
 	private CrimeCaseDatabase cCaseDatabase;
 	private Date globalFromDate, globalToDate, currentFromDate, currentToDate;
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -33,6 +34,7 @@ public class MainframeController {
 	private MapController geoMapController;
 	private int[] weekdays = {1,2,3,4,5,6,7};
 	private String currentCategory;
+	private MapController mapController;
 	
 	//Timeline:
 	private int timelineSmallestTimeInterval = 1;
@@ -42,13 +44,14 @@ public class MainframeController {
 	private String intervalName = null;
 	
 	
-	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase) throws ParseException{
+	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase, MapController mC) throws ParseException{
 		this.mainframe = frame;
 		this.cCaseDatabase = dataBase;
 		this.globalFromDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("01/01/2011 12:00:01 AM");
 		this.globalToDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("02/01/2011 23:59:99 PM");
 		this.geoMapController = this.mainframe.getGeoMapController();
-		
+		this.mapController = mC;
+		this.mapController.setMainFrameController(this);
 		this.init();
 	}
 	
@@ -91,6 +94,9 @@ public class MainframeController {
 		this.timeLineChanged(0, 1);
 		//Chart:
 		this.refreshChart();
+		//reportListArea
+		this.mainframe.selectedCaseDetails_textArea.setEditable(false);
+		this.mainframe.selectedCaseDetails_textArea.setLineWrap(true);
 	}
 	
 	private void refreshTimelineAttributes(){
@@ -242,6 +248,7 @@ public class MainframeController {
 				System.out.println("fromDate: "+this.currentFromDate+" , toDate: "+this.currentToDate);
 				this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
 				this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());
+				this.fillReportListWith(this.cCaseDatabase.getCurrentData());
 				this.geoMapController.setShowCurrentPoints(true);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -250,6 +257,13 @@ public class MainframeController {
 		
 	}
 	
+	private void fillReportListWith(ArrayList<CaseReport> currentData) {
+		this.mainframe.reportListModel.clear();
+		for(CaseReport cR : this.cCaseDatabase.getCurrentData()){
+			this.mainframe.reportListModel.addElement(cR);
+		}
+	}
+
 	private void refreshCurrentDates(int minValue, int maxValue){
 		Calendar temp = Calendar.getInstance();
 		SimpleDateFormat tempDateFormat = this.standardGUIDateOutputFormat;
@@ -361,5 +375,28 @@ public class MainframeController {
 		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 		
 		return dataset;
+	}
+
+	/**
+	 * This is called when a new Item in the reportList is selected.
+	 */
+	public void onNewCaseSelection() {
+		CaseReport cR = this.mainframe.reportList.getSelectedValue();
+		String result;
+		if(cR == null){
+			result = "";
+		} else {
+			this.mapController.setSelectedMarker(cR.getPoint());
+			result = cR.toString2();
+			result = result.substring(11, result.length()-1);
+			Pattern pattern = Pattern.compile(Pattern.quote("%$sepa&%$"));
+			String[] tokens = pattern.split(result);
+			result = "Selected Case:\n";
+			for(String s : tokens){
+				result += s+"\n";
+			}
+		}
+		this.mainframe.selectedCaseDetails_textArea.setText(result);
+		this.mainframe.repaint();
 	}
 }
