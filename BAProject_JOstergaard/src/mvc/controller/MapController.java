@@ -53,7 +53,7 @@ public class MapController extends DefaultMapController {
 				case 2: cR.getPoint().setBackColor(Color.YELLOW); break; //monday
 				case 3: cR.getPoint().setBackColor(Color.CYAN); break; //tuesday
 				case 4: cR.getPoint().setBackColor(Color.MAGENTA); break; //wednesday
-				case 5: cR.getPoint().setBackColor(Color.ORANGE); break; //thursday
+				case 5: cR.getPoint().setBackColor(new Color(220,90,0)); break; //thursday
 				case 6: cR.getPoint().setBackColor(Color.RED); break; //friday
 				case 7: cR.getPoint().setBackColor(Color.GREEN); break; //saturday
 			}
@@ -161,7 +161,7 @@ public class MapController extends DefaultMapController {
 						case 2: cR.getPoint().setBackColor(Color.YELLOW); break; //monday
 						case 3: cR.getPoint().setBackColor(Color.CYAN); break; //tuesday
 						case 4: cR.getPoint().setBackColor(Color.MAGENTA); break; //wednesday
-						case 5: cR.getPoint().setBackColor(Color.ORANGE); break; //thursday
+						case 5: cR.getPoint().setBackColor(new Color(220,90,0)); break; //thursday
 						case 6: cR.getPoint().setBackColor(Color.RED); break; //friday
 						case 7: cR.getPoint().setBackColor(Color.GREEN); break; //saturday
 					}

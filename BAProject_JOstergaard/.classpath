@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="libs/lucene-facet-5.3.1.jar"/>
 	<classpathentry kind="lib" path="libs/lucene-queries-5.3.1.jar"/>
 	<classpathentry kind="lib" path="libs/lucene-queryparser-5.3.1.jar"/>
+	<classpathentry kind="lib" path="libs/prefuse.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -15,13 +15,13 @@ import java.util.regex.Pattern;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
+import mvc.model.CustomBarRenderer;
 import mvc.view.Mainframe;
 
 public class MainframeController {
@@ -67,12 +67,19 @@ public class MainframeController {
 		this.timelineDateSteps = 0; // hours
 		//Day of Week Checkboxes:
 		this.mainframe.checkBox_Mon.setSelected(true);
+		this.mainframe.checkBox_Mon.setBackground(Color.YELLOW);
 		this.mainframe.checkBox_Tue.setSelected(true);
+		this.mainframe.checkBox_Tue.setBackground(Color.CYAN);
 		this.mainframe.checkBox_Wed.setSelected(true);
+		this.mainframe.checkBox_Wed.setBackground(Color.MAGENTA);
 		this.mainframe.checkBox_Thu.setSelected(true);
+		this.mainframe.checkBox_Thu.setBackground(new Color(220,90,0));
 		this.mainframe.checkBox_Fri.setSelected(true);
+		this.mainframe.checkBox_Fri.setBackground(Color.RED);
 		this.mainframe.checkBox_Sat.setSelected(true);
+		this.mainframe.checkBox_Sat.setBackground(Color.GREEN);
 		this.mainframe.checkBox_Sun.setSelected(true);
+		this.mainframe.checkBox_Sun.setBackground(Color.BLUE);
 		//calendarbuttons:
 		this.mainframe.filtermenu_dates_leftCalendarButton.setTargetDate(globalFromDate);
 		this.mainframe.filtermenu_dates_rightCalendarButton.setTargetDate(globalToDate);
@@ -322,7 +329,7 @@ public class MainframeController {
 		//Create ChartData:
 		
 		//Create Chart:
-		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, "Counts", this.createDataset());
+		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, null, this.createDataset());
 		this.mainframe.barChart.removeLegend();
 		this.mainframe.innerChartPanel = new ChartPanel(this.mainframe.barChart);
 		this.mainframe.gui_chart_panel.setLayout(new BorderLayout());
@@ -336,9 +343,24 @@ public class MainframeController {
 	}
 	
 	private CategoryDataset createDataset(){
+		//Choose Renderer
+		final CategoryPlot plot;
+		if(this.mainframe.barChart != null){
+			plot = this.mainframe.barChart.getCategoryPlot();
+			if(this.timelineDateSteps == 0) { //hours
+				
+			} else if(this.timelineDateSteps == 1){ //days
+				CategoryItemRenderer customBarRenderer;
+				customBarRenderer = new CustomBarRenderer(this);
+				plot.setRenderer(customBarRenderer);
+			} else if(this.timelineDateSteps == 2){ //weeks
+				
+			} else { //months
+				
+			}
+		}
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		int count = 0, dayOfWeek;
-		Calendar cal = Calendar.getInstance();
+		int count = 0;
 		for(int i=1; i <= this.timelineMaxValue; i++){
 			this.refreshCurrentDates(i-1, i);
 			try {
@@ -346,32 +368,8 @@ public class MainframeController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if(this.timelineDateSteps == 1 ){
-				cal.setTime(this.currentFromDate);
-				dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-				dataset.addValue(count, String.valueOf(dayOfWeek), "");
-			} else {
-				dataset.addValue(count, String.valueOf(i), "");
-			}
-			
+			dataset.addValue(count, String.valueOf(i), "");
 		}
-		if(this.timelineDateSteps == 0) { //hours
-			
-		} else if(this.timelineDateSteps == 1){ //days
-			BarRenderer br = (BarRenderer) this.mainframe.barChart.getCategoryPlot().getRenderer();
-			br.setSeriesPaint(1, Color.BLUE);
-			br.setSeriesPaint(2, Color.YELLOW);
-			br.setSeriesPaint(3, Color.CYAN);
-			br.setSeriesPaint(4, Color.MAGENTA);
-			br.setSeriesPaint(5, Color.ORANGE);
-			br.setSeriesPaint(6, Color.RED);
-			br.setSeriesPaint(7, Color.GREEN);
-		} else if(this.timelineDateSteps == 2){ //weeks
-			
-		} else { //months
-			
-		}
-		
 		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 		
 		return dataset;
@@ -398,5 +396,13 @@ public class MainframeController {
 		}
 		this.mainframe.selectedCaseDetails_textArea.setText(result);
 		this.mainframe.repaint();
+	}
+	
+	public byte getTimeLineDateSteps(){
+		return this.timelineDateSteps;
+	}
+	
+	public Date getGlobalFromDate(){
+		return this.globalFromDate;
 	}
 }

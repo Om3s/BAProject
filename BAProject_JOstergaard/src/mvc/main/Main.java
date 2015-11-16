@@ -1,5 +1,6 @@
 package mvc.main;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 

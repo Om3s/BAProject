@@ -11,8 +11,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 
-
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Color;
@@ -25,7 +23,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JTextArea;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 
 import mvc.controller.MainframeController;
@@ -37,6 +34,8 @@ import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+
+import prefuse.util.ui.JRangeSlider;
 
 import com.visutools.nav.bislider.BiSlider;
 
@@ -54,19 +53,14 @@ import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JScrollPane;
 import javax.swing.JList;
-import javax.swing.JTextField;
-
-import java.awt.FlowLayout;
-
 import javax.swing.BoxLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 public class Mainframe extends JFrame {
 	public JMapViewer geoMap;
@@ -88,9 +82,6 @@ public class Mainframe extends JFrame {
 	public final JCheckBox checkBox_Sat;
 	public final JCheckBox checkBox_Sun;
 	public final JCalendarButton filtermenu_dates_leftCalendarButton, filtermenu_dates_rightCalendarButton;
-	public final JLabel timeline_panel_fromDate_label;
-	public final JLabel timeline_panel_toDate_label;
-	public final BiSlider timeLineBiSlider;
 	public final JButton filtermenu_buttons_applyButton;
 	public final JButton filtermenu_buttons_defaultButton;
 	public final JComboBox<String> filtermenu_comboBox_category;
@@ -101,6 +92,10 @@ public class Mainframe extends JFrame {
 	public MyJList<CaseReport> reportList;
 	public DefaultListModel<CaseReport> reportListModel;
 	public JTextArea selectedCaseDetails_textArea;
+	public JRangeSlider rangeSlider;
+	public JLabel timeline_panel_fromDate_label;
+	public JLabel timeline_panel_toDate_label;
+	public BiSlider timeLineBiSlider;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -124,16 +119,11 @@ public class Mainframe extends JFrame {
 		//calendarbuttons:
 		this.filtermenu_dates_leftCalendarButton = new JCalendarButton();
 		this.filtermenu_dates_rightCalendarButton = new JCalendarButton();
-		this.timeline_panel_fromDate_label = new JLabel("fromDate");
-		this.timeline_panel_toDate_label = new JLabel("toDate");
 		//Filechooser:
 		this.fileChooser = new JFileChooser();
 		//MenuItems:
 		this.fileMenu_item_load = new JMenuItem("Load");
 		this.fileMenu_item_exit = new JMenuItem("Exit");
-		//Timeline:
-		this.timeLineBiSlider = new BiSlider();
-		this.timeLineBiSlider.setMinimumSize(new Dimension(350, 20));
 		//Apply/Default Buttons:
 		this.filtermenu_buttons_applyButton = new JButton("Apply");
 		this.filtermenu_buttons_defaultButton = new JButton("Default");
@@ -176,7 +166,6 @@ public class Mainframe extends JFrame {
 		GridBagConstraints gbc_analysis_panel = new GridBagConstraints();
 		gbc_analysis_panel.gridwidth = 2;
 		gbc_analysis_panel.weightx = 1.0;
-		gbc_analysis_panel.insets = new Insets(0, 0, 5, 5);
 		gbc_analysis_panel.fill = GridBagConstraints.BOTH;
 		gbc_analysis_panel.gridx = 1;
 		gbc_analysis_panel.gridy = 0;
@@ -194,7 +183,7 @@ public class Mainframe extends JFrame {
 		geomap_panel.setToolTipText("GeoMap for Hotspot visualization");
 		GridBagConstraints gbc_geomap_panel = new GridBagConstraints();
 		gbc_geomap_panel.weighty = 0.85;
-		gbc_geomap_panel.insets = new Insets(0, 0, 5, 0);
+		gbc_geomap_panel.insets = new Insets(0, 0, 0, 0);
 		gbc_geomap_panel.fill = GridBagConstraints.BOTH;
 		gbc_geomap_panel.gridx = 0;
 		gbc_geomap_panel.gridy = 0;
@@ -204,24 +193,54 @@ public class Mainframe extends JFrame {
 		geomap_panel.setLayout(gl_geomap_panel);
 		
 		JPanel timeline_panel = new JPanel();
-		timeline_panel.setBackground(Color.BLUE);
+//		timeline_panel.setBackground(Color.BLUE);
 		GridBagConstraints gbc_timeline_panel = new GridBagConstraints();
-		gbc_timeline_panel.insets = new Insets(0, 0, 5, 0);
-		gbc_timeline_panel.weighty = 0.05;
 		gbc_timeline_panel.fill = GridBagConstraints.BOTH;
 		gbc_timeline_panel.gridx = 0;
 		gbc_timeline_panel.gridy = 1;
 		analysis_panel.add(timeline_panel, gbc_timeline_panel);
-		timeline_panel.setLayout(new BorderLayout(0, 0));
+		GridBagLayout gbl_timeline_panel = new GridBagLayout();
+		gbl_timeline_panel.columnWidths = new int[] {0, 0};
+		gbl_timeline_panel.rowHeights = new int[] {0, 0};
+		gbl_timeline_panel.columnWeights = new double[]{0.0, 0.0, 0.0};
+		gbl_timeline_panel.rowWeights = new double[]{0.0, 0.0};
+		timeline_panel.setLayout(gbl_timeline_panel);
 		
-		JPanel panel = new JPanel();
-		timeline_panel.add(panel, BorderLayout.CENTER);
-		panel.setLayout(new BorderLayout(0, 0));
+		timeline_panel_toDate_label = new JLabel("toDate");
+		GridBagConstraints gbc_timeline_panel_toDate_label = new GridBagConstraints();
+		gbc_timeline_panel_toDate_label.weighty = 0.5;
+		gbc_timeline_panel_toDate_label.weightx = 1.0;
+		gbc_timeline_panel_toDate_label.anchor = GridBagConstraints.EAST;
+		gbc_timeline_panel_toDate_label.fill = GridBagConstraints.VERTICAL;
+		gbc_timeline_panel_toDate_label.insets = new Insets(0, 0, 0, 0);
+		gbc_timeline_panel_toDate_label.gridx = 1;
+		gbc_timeline_panel_toDate_label.gridy = 0;
+		timeline_panel.add(timeline_panel_toDate_label, gbc_timeline_panel_toDate_label);
 		
-		panel.add(this.timeLineBiSlider);
+		timeLineBiSlider = new BiSlider();
+		timeLineBiSlider.setMinimumSize(new Dimension(350, 50));
+		GridBagConstraints gbc_timeLineBiSlider = new GridBagConstraints();
+		gbc_timeLineBiSlider.weighty = 1.0;
+		gbc_timeLineBiSlider.insets = new Insets(0, 13, 0, 0);
+		gbc_timeLineBiSlider.weightx = 1.0;
+		gbc_timeLineBiSlider.gridwidth = 2;
+		gbc_timeLineBiSlider.fill = GridBagConstraints.BOTH;
+		gbc_timeLineBiSlider.gridx = 0;
+		gbc_timeLineBiSlider.gridy = 1;
+		timeline_panel.add(timeLineBiSlider, gbc_timeLineBiSlider);
 		
-		panel.add(timeline_panel_fromDate_label, BorderLayout.WEST);
-		panel.add(timeline_panel_toDate_label, BorderLayout.EAST);
+		timeline_panel_fromDate_label = new JLabel("fromDate");
+		GridBagConstraints gbc_timeline_panel_fromDate_label = new GridBagConstraints();
+		gbc_timeline_panel_fromDate_label.weighty = 0.5;
+		gbc_timeline_panel_fromDate_label.weightx = 1.0;
+		gbc_timeline_panel_fromDate_label.anchor = GridBagConstraints.WEST;
+		gbc_timeline_panel_fromDate_label.fill = GridBagConstraints.HORIZONTAL;
+		gbc_timeline_panel_fromDate_label.gridwidth = 3;
+		gbc_timeline_panel_fromDate_label.gridx = 0;
+		gbc_timeline_panel_fromDate_label.gridy = 0;
+		timeline_panel.add(timeline_panel_fromDate_label, gbc_timeline_panel_fromDate_label);
+//		this.rangeSlider = new JRangeSlider(0, 100, 0, 50, 1);
+//		panel.add(this.rangeSlider, BorderLayout.PAGE_END);
 		
 		GridBagConstraints gbc_chart_panel = new GridBagConstraints();
 		gbc_chart_panel.weighty = 0.1;
@@ -233,7 +252,7 @@ public class Mainframe extends JFrame {
 		JPanel filtermenu_panel = new JPanel();
 		filtermenu_panel.setBackground(Color.LIGHT_GRAY);
 		GridBagConstraints gbc_filtermenu_panel = new GridBagConstraints();
-		gbc_filtermenu_panel.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_panel.insets = new Insets(0, 0, 0, 0);
 		gbc_filtermenu_panel.fill = GridBagConstraints.BOTH;
 		gbc_filtermenu_panel.gridx = 3;
 		gbc_filtermenu_panel.gridy = 0;
@@ -511,6 +530,52 @@ public class Mainframe extends JFrame {
 		
 		
 		// =================== EVENTHANDLER: =================== 
+this.timeLineBiSlider.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				BiSlider src = (BiSlider) e.getSource();
+				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
+			}
+		});
+		
+		this.timeLineBiSlider.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				BiSlider src = (BiSlider) e.getSource();
+				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
+			}
+		});
+		
 		this.fileMenu_item_exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -596,52 +661,6 @@ public class Mainframe extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Default button.");
 				Mainframe.this.controller.defaultSettings();
-			}
-		});
-		
-		this.timeLineBiSlider.addMouseListener(new MouseListener() {
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BiSlider src = (BiSlider) e.getSource();
-				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
-			}
-		});
-		
-		this.timeLineBiSlider.addMouseMotionListener(new MouseMotionListener() {
-			
-			@Override
-			public void mouseMoved(MouseEvent e) {
-
-			}
-			
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				BiSlider src = (BiSlider) e.getSource();
-				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
 			}
 		});
 		
