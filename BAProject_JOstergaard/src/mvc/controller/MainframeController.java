@@ -16,9 +16,11 @@ import java.util.regex.Pattern;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
 import mvc.model.CustomBarRenderer;
@@ -329,7 +331,7 @@ public class MainframeController {
 		//Create ChartData:
 		
 		//Create Chart:
-		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, null, this.createDataset());
+		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, null, this.createDataset(), PlotOrientation.VERTICAL, false, true, false);
 		this.mainframe.barChart.removeLegend();
 		this.mainframe.innerChartPanel = new ChartPanel(this.mainframe.barChart);
 		this.mainframe.gui_chart_panel.setLayout(new BorderLayout());
@@ -353,6 +355,10 @@ public class MainframeController {
 				CategoryItemRenderer customBarRenderer;
 				customBarRenderer = new CustomBarRenderer(this);
 				plot.setRenderer(customBarRenderer);
+				customBarRenderer.setSeriesPaint(0, Color.BLUE);
+				customBarRenderer.setSeriesPaint(1, Color.GREEN);
+				customBarRenderer.setSeriesPaint(2, Color.MAGENTA);
+				customBarRenderer.setSeriesPaint(3, Color.YELLOW);
 			} else if(this.timelineDateSteps == 2){ //weeks
 				
 			} else { //months
