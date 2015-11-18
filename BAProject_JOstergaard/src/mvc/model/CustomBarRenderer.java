@@ -27,9 +27,7 @@ public class CustomBarRenderer extends BarRenderer {
 	@Override
 	public Paint getItemPaint(int row,int column)
 	{
-		System.out.println("BARRENDERER ROW: "+row);
-		System.out.println("BARRENDERER COLUMN: "+column);
-		this.dayOfWeek = ((this.firstDay + column - 1) % 7)+1;
+		this.dayOfWeek = ((this.firstDay + row - 1) % 7)+1;
 		switch (this.dayOfWeek) {
 			case 1: return Color.BLUE; //sunday
 			case 2: return Color.YELLOW; //monday

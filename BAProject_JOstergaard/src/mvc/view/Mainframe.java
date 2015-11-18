@@ -35,8 +35,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
-import prefuse.util.ui.JRangeSlider;
-
 import com.visutools.nav.bislider.BiSlider;
 
 import javax.swing.JButton;
@@ -61,6 +59,7 @@ import javax.swing.BoxLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.border.LineBorder;
+import javax.swing.SwingConstants;
 
 public class Mainframe extends JFrame {
 	public JMapViewer geoMap;
@@ -92,10 +91,10 @@ public class Mainframe extends JFrame {
 	public MyJList<CaseReport> reportList;
 	public DefaultListModel<CaseReport> reportListModel;
 	public JTextArea selectedCaseDetails_textArea;
-	public JRangeSlider rangeSlider;
 	public JLabel timeline_panel_fromDate_label;
 	public JLabel timeline_panel_toDate_label;
 	public BiSlider timeLineBiSlider;
+	private JLabel timeLine_range_label;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -193,52 +192,63 @@ public class Mainframe extends JFrame {
 		geomap_panel.setLayout(gl_geomap_panel);
 		
 		JPanel timeline_panel = new JPanel();
-//		timeline_panel.setBackground(Color.BLUE);
 		GridBagConstraints gbc_timeline_panel = new GridBagConstraints();
 		gbc_timeline_panel.fill = GridBagConstraints.BOTH;
 		gbc_timeline_panel.gridx = 0;
 		gbc_timeline_panel.gridy = 1;
 		analysis_panel.add(timeline_panel, gbc_timeline_panel);
 		GridBagLayout gbl_timeline_panel = new GridBagLayout();
-		gbl_timeline_panel.columnWidths = new int[] {0, 0};
-		gbl_timeline_panel.rowHeights = new int[] {0, 0};
+		gbl_timeline_panel.columnWidths = new int[] {30, 30, 30};
+		gbl_timeline_panel.rowHeights = new int[] {10, 30};
 		gbl_timeline_panel.columnWeights = new double[]{0.0, 0.0, 0.0};
 		gbl_timeline_panel.rowWeights = new double[]{0.0, 0.0};
 		timeline_panel.setLayout(gbl_timeline_panel);
 		
 		timeline_panel_toDate_label = new JLabel("toDate");
+		timeline_panel_toDate_label.setVerticalAlignment(SwingConstants.TOP);
 		GridBagConstraints gbc_timeline_panel_toDate_label = new GridBagConstraints();
-		gbc_timeline_panel_toDate_label.weighty = 0.5;
+		gbc_timeline_panel_toDate_label.weighty = 0.01;
 		gbc_timeline_panel_toDate_label.weightx = 1.0;
-		gbc_timeline_panel_toDate_label.anchor = GridBagConstraints.EAST;
-		gbc_timeline_panel_toDate_label.fill = GridBagConstraints.VERTICAL;
-		gbc_timeline_panel_toDate_label.insets = new Insets(0, 0, 0, 0);
-		gbc_timeline_panel_toDate_label.gridx = 1;
+		gbc_timeline_panel_toDate_label.anchor = GridBagConstraints.NORTHEAST;
+		gbc_timeline_panel_toDate_label.insets = new Insets(0, 0, 5, 0);
+		gbc_timeline_panel_toDate_label.gridx = 2;
 		gbc_timeline_panel_toDate_label.gridy = 0;
 		timeline_panel.add(timeline_panel_toDate_label, gbc_timeline_panel_toDate_label);
 		
-		timeLineBiSlider = new BiSlider();
-		timeLineBiSlider.setMinimumSize(new Dimension(350, 50));
+		this.timeLineBiSlider = new BiSlider();
+		this.timeLineBiSlider.setMinimumSize(new Dimension(350, 50));
+		this.timeLineBiSlider.setMinimumColor(Color.GRAY);
+		this.timeLineBiSlider.setMaximumColor(Color.LIGHT_GRAY);
 		GridBagConstraints gbc_timeLineBiSlider = new GridBagConstraints();
 		gbc_timeLineBiSlider.weighty = 1.0;
-		gbc_timeLineBiSlider.insets = new Insets(0, 13, 0, 0);
+		gbc_timeLineBiSlider.insets = new Insets(0, 13, 5, 0);
 		gbc_timeLineBiSlider.weightx = 1.0;
-		gbc_timeLineBiSlider.gridwidth = 2;
+		gbc_timeLineBiSlider.gridwidth = 3;
 		gbc_timeLineBiSlider.fill = GridBagConstraints.BOTH;
 		gbc_timeLineBiSlider.gridx = 0;
 		gbc_timeLineBiSlider.gridy = 1;
 		timeline_panel.add(timeLineBiSlider, gbc_timeLineBiSlider);
 		
 		timeline_panel_fromDate_label = new JLabel("fromDate");
+		timeline_panel_fromDate_label.setVerticalAlignment(SwingConstants.TOP);
 		GridBagConstraints gbc_timeline_panel_fromDate_label = new GridBagConstraints();
-		gbc_timeline_panel_fromDate_label.weighty = 0.5;
+		gbc_timeline_panel_fromDate_label.insets = new Insets(0, 0, 5, 0);
+		gbc_timeline_panel_fromDate_label.weighty = 0.01;
 		gbc_timeline_panel_fromDate_label.weightx = 1.0;
-		gbc_timeline_panel_fromDate_label.anchor = GridBagConstraints.WEST;
-		gbc_timeline_panel_fromDate_label.fill = GridBagConstraints.HORIZONTAL;
-		gbc_timeline_panel_fromDate_label.gridwidth = 3;
+		gbc_timeline_panel_fromDate_label.anchor = GridBagConstraints.NORTHWEST;
 		gbc_timeline_panel_fromDate_label.gridx = 0;
 		gbc_timeline_panel_fromDate_label.gridy = 0;
 		timeline_panel.add(timeline_panel_fromDate_label, gbc_timeline_panel_fromDate_label);
+		
+		timeLine_range_label = new JLabel("Range");
+		timeLine_range_label.setVerticalAlignment(SwingConstants.TOP);
+		GridBagConstraints gbc_timeLine_range_label = new GridBagConstraints();
+		gbc_timeLine_range_label.weighty = 0.01;
+		gbc_timeLine_range_label.weightx = 1.0;
+		gbc_timeLine_range_label.anchor = GridBagConstraints.NORTH;
+		gbc_timeLine_range_label.gridx = 1;
+		gbc_timeLine_range_label.gridy = 0;
+		timeline_panel.add(timeLine_range_label, gbc_timeLine_range_label);
 //		this.rangeSlider = new JRangeSlider(0, 100, 0, 50, 1);
 //		panel.add(this.rangeSlider, BorderLayout.PAGE_END);
 		

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 
+import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
 import mvc.model.GeoPoint;
@@ -48,15 +49,7 @@ public class MapController extends DefaultMapController {
 		for(CaseReport cR : reports){
 			cal.setTime(cR.getDateOpened());
 			dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-			switch (dayOfWeek) {
-				case 1: cR.getPoint().setBackColor(Color.BLUE); break; //sunday
-				case 2: cR.getPoint().setBackColor(Color.YELLOW); break; //monday
-				case 3: cR.getPoint().setBackColor(Color.CYAN); break; //tuesday
-				case 4: cR.getPoint().setBackColor(Color.MAGENTA); break; //wednesday
-				case 5: cR.getPoint().setBackColor(new Color(220,90,0)); break; //thursday
-				case 6: cR.getPoint().setBackColor(Color.RED); break; //friday
-				case 7: cR.getPoint().setBackColor(Color.GREEN); break; //saturday
-			}
+			cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
 			this.currentPoints.add(cR.getPoint());
 		}
 		for(GeoPoint p : this.currentPoints){
@@ -156,15 +149,7 @@ public class MapController extends DefaultMapController {
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(cR.getDateOpened());
 					dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-					switch (dayOfWeek) {
-						case 1: cR.getPoint().setBackColor(Color.BLUE); break; //sunday
-						case 2: cR.getPoint().setBackColor(Color.YELLOW); break; //monday
-						case 3: cR.getPoint().setBackColor(Color.CYAN); break; //tuesday
-						case 4: cR.getPoint().setBackColor(Color.MAGENTA); break; //wednesday
-						case 5: cR.getPoint().setBackColor(new Color(220,90,0)); break; //thursday
-						case 6: cR.getPoint().setBackColor(Color.RED); break; //friday
-						case 7: cR.getPoint().setBackColor(Color.GREEN); break; //saturday
-					}
+					cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
 				}
 			}
 		}

@@ -21,6 +21,7 @@ import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
 import mvc.model.CustomBarRenderer;
@@ -69,19 +70,19 @@ public class MainframeController {
 		this.timelineDateSteps = 0; // hours
 		//Day of Week Checkboxes:
 		this.mainframe.checkBox_Mon.setSelected(true);
-		this.mainframe.checkBox_Mon.setBackground(Color.YELLOW);
+		this.mainframe.checkBox_Mon.setBackground(Main.mondayColor);
 		this.mainframe.checkBox_Tue.setSelected(true);
-		this.mainframe.checkBox_Tue.setBackground(Color.CYAN);
+		this.mainframe.checkBox_Tue.setBackground(Main.tuesdayColor);
 		this.mainframe.checkBox_Wed.setSelected(true);
-		this.mainframe.checkBox_Wed.setBackground(Color.MAGENTA);
+		this.mainframe.checkBox_Wed.setBackground(Main.wednesdayColor);
 		this.mainframe.checkBox_Thu.setSelected(true);
-		this.mainframe.checkBox_Thu.setBackground(new Color(220,90,0));
+		this.mainframe.checkBox_Thu.setBackground(Main.thursdayColor);
 		this.mainframe.checkBox_Fri.setSelected(true);
-		this.mainframe.checkBox_Fri.setBackground(Color.RED);
+		this.mainframe.checkBox_Fri.setBackground(Main.fridayColor);
 		this.mainframe.checkBox_Sat.setSelected(true);
-		this.mainframe.checkBox_Sat.setBackground(Color.GREEN);
+		this.mainframe.checkBox_Sat.setBackground(Main.saturdayColor);
 		this.mainframe.checkBox_Sun.setSelected(true);
-		this.mainframe.checkBox_Sun.setBackground(Color.BLUE);
+		this.mainframe.checkBox_Sun.setBackground(Main.sundayColor);
 		//calendarbuttons:
 		this.mainframe.filtermenu_dates_leftCalendarButton.setTargetDate(globalFromDate);
 		this.mainframe.filtermenu_dates_rightCalendarButton.setTargetDate(globalToDate);
@@ -327,12 +328,27 @@ public class MainframeController {
 	
 	public void refreshChart(){
 		this.mainframe.gui_chart_panel.removeAll();
-		this.mainframe.gui_chart_panel.revalidate();
-		//Create ChartData:
-		
+//		this.mainframe.gui_chart_panel.revalidate();
+		this.mainframe.getContentPane().revalidate();
 		//Create Chart:
 		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, null, this.createDataset(), PlotOrientation.VERTICAL, false, true, false);
-		this.mainframe.barChart.removeLegend();
+		//Choose Renderer
+		final CategoryPlot plot;
+		if(this.mainframe.barChart != null){
+			plot = this.mainframe.barChart.getCategoryPlot();
+			if(this.timelineDateSteps == 0) { //hours
+				
+			} else if(this.timelineDateSteps == 1){ //days
+				CategoryItemRenderer customBarRenderer;
+				customBarRenderer = new CustomBarRenderer(this);
+				plot.setRenderer(customBarRenderer);
+			} else if(this.timelineDateSteps == 2){ //weeks
+				
+			} else { //months
+				
+			}
+		}
+		
 		this.mainframe.innerChartPanel = new ChartPanel(this.mainframe.barChart);
 		this.mainframe.gui_chart_panel.setLayout(new BorderLayout());
 		this.mainframe.gui_chart_panel.add(this.mainframe.innerChartPanel);
@@ -345,26 +361,6 @@ public class MainframeController {
 	}
 	
 	private CategoryDataset createDataset(){
-		//Choose Renderer
-		final CategoryPlot plot;
-		if(this.mainframe.barChart != null){
-			plot = this.mainframe.barChart.getCategoryPlot();
-			if(this.timelineDateSteps == 0) { //hours
-				
-			} else if(this.timelineDateSteps == 1){ //days
-				CategoryItemRenderer customBarRenderer;
-				customBarRenderer = new CustomBarRenderer(this);
-				plot.setRenderer(customBarRenderer);
-				customBarRenderer.setSeriesPaint(0, Color.BLUE);
-				customBarRenderer.setSeriesPaint(1, Color.GREEN);
-				customBarRenderer.setSeriesPaint(2, Color.MAGENTA);
-				customBarRenderer.setSeriesPaint(3, Color.YELLOW);
-			} else if(this.timelineDateSteps == 2){ //weeks
-				
-			} else { //months
-				
-			}
-		}
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		int count = 0;
 		for(int i=1; i <= this.timelineMaxValue; i++){
