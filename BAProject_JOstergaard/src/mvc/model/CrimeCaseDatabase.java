@@ -27,7 +27,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.NumericRangeQuery;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
@@ -68,7 +67,7 @@ public class CrimeCaseDatabase {
 		// Testing:
 //		this.readCategoriesFromIndex();
 		String fromDateTest = "01/01/2008 12:00:01 AM";
-		String toDateTest = "01/03/2008 23:59:99 PM";
+		String toDateTest = "01/28/2008 23:59:59 PM";
 		
 		try {
 			int[] weekdays = {1,2,3,4,5,6,7};
@@ -77,9 +76,6 @@ public class CrimeCaseDatabase {
 			e.printStackTrace();
 		}
 		System.out.println("CurrentData#: "+this.currentData.size());
-//		for(CaseReport cR : this.currentData){
-//			System.out.println(cR);
-//		}
 	}
 	
 	@SuppressWarnings("unused")
@@ -109,6 +105,12 @@ public class CrimeCaseDatabase {
 		System.out.println("------\n");
 	}
 	
+	/**
+	 * deletes the old index of the lucene representation of the data
+	 * and loads the csv-file from the path folder to create a new index.
+	 *  
+	 * @param path contains the path to the csv file which should be the new indexed database.
+	 */
 	public void reindexCSV(String path){
 		System.out.println("Begin indexing...");
 		long startTime = System.currentTimeMillis(), tempTime = System.currentTimeMillis();
@@ -165,6 +167,9 @@ public class CrimeCaseDatabase {
 		System.out.println(emptyEntries+" empty entries in CSV found and ignored");
 	}
 	
+	/**
+	 * deletes all entries in the currentData list
+	 */
 	public void clearCurrentData(){
 		this.currentData.clear();
 	}
@@ -201,11 +206,26 @@ public class CrimeCaseDatabase {
 			}
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @return the CaseReport ArrayList with the currently loaded data.
+	 */
 	public ArrayList<CaseReport> getCurrentData() {
 		return this.currentData;
 	}
 	
+	/**
+	 * This method counts all CaseReport in a given timespan
+	 * and only includes the selected weekdays and the selected category
+	 * 
+	 * @param fromDate begin of the timespan
+	 * @param toDate end of the timespan
+	 * @param weekdays array of all selected weekdays
+	 * @param category String with the selected category
+	 * @return the amount of all CaseReports filtered by the parameters
+	 * @throws IOException
+	 */
 	public int countCaseReportsFromTo(Date fromDate, Date toDate, int[] weekdays, String category) throws IOException{
 		int totalHits = 0;
 		for(int day : weekdays){

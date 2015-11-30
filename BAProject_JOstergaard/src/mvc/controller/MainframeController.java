@@ -1,7 +1,6 @@
 package mvc.controller;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.text.ParseException;
@@ -27,13 +26,18 @@ import mvc.model.CrimeCaseDatabase;
 import mvc.model.CustomBarRenderer;
 import mvc.view.Mainframe;
 
+/**
+ * 
+ * @author Jonas Ostergaard
+ *
+ */
 public class MainframeController {
 	public Mainframe mainframe;
 	private CrimeCaseDatabase cCaseDatabase;
 	private Date globalFromDate, globalToDate, currentFromDate, currentToDate;
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat standardGUIDateTimeOutputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	private byte timelineDateSteps;
+	private int timelineDateSteps;
 	private MapController geoMapController;
 	private int[] weekdays = {1,2,3,4,5,6,7};
 	private String currentCategory;
@@ -46,7 +50,13 @@ public class MainframeController {
 	//Chart:
 	private String intervalName = null;
 	
-	
+	/**
+	 * 
+	 * @param frame is the reference to the mainframe
+	 * @param dataBase is the reference to the main database
+	 * @param mC is the reference to the MapController of the GeoMap
+	 * @throws ParseException
+	 */
 	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase, MapController mC) throws ParseException{
 		this.mainframe = frame;
 		this.cCaseDatabase = dataBase;
@@ -108,7 +118,9 @@ public class MainframeController {
 		this.mainframe.selectedCaseDetails_textArea.setEditable(false);
 		this.mainframe.selectedCaseDetails_textArea.setLineWrap(true);
 	}
-	
+	/**
+	 * Refreshes the TimeLine with the actual Filtersettings
+	 */
 	private void refreshTimelineAttributes(){
 		Date fromDate = this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate();
 		Date toDate = this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate();
@@ -149,6 +161,11 @@ public class MainframeController {
 		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 	}
 	
+	/**
+	 * is called when the apply button of the settings is clicked
+	 * it calls all functions to refresh the values and attributes
+	 * of the analysis part.
+	 */
 	public void applySettings(){
 		this.refreshGlobalDates();
 		this.refreshTimelineAttributes();
@@ -159,11 +176,17 @@ public class MainframeController {
 		this.refreshChart();
 	}
 	
+	/**
+	 * writes the date values of the filter buttons into global variables
+	 */
 	private void refreshGlobalDates() {
 		this.globalFromDate = this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate();
 		this.globalToDate = this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate();
 	}
-
+	
+	/**
+	 * reads the checkboxes of the filtermenu and creates the new weekday array
+	 */
 	private void refreshWeekdays() {
 		ArrayList<Integer> tempWeekdayList = new ArrayList<Integer>();
 		if(this.mainframe.checkBox_Sun.isSelected()){
@@ -195,7 +218,10 @@ public class MainframeController {
 			System.out.println(i + " : " + this.weekdays[i]);
 		}
 	}
-
+	
+	/**
+	 * is called by clicking the "Default" Button, at the moment it just calls the init() function.
+	 */
 	public void defaultSettings(){
 		try {
 			this.init();
@@ -204,10 +230,21 @@ public class MainframeController {
 		}
 	}
 	
+	/**
+	 * This method is called when the load menuitem is clicked.
+	 * It will call the reindexCSV() function of the dataBase with a given path as parameter.
+	 * @param path where the new CSV file is.
+	 */
 	public void loadData(String path){
 		this.cCaseDatabase.reindexCSV(path);
 	}
 	
+	/**
+	 * This method is called if the value of the fromDate of the filtermenu
+	 * has been changed. And it will change the toDate properly if needed.
+	 * 
+	 * @param newDate the new Date the CalendarButton fromDate has to be set to.
+	 */
 	public void fromDateAction(Date newDate){
 		System.out.println("fromDate changed");
 		String newDateText = this.standardGUIDateOutputFormat.format(newDate);
@@ -221,7 +258,13 @@ public class MainframeController {
 		}
 		this.mainframe.repaint();
 	}
-	
+
+	/**
+	 * This method is called if the value of the toDate of the filtermenu
+	 * has been changed. And it will change the toDate properly if needed.
+	 * 
+	 * @param newDate the new Date the CalendarButton toDate has to be set to.
+	 */
 	public void toDateAction(Date newDate){
 		System.out.println("toDate changed");
 		String newDateText;
@@ -237,18 +280,34 @@ public class MainframeController {
 		}
 	}
 	
+	/**
+	 * This method sets the value of the Calendarbutton fromDate.
+	 * 
+	 * @param newDate
+	 */
 	private void setFromDate(Date newDate){
 		String newDateText = this.standardGUIDateOutputFormat.format(newDate);
 		this.mainframe.filtermenu_dates_leftCalendarButton.setTargetDate(newDate);
 		this.mainframe.filtermenu_dates_leftCalendarButton.setText(newDateText);
 	}
 	
+	/**
+	 * This method sets the value of the Calendarbutton toDate.
+	 * 
+	 * @param newDate
+	 */
 	private void setToDate(Date newDate){
 		String newDateText = this.standardGUIDateOutputFormat.format(newDate);
 		this.mainframe.filtermenu_dates_rightCalendarButton.setTargetDate(newDate);
 		this.mainframe.filtermenu_dates_rightCalendarButton.setText(newDateText);
 	}
 	
+	/**
+	 * This method is always called, if the timeLine has been changed
+	 * 
+	 * @param minColorValue the left curser position
+	 * @param maxColorValue the right cursor position
+	 */
 	public void timeLineChanged(double minColorValue, double maxColorValue){
 		if(this.hasTimeLineChanged((int) (minColorValue+0.5), (int) (maxColorValue+0.5))){
 			this.timelineLowerValue = (int) (minColorValue+0.5);
@@ -267,13 +326,25 @@ public class MainframeController {
 		
 	}
 	
+	/**
+	 * This method fills the List for the CaseReportList.
+	 * 
+	 * @param currentData contains the data thas should be listed.
+	 */
 	private void fillReportListWith(ArrayList<CaseReport> currentData) {
 		this.mainframe.reportListModel.clear();
 		for(CaseReport cR : this.cCaseDatabase.getCurrentData()){
 			this.mainframe.reportListModel.addElement(cR);
 		}
 	}
-
+	
+	/**
+	 * This method refreshes the currentDates, currentDate Labels depending on time interval setting,
+	 * minValue = globalMinValue and maxValue is minValue + selected timeintervall. 
+	 * 
+	 * @param minValue
+	 * @param maxValue
+	 */
 	private void refreshCurrentDates(int minValue, int maxValue){
 		Calendar temp = Calendar.getInstance();
 		SimpleDateFormat tempDateFormat = this.standardGUIDateOutputFormat;
@@ -314,6 +385,15 @@ public class MainframeController {
 		this.mainframe.timeline_panel_toDate_label.setText(newDateText);
 	}
 	
+	/**
+	 * This method checks, if the timeLineBiSlider has been changed.
+	 * The parameters are values of the gui element are getting compared to
+	 * the saved values.
+	 * 
+	 * @param minColorValue
+	 * @param maxColorValue
+	 * @return
+	 */
 	private boolean hasTimeLineChanged(int minColorValue, int maxColorValue){
 		if(this.timelineLowerValue == minColorValue && this.timelineHigherValue == maxColorValue){
 			return false;
@@ -321,14 +401,20 @@ public class MainframeController {
 			return true;
 		}
 	}
-
+	
+	/**
+	 * This method sets the currentCategory variable with the current selected one from the GUI DropList.
+	 */
 	public void refreshCurrentCategory() {
 		this.currentCategory = (String) this.mainframe.filtermenu_comboBox_category.getSelectedItem();
 	}
 	
+	/**
+	 * This method deletes the old chart and creates a new chart
+	 * based on the selected filter values.
+	 */
 	public void refreshChart(){
 		this.mainframe.gui_chart_panel.removeAll();
-//		this.mainframe.gui_chart_panel.revalidate();
 		this.mainframe.getContentPane().revalidate();
 		//Create Chart:
 		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, null, this.createDataset(), PlotOrientation.VERTICAL, false, true, false);
@@ -348,7 +434,6 @@ public class MainframeController {
 				
 			}
 		}
-		
 		this.mainframe.innerChartPanel = new ChartPanel(this.mainframe.barChart);
 		this.mainframe.gui_chart_panel.setLayout(new BorderLayout());
 		this.mainframe.gui_chart_panel.add(this.mainframe.innerChartPanel);
@@ -360,6 +445,13 @@ public class MainframeController {
 		}
 	}
 	
+	/**
+	 * This method creates the current dataset by getting all cases
+	 * from the database which are in the timespan from the currentFromDate
+	 * and the currentToDate of the BiSlider.
+	 * 
+	 * @return the CategoryDataset for the Chart
+	 */
 	private CategoryDataset createDataset(){
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		int count = 0;
@@ -400,10 +492,18 @@ public class MainframeController {
 		this.mainframe.repaint();
 	}
 	
-	public byte getTimeLineDateSteps(){
+	/**
+	 * 
+	 * @return the current timeLineDateSteps value
+	 */
+	public int getTimeLineDateSteps(){
 		return this.timelineDateSteps;
 	}
 	
+	/**
+	 * 
+	 * @return the globalFromDate value
+	 */
 	public Date getGlobalFromDate(){
 		return this.globalFromDate;
 	}

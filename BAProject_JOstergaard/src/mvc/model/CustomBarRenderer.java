@@ -8,10 +8,14 @@ import mvc.controller.MainframeController;
 
 import org.jfree.chart.renderer.category.BarRenderer;
 
+/**
+ * 
+ * @author Jonas Ostergaard
+ *
+ */
 public class CustomBarRenderer extends BarRenderer {
 	private final MainframeController mFController;
-	private byte timeLineDateSteps;
-	private int dayOfWeek, firstDay;
+	private int dayOfWeek, firstDay, timeLineDateSteps;;
 	Calendar cal;
 	public CustomBarRenderer(MainframeController mFC)
 	{
@@ -25,6 +29,10 @@ public class CustomBarRenderer extends BarRenderer {
 	}
 	
 	@Override
+	/**
+	 * This overwrites the original getItemPaint method, to colorize
+	 * the bars into the specific weekday colors defined in the main class
+	 */
 	public Paint getItemPaint(int row,int column)
 	{
 		this.dayOfWeek = ((this.firstDay + row - 1) % 7)+1;

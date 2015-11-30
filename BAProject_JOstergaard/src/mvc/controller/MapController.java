@@ -18,6 +18,13 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 
+/**
+ * 
+ * @author Jonas Ostergaard
+ * 
+ * This class is the custom controller for the JMapViewer GeoMap element.
+ *
+ */
 public class MapController extends DefaultMapController {
 	private CrimeCaseDatabase dataBase;
 	private ArrayList<GeoPoint> currentPoints;
@@ -32,6 +39,9 @@ public class MapController extends DefaultMapController {
 		this.init();
 	}
 	
+	/**
+	 * Simply draws all current data initially to the map.
+	 */
 	public void init(){
 		for(CaseReport cR : dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
@@ -39,6 +49,12 @@ public class MapController extends DefaultMapController {
 		this.map.updateUI();
 	}
 	
+	/**
+	 * This method creates GeoPoint mapMarkers for all CaseReport objects of
+	 * the given reports array.
+	 * 
+	 * @param reports the list of Casereport's you want to load to the map.
+	 */
 	public void loadPoints(ArrayList<CaseReport> reports){
 		this.setShowCurrentPoints(false);
 		this.map.removeAllMapMarkers();
@@ -60,6 +76,11 @@ public class MapController extends DefaultMapController {
 		this.map.updateUI();
 	}
 	
+	/**
+	 * Shows or hides all currentPoints on the map
+	 * 
+	 * @param showThem true for visible, false for invisible.
+	 */
 	public void setShowCurrentPoints(boolean showThem){
 		for(GeoPoint point : this.currentPoints){
 			if(!showThem){
@@ -72,6 +93,12 @@ public class MapController extends DefaultMapController {
 	}
 	
 	@Override
+	/**
+	 * This method overwrites the default mouseClicked method to
+	 * add a "select" function. Basically this method checks if your
+	 * mouse position was on a mapMarker and if it was, it will be
+	 * visible and logically selected.
+	 */
 	public void mouseClicked(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1){
 	  		Coordinate geoClickPos = this.map.getPosition(e.getPoint());
@@ -125,22 +152,45 @@ public class MapController extends DefaultMapController {
   	    this.map.repaint();
 	}
 	
+	/**
+	 * calculates the euclidean distance
+	 * 
+	 * @param c1 start coordinate
+	 * @param c2 target coordinate
+	 * @return the euclidean distance of two coordinates
+	 */
 	private double distance(Coordinate c1, Coordinate c2){
 		return (c1.getLat()-c2.getLat())*(c1.getLat()-c2.getLat())+(c1.getLon()-c2.getLon())*(c1.getLon()-c2.getLon());
 	}
-
+	
+	/**
+	 * This method will deselect the currentSelected mapMarker
+	 * visually and logically.
+	 */
 	private void clearSelectedMapMarker() {
 		this.setDefaultColor(this.selectedMapMarker);
 		this.mainFrameController.mainframe.reportList.clearSelection();
 		this.selectedMapMarker = null;
 	}
 	
+	/**
+	 * This method will select the given mapMarker visually
+	 * and logically 
+	 * 
+	 * @param mapMarker
+	 */
 	public void setSelectedMarker(GeoPoint mapMarker){
 		this.setDefaultColor(this.selectedMapMarker);
 		this.selectedMapMarker = mapMarker;
 		this.selectedMapMarker.setBackColor(Color.PINK);
 	}
-
+	
+	/**
+	 * This method will determine and set the original color
+	 * of a given mapMarker.
+	 * 
+	 * @param m this mapMarker will be colored in its original color.
+	 */
 	private void setDefaultColor(MapMarker m) {
 		if(m != null){
 			for(CaseReport cR : this.dataBase.getCurrentData()){
@@ -155,6 +205,11 @@ public class MapController extends DefaultMapController {
 		}
 	}
 	
+	/**
+	 * Sets the reference to the MainFrameController
+	 * 
+	 * @param mFC
+	 */
 	public void setMainFrameController(MainframeController mFC){
 		this.mainFrameController = mFC;
 	}

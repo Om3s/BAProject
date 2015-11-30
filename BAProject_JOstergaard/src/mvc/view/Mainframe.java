@@ -61,6 +61,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.border.LineBorder;
 import javax.swing.SwingConstants;
 
+/**
+ * 
+ * @author Jonas Ostergaard
+ *
+ */
 public class Mainframe extends JFrame {
 	public JMapViewer geoMap;
 	private MainframeController controller;
@@ -134,10 +139,17 @@ public class Mainframe extends JFrame {
 		this.init();
 	}
 	
+	/**
+	 * 
+	 * @param mfC the MainframeController which controls the functions of this frame
+	 */
 	public void setController(MainframeController mfC){
 		this.controller = mfC;
 	}
 	
+	/**
+	 * setting up the GUI and its eventHandlers
+	 */
 	private void init(){
 		// =================== WINDOW SETTINGS: =================== 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -540,7 +552,7 @@ public class Mainframe extends JFrame {
 		
 		
 		// =================== EVENTHANDLER: =================== 
-this.timeLineBiSlider.addMouseListener(new MouseListener() {
+		this.timeLineBiSlider.addMouseListener(new MouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -684,7 +696,11 @@ this.timeLineBiSlider.addMouseListener(new MouseListener() {
 			}
 		});
 	}
-
+	
+	/**
+	 * 
+	 * @return the mapController of the GeoMap
+	 */
 	public MapController getGeoMapController() {
 		return geoMapController;
 	}

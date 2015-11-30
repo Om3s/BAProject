@@ -10,6 +10,11 @@ import mvc.controller.MapController;
 import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
 
+/**
+ * 
+ * @author Jonas Ostergaard
+ *
+ */
 public class Main {
 	public static Color[] weekDayColors;
 	public static Color
@@ -47,7 +52,12 @@ public class Main {
 		
 //		System.exit(0); //testing
 	}
-
+	
+	/**
+	 * This method sets up the colorarray with the static defined
+	 * colors for each day. The index of the array is the same index
+	 * as the weekday Number of the Calendar.WEEKDAY standard.
+	 */
 	private static void defineColors() {
 		Main.weekDayColors = new Color[7];
 		Main.weekDayColors[0] = sundayColor;
