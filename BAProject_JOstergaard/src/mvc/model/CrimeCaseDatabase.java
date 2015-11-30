@@ -66,15 +66,6 @@ public class CrimeCaseDatabase {
 		
 		// Testing:
 //		this.readCategoriesFromIndex();
-		String fromDateTest = "01/01/2008 12:00:01 AM";
-		String toDateTest = "01/28/2008 23:59:59 PM";
-		
-		try {
-			int[] weekdays = {1,2,3,4,5,6,7};
-			this.selectWeekdaysCasesBetweenDatesToCurrentData(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(fromDateTest), new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(toDateTest), weekdays, "All categories");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
 		System.out.println("CurrentData#: "+this.currentData.size());
 	}
 	

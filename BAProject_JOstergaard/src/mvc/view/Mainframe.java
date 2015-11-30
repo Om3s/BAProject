@@ -100,6 +100,14 @@ public class Mainframe extends JFrame {
 	public JLabel timeline_panel_toDate_label;
 	public BiSlider timeLineBiSlider;
 	private JLabel timeLine_range_label;
+	private JLabel filtermenu_specific_dow_daytime_label;
+	public JCheckBox checkBox_daytime_morning;
+	public JCheckBox checkBox_daytime_noon;
+	public JCheckBox checkBox_daytime_afternoon;
+	public JCheckBox checkBox_daytime_evening;
+	public JCheckBox checkBox_daytime_midnight;
+	public JCheckBox checkBox_daytime_latenight;
+	private JPanel filtermenu_daytime_panel;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -272,7 +280,7 @@ public class Mainframe extends JFrame {
 		analysis_panel.add(this.gui_chart_panel, gbc_chart_panel);
 						
 		JPanel filtermenu_panel = new JPanel();
-		filtermenu_panel.setBackground(Color.LIGHT_GRAY);
+		filtermenu_panel.setBackground(new Color(230,230,230));
 		GridBagConstraints gbc_filtermenu_panel = new GridBagConstraints();
 		gbc_filtermenu_panel.insets = new Insets(0, 0, 0, 0);
 		gbc_filtermenu_panel.fill = GridBagConstraints.BOTH;
@@ -281,17 +289,18 @@ public class Mainframe extends JFrame {
 		getContentPane().add(filtermenu_panel, gbc_filtermenu_panel);
 		GridBagLayout gbl_filtermenu_panel = new GridBagLayout();
 		gbl_filtermenu_panel.columnWidths = new int[] {0, 0};
-		gbl_filtermenu_panel.rowHeights = new int[] {0, 0, 0, 0, 0};
+		gbl_filtermenu_panel.rowHeights = new int[] {0, 0, 0, 0, 0, 0};
 		gbl_filtermenu_panel.columnWeights = new double[]{1.0, 1.0};
-		gbl_filtermenu_panel.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0, 1.0};
+		gbl_filtermenu_panel.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0, 1.0, 1.0};
 		filtermenu_panel.setLayout(gbl_filtermenu_panel);
 		
 		JPanel filtermenu_interval_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_interval_panel = new GridBagConstraints();
+		gbc_filtermenu_interval_panel.weighty = 0.1;
 		gbc_filtermenu_interval_panel.anchor = GridBagConstraints.NORTH;
 		gbc_filtermenu_interval_panel.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_interval_panel.gridwidth = 2;
-		gbc_filtermenu_interval_panel.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_interval_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_interval_panel.gridx = 0;
 		gbc_filtermenu_interval_panel.gridy = 2;
 		filtermenu_panel.add(filtermenu_interval_panel, gbc_filtermenu_interval_panel);
@@ -345,8 +354,9 @@ public class Mainframe extends JFrame {
 		
 		JPanel filtermenu_specific_dow_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_specific_dow_panel = new GridBagConstraints();
+		gbc_filtermenu_specific_dow_panel.weighty = 0.1;
 		gbc_filtermenu_specific_dow_panel.anchor = GridBagConstraints.NORTH;
-		gbc_filtermenu_specific_dow_panel.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_specific_dow_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_specific_dow_panel.gridwidth = 2;
 		gbc_filtermenu_specific_dow_panel.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_specific_dow_panel.gridx = 0;
@@ -361,69 +371,137 @@ public class Mainframe extends JFrame {
 				
 		GridBagConstraints gbc_checkBox_Mon = new GridBagConstraints();
 		gbc_checkBox_Mon.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Mon.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Mon.gridx = 0;
 		gbc_checkBox_Mon.gridy = 1;
 		filtermenu_specific_dow_panel.add(checkBox_Mon, gbc_checkBox_Mon);
 
 		GridBagConstraints gbc_checkBox_Tue = new GridBagConstraints();
 		gbc_checkBox_Tue.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Tue.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Tue.gridx = 1;
 		gbc_checkBox_Tue.gridy = 1;
 		filtermenu_specific_dow_panel.add(checkBox_Tue, gbc_checkBox_Tue);
 
 		GridBagConstraints gbc_checkBox_Wed = new GridBagConstraints();
 		gbc_checkBox_Wed.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Wed.insets = new Insets(0, 0, 5, 0);
 		gbc_checkBox_Wed.gridx = 2;
 		gbc_checkBox_Wed.gridy = 1;
 		filtermenu_specific_dow_panel.add(checkBox_Wed, gbc_checkBox_Wed);
 
 		GridBagConstraints gbc_checkBox_Thu_ = new GridBagConstraints();
 		gbc_checkBox_Thu_.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Thu_.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Thu_.gridx = 0;
 		gbc_checkBox_Thu_.gridy = 2;
 		filtermenu_specific_dow_panel.add(checkBox_Thu, gbc_checkBox_Thu_);
 
 		GridBagConstraints gbc_checkBox_Fri = new GridBagConstraints();
 		gbc_checkBox_Fri.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Fri.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_Fri.gridx = 1;
 		gbc_checkBox_Fri.gridy = 2;
 		filtermenu_specific_dow_panel.add(checkBox_Fri, gbc_checkBox_Fri);
 
 		GridBagConstraints gbc_checkBox_Sat = new GridBagConstraints();
 		gbc_checkBox_Sat.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Sat.insets = new Insets(0, 0, 5, 0);
 		gbc_checkBox_Sat.gridx = 2;
 		gbc_checkBox_Sat.gridy = 2;
 		filtermenu_specific_dow_panel.add(checkBox_Sat, gbc_checkBox_Sat);
 
 		GridBagConstraints gbc_checkBox_Sun = new GridBagConstraints();
 		gbc_checkBox_Sun.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Sun.insets = new Insets(0, 0, 0, 5);
 		gbc_checkBox_Sun.gridx = 0;
 		gbc_checkBox_Sun.gridy = 3;
 		filtermenu_specific_dow_panel.add(checkBox_Sun, gbc_checkBox_Sun);
 		
-		JLabel filtermenu_specific_dow_label = new JLabel("Choose specific weekdays:");
+		JLabel filtermenu_specific_dow_label = new JLabel("Weekdays:");
 		GridBagConstraints gbc_filtermenu_specific_dow_label = new GridBagConstraints();
+		gbc_filtermenu_specific_dow_label.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_specific_dow_label.gridwidth = 3;
-		gbc_filtermenu_specific_dow_label.insets = new Insets(0, 0, 0, 5);
 		gbc_filtermenu_specific_dow_label.gridx = 0;
 		gbc_filtermenu_specific_dow_label.gridy = 0;
 		filtermenu_specific_dow_panel.add(filtermenu_specific_dow_label, gbc_filtermenu_specific_dow_label);
+
+		filtermenu_daytime_panel = new JPanel();
+		GridBagConstraints gbc_filtermenu_daytime_panel = new GridBagConstraints();
+		gbc_filtermenu_daytime_panel.anchor = GridBagConstraints.NORTH;
+		gbc_filtermenu_daytime_panel.weighty = 0.1;
+		gbc_filtermenu_daytime_panel.gridwidth = 2;
+		gbc_filtermenu_daytime_panel.insets = new Insets(0, 3, 5, 3);
+		gbc_filtermenu_daytime_panel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_filtermenu_daytime_panel.gridx = 0;
+		gbc_filtermenu_daytime_panel.gridy = 4;
+		
+		filtermenu_panel.add(filtermenu_daytime_panel, gbc_filtermenu_daytime_panel);
+		GridBagLayout gbl_filtermenu_daytime_panel = new GridBagLayout();
+		gbl_filtermenu_daytime_panel.columnWidths = new int[] {0, 0};
+		gbl_filtermenu_daytime_panel.rowHeights = new int[] {0, 0, 0, 0};
+		gbl_filtermenu_daytime_panel.columnWeights = new double[]{Double.MIN_VALUE};
+		gbl_filtermenu_daytime_panel.rowWeights = new double[]{Double.MIN_VALUE, 0.0, 0.0, 0.0};
+		filtermenu_daytime_panel.setLayout(gbl_filtermenu_daytime_panel);
+		
+		checkBox_daytime_latenight = new JCheckBox("Early Morning");
+		checkBox_daytime_latenight.setToolTipText("2 AM to 6 AM");
+		GridBagConstraints gbc_checkBox_daytime_latenight = new GridBagConstraints();
+		gbc_checkBox_daytime_latenight.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_latenight.gridx = 1;
+		gbc_checkBox_daytime_latenight.gridy = 3;
+		filtermenu_daytime_panel.add(checkBox_daytime_latenight, gbc_checkBox_daytime_latenight);
+		
+		checkBox_daytime_midnight = new JCheckBox("Midnight");
+		checkBox_daytime_midnight.setToolTipText("10 PM to 2 AM");
+		GridBagConstraints gbc_checkBox_daytime_midnight = new GridBagConstraints();
+		gbc_checkBox_daytime_midnight.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_midnight.gridx = 0;
+		gbc_checkBox_daytime_midnight.gridy = 3;
+		filtermenu_daytime_panel.add(checkBox_daytime_midnight, gbc_checkBox_daytime_midnight);
+		
+		checkBox_daytime_evening = new JCheckBox("Evening");
+		checkBox_daytime_evening.setToolTipText("6 PM to 10 PM");
+		GridBagConstraints gbc_checkBox_daytime_evening = new GridBagConstraints();
+		gbc_checkBox_daytime_evening.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_evening.gridx = 1;
+		gbc_checkBox_daytime_evening.gridy = 2;
+		filtermenu_daytime_panel.add(checkBox_daytime_evening, gbc_checkBox_daytime_evening);
+		
+		checkBox_daytime_afternoon = new JCheckBox("Afternoon");
+		checkBox_daytime_afternoon.setToolTipText("2:00 PM to 6 PM");
+		GridBagConstraints gbc_checkBox_daytime_afternoon = new GridBagConstraints();
+		gbc_checkBox_daytime_afternoon.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_afternoon.gridx = 0;
+		gbc_checkBox_daytime_afternoon.gridy = 2;
+		filtermenu_daytime_panel.add(checkBox_daytime_afternoon, gbc_checkBox_daytime_afternoon);
+		
+		checkBox_daytime_noon = new JCheckBox("Noon");
+		checkBox_daytime_noon.setToolTipText("10:00 AM to 2:00 PM");
+		GridBagConstraints gbc_checkBox_daytime_noon = new GridBagConstraints();
+		gbc_checkBox_daytime_noon.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_noon.gridx = 1;
+		gbc_checkBox_daytime_noon.gridy = 1;
+		filtermenu_daytime_panel.add(checkBox_daytime_noon, gbc_checkBox_daytime_noon);
+		
+		checkBox_daytime_morning = new JCheckBox("Morning");
+		checkBox_daytime_morning.setToolTipText("6:00 AM to 10:00 AM");
+		GridBagConstraints gbc_checkBox_daytime_morning = new GridBagConstraints();
+		gbc_checkBox_daytime_morning.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_morning.gridx = 0;
+		gbc_checkBox_daytime_morning.gridy = 1;
+		filtermenu_daytime_panel.add(checkBox_daytime_morning, gbc_checkBox_daytime_morning);
+		
+		filtermenu_specific_dow_daytime_label = new JLabel("Daytime:");
+		GridBagConstraints gbc_filtermenu_specific_dow_daytime_label = new GridBagConstraints();
+		gbc_filtermenu_specific_dow_daytime_label.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_specific_dow_daytime_label.gridwidth = 2;
+		gbc_filtermenu_specific_dow_daytime_label.gridx = 0;
+		gbc_filtermenu_specific_dow_daytime_label.gridy = 0;
+		filtermenu_daytime_panel.add(filtermenu_specific_dow_daytime_label, gbc_filtermenu_specific_dow_daytime_label);
 		
 		JPanel filtermenu_buttons_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_buttons_panel = new GridBagConstraints();
+		gbc_filtermenu_buttons_panel.weighty = 1.0;
 		gbc_filtermenu_buttons_panel.anchor = GridBagConstraints.SOUTH;
 		gbc_filtermenu_buttons_panel.gridwidth = 2;
 		gbc_filtermenu_buttons_panel.insets = new Insets(0, 3, 5, 3);
-		gbc_filtermenu_buttons_panel.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_buttons_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_buttons_panel.gridx = 0;
-		gbc_filtermenu_buttons_panel.gridy = 4;
+		gbc_filtermenu_buttons_panel.gridy = 5;
 		filtermenu_panel.add(filtermenu_buttons_panel, gbc_filtermenu_buttons_panel);
 		filtermenu_buttons_panel.setLayout(new GridLayout(1, 2, 0, 0));
 		
@@ -461,6 +539,7 @@ public class Mainframe extends JFrame {
 		filtermenu_comboBox_category.addItem("Unpermitted Cab Complaint");
 		filtermenu_comboBox_category.addItem("Construction Zone Permits");
 		GridBagConstraints gbc_filtermenu_comboBox_category = new GridBagConstraints();
+		gbc_filtermenu_comboBox_category.weighty = 0.1;
 		gbc_filtermenu_comboBox_category.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_comboBox_category.gridwidth = 2;
 		gbc_filtermenu_comboBox_category.fill = GridBagConstraints.HORIZONTAL;
@@ -470,10 +549,11 @@ public class Mainframe extends JFrame {
 		
 		JPanel filtermenu_dates_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_dates_panel = new GridBagConstraints();
-		gbc_filtermenu_dates_panel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_filtermenu_dates_panel.weighty = 0.1;
+		gbc_filtermenu_dates_panel.fill = GridBagConstraints.BOTH;
 		gbc_filtermenu_dates_panel.anchor = GridBagConstraints.NORTH;
 		gbc_filtermenu_dates_panel.gridwidth = 2;
-		gbc_filtermenu_dates_panel.insets = new Insets(0, 3, 3, 3);
+		gbc_filtermenu_dates_panel.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_dates_panel.gridx = 0;
 		gbc_filtermenu_dates_panel.gridy = 1;
 		filtermenu_panel.add(filtermenu_dates_panel, gbc_filtermenu_dates_panel);
@@ -508,6 +588,7 @@ public class Mainframe extends JFrame {
 				gbc_filtermenu_dates_rightCalendarButton.gridx = 1;
 				gbc_filtermenu_dates_rightCalendarButton.gridy = 1;
 				filtermenu_dates_panel.add(this.filtermenu_dates_rightCalendarButton, gbc_filtermenu_dates_rightCalendarButton);
+				
 				
 				this.reportList_panel = new JPanel();
 				GridBagConstraints gbc_reportList_panel = new GridBagConstraints();

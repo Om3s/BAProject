@@ -60,8 +60,6 @@ public class MainframeController {
 	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase, MapController mC) throws ParseException{
 		this.mainframe = frame;
 		this.cCaseDatabase = dataBase;
-		this.globalFromDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("01/01/2011 12:00:01 AM");
-		this.globalToDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("02/01/2011 23:59:99 PM");
 		this.geoMapController = this.mainframe.getGeoMapController();
 		this.mapController = mC;
 		this.mapController.setMainFrameController(this);
@@ -75,9 +73,15 @@ public class MainframeController {
 	 * @throws ParseException
 	 */
 	private void init() throws ParseException{
+		//Globaldates
+		this.globalFromDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("01/01/2011 12:00:01 AM");
+		this.globalToDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("28/01/2011 12:00:01 AM");
 		//Radiobutton
-		this.mainframe.filtermenu_interval_radioButtonHours.setSelected(true);
-		this.timelineDateSteps = 0; // hours
+		this.mainframe.filtermenu_interval_radioButtonWeeks.setSelected(true);
+		this.timelineDateSteps = 2; // weeks
+		this.mainframe.filtermenu_interval_radioButtonDays.setEnabled(false);
+		this.mainframe.filtermenu_interval_radioButtonHours.setEnabled(false);
+		this.mainframe.filtermenu_interval_radioButtonMonths.setEnabled(false);
 		//Day of Week Checkboxes:
 		this.mainframe.checkBox_Mon.setSelected(true);
 		this.mainframe.checkBox_Mon.setBackground(Main.mondayColor);
@@ -117,6 +121,13 @@ public class MainframeController {
 		//reportListArea
 		this.mainframe.selectedCaseDetails_textArea.setEditable(false);
 		this.mainframe.selectedCaseDetails_textArea.setLineWrap(true);
+		//daytime checkboxes
+		this.mainframe.checkBox_daytime_morning.setSelected(true);
+		this.mainframe.checkBox_daytime_noon.setSelected(true);
+		this.mainframe.checkBox_daytime_afternoon.setSelected(true);
+		this.mainframe.checkBox_daytime_evening.setSelected(true);
+		this.mainframe.checkBox_daytime_midnight.setSelected(true);
+		this.mainframe.checkBox_daytime_latenight.setSelected(true);
 	}
 	/**
 	 * Refreshes the TimeLine with the actual Filtersettings
