@@ -95,7 +95,6 @@ public class Mainframe extends JFrame {
 	private JPanel reportList_panel;
 	public MyJList<CaseReport> reportList;
 	public DefaultListModel<CaseReport> reportListModel;
-	public JTextArea selectedCaseDetails_textArea;
 	public JLabel timeline_panel_fromDate_label;
 	public JLabel timeline_panel_toDate_label;
 	public BiSlider timeLineBiSlider;
@@ -609,11 +608,6 @@ public class Mainframe extends JFrame {
 				this.reportList.setVisibleRowCount(-1);
 				JScrollPane reportList_scrollPane = new JScrollPane(reportList);
 				this.reportList_panel.add(reportList_scrollPane);
-				
-				this.selectedCaseDetails_textArea = new JTextArea();
-				this.selectedCaseDetails_textArea.setMaximumSize(new Dimension(2000, 400));
-				this.selectedCaseDetails_textArea.setMinimumSize(new Dimension(300, 10));
-				this.reportList_panel.add(selectedCaseDetails_textArea);
 		
 		JMenuBar menuBar = new JMenuBar();
 		GridBagConstraints gbc_menuBar = new GridBagConstraints();

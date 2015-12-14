@@ -16,20 +16,35 @@ import mvc.view.Mainframe;
  *
  */
 public class Main {
-	public static Color[] weekDayColors;
+	public static Color[] weekDayColors,weekDayColorsWithAlpha;
+	public static int colorAlpha = 50;
 	public static Color
-		mondayColor = Color.YELLOW,
-		tuesdayColor = Color.CYAN,
-		wednesdayColor = Color.MAGENTA,
+		mondayColor = new Color(213,207,11), //YELLOW
+		tuesdayColor = new Color(0,200,240), //CYAN
+		wednesdayColor = new Color(160,15,200), //MAGENTA
 		thursdayColor = new Color(220,90,0), //ORANGE
-		fridayColor = Color.RED,
-		saturdayColor = Color.GREEN,
-		sundayColor = Color.blue;
+		fridayColor = new Color(200,0,0), //RED
+		saturdayColor = new Color(0,200,100), //GREEN
+		sundayColor = new Color(0,0,200), // BLUE
+		mondayColorWithAlpha = new Color(213,207,11,colorAlpha), //YELLOW
+		tuesdayColorWithAlpha = new Color(0,200,240,colorAlpha), //CYAN
+		wednesdayColorWithAlpha = new Color(160,15,200,colorAlpha), //MAGENTA
+		thursdayColorWithAlpha = new Color(220,90,0,colorAlpha), //ORANGE
+		fridayColorWithAlpha = new Color(200,0,0,colorAlpha), //RED
+		saturdayColorWithAlpha = new Color(0,200,100,colorAlpha), //GREEN
+		sundayColorWithAlpha = new Color(0,0,200,colorAlpha); //BLUE
 	
 	public static void main(String[] args) throws Exception {
 		defineColors();
 		CrimeCaseDatabase dataBase;
-		dataBase = new CrimeCaseDatabase("dat\\Case_Data_from_San_Francisco_311__SF311_.csv");
+		boolean testing = false;
+		boolean reIndex = false;
+		if(testing){
+			dataBase = new CrimeCaseDatabase("dat\\testData.csv", reIndex);	
+		} else {
+			dataBase = new CrimeCaseDatabase("dat\\Case_Data_from_San_Francisco_311__SF311_.csv", reIndex);
+			
+		}
 		
 		System.out.println("Create Map...");
 		JMapViewer map = new JMapViewer();
@@ -67,6 +82,14 @@ public class Main {
 		Main.weekDayColors[4] = thursdayColor;
 		Main.weekDayColors[5] = fridayColor;
 		Main.weekDayColors[6] = saturdayColor;
+		Main.weekDayColorsWithAlpha = new Color[7];
+		Main.weekDayColorsWithAlpha[0] = sundayColorWithAlpha;
+		Main.weekDayColorsWithAlpha[1] = mondayColorWithAlpha;
+		Main.weekDayColorsWithAlpha[2] = tuesdayColorWithAlpha;
+		Main.weekDayColorsWithAlpha[3] = wednesdayColorWithAlpha;
+		Main.weekDayColorsWithAlpha[4] = thursdayColorWithAlpha;
+		Main.weekDayColorsWithAlpha[5] = fridayColorWithAlpha;
+		Main.weekDayColorsWithAlpha[6] = saturdayColorWithAlpha;
 	}
 
 }

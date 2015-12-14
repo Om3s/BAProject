@@ -14,21 +14,24 @@ import org.openstreetmap.gui.jmapviewer.Coordinate;
 public class CaseReport {
 	private int caseID;
 	private Date dateOpened, dateClosed;
-	private String address, category;
+	private String address, category, mediaURLPath, neighbourhood, status, statusNotes;
 	private GeoPoint point;
-	private boolean currentSelected = false;
+	private boolean currentSelected = false, isClosed;
 	
 	public CaseReport(){
 		
 	}
 	
-	public CaseReport(int caseID, String dateOpened, String dateClosed, String address, String category, String point){
+	public CaseReport(int caseID, String dateOpened, String dateClosed, String status, String statusNotes, String category, String address, String neighbourhood, String point, String mediaUrl){
 		this.caseID = caseID;
-		this.address = address;
+		this.status = status;
+		this.statusNotes = statusNotes;
 		this.category = category;
+		this.address = address;
+		this.neighbourhood = neighbourhood;
 		this.point = fromStringToGeoPoint(point);
 		this.dateOpened = new Date(Long.valueOf(dateOpened));
-		if(!dateClosed.isEmpty()){
+		if(!dateClosed.equals("-1")){
 			this.dateClosed = new Date(Long.valueOf(dateClosed));
 		} else {
 			this.dateClosed = null;
@@ -55,7 +58,7 @@ public class CaseReport {
 	 * @return the representative String for the CaseReport List elements
 	 */
 	public String toString(){
-		return "CaseReport[CaseID: "+this.caseID+"]";
+		return this.dateOpened.toString();
 	}
 	
 	/**
@@ -122,5 +125,29 @@ public class CaseReport {
 	 */
 	public int getCaseID(){
 		return this.caseID;
+	}
+
+	public String getMediaURLPath() {
+		return mediaURLPath;
+	}
+
+	public void setMediaURLPath(String mediaURL) {
+		this.mediaURLPath = mediaURL;
+	}
+
+	public boolean isClosed() {
+		return isClosed;
+	}
+
+	public String getNeighbourhood() {
+		return neighbourhood;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public String getStatusNotes() {
+		return statusNotes;
 	}
 }

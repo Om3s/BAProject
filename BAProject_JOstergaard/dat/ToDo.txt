@@ -3,6 +3,16 @@ basic ui javadoc
 heat map - gauss kernel (gauss interpolation, kleines pic)
 term enum
 
+TODO:
+- ReIndex with more data - DONE
+	- images?!?
+	- 
+- details sektion entfernen
+- detailfenster mit button öffnen
+- GUI elemente entfernen (details, rangelabel, currentFromDate, currentToDate, BISLIDER!)
+- Logic to DayTimes
+- barchart ändern (Wochentage/Tageszeiten etc.)
+
 Categories:
 SFHA Requests
 Abandoned Vehicle
@@ -31,3 +41,4 @@ Interdepartmental Request
 DPW Volunteer Programs
 Unpermitted Cab Complaint
 Construction Zone Permits
+

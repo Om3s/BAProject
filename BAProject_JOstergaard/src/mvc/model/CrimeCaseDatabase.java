@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -35,7 +36,8 @@ import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import com.opencsv.CSVReader;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 
 /**
  * 
@@ -48,13 +50,15 @@ public class CrimeCaseDatabase {
 	private StandardAnalyzer standardAnalyzer = null;
 	private ArrayList<String> categories;
 	
-	public CrimeCaseDatabase(String path) throws IOException {
+	public CrimeCaseDatabase(String path, boolean reIndex) throws IOException {
 		
 		this.currentData = new ArrayList<CaseReport>();
 		this.standardAnalyzer = new StandardAnalyzer();
 		this.categories = new ArrayList<String>();
 		
-//		this.reindexCSV(path); //testing
+		if(reIndex){
+			this.reindexCSV(path); //testing
+		}
 		
 		try{
 			this.indexSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("dat/lucene_index").toPath())));
@@ -105,9 +109,15 @@ public class CrimeCaseDatabase {
 	public void reindexCSV(String path){
 		System.out.println("Begin indexing...");
 		long startTime = System.currentTimeMillis(), tempTime = System.currentTimeMillis();
-		int emptyEntries = 0;
+		int emptyEntries = 0, i = 1, deletedRows = 0;
 		try {
-			CSVReader reader = new CSVReader(new FileReader(path), ',' , '\"', 1);
+			CsvParserSettings settings = new CsvParserSettings();
+			settings.getFormat().setLineSeparator("\r\n");
+			settings.setLineSeparatorDetectionEnabled(true);
+			settings.setHeaderExtractionEnabled(true);
+			CsvParser parser  = new CsvParser(settings);
+			parser.beginParsing(new FileReader(path));
+			
 			String[] nextLine;
 
 			Directory indexDirectory = FSDirectory.open(new File("dat/lucene_index").toPath());
@@ -118,36 +128,62 @@ public class CrimeCaseDatabase {
 			Document doc;
 			long dateOpenedAsLong = -1, dateClosedAsLong = -1;
 			int dayOfWeek = -1;
-			while((nextLine = reader.readNext()) != null){
-				try{
-					doc = new Document();
-					doc.add(new IntField("id", Integer.valueOf(nextLine[0]), Field.Store.YES));
+			while((nextLine = parser.parseNext()) != null){
+				i++;
+				if(nextLine[13] != null){
 					try{
-						dateOpenedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[1]).getTime());
-						dateClosedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[2]).getTime());
-					} catch (ParseException e) {
-						
+						doc = new Document();
+						doc.add(new IntField("id", Integer.valueOf(nextLine[0]), Field.Store.YES));
+						try{
+							dateOpenedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[1]).getTime());
+							dateClosedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[2]).getTime());
+						} catch (ParseException e) {
+							
+						} catch (NullPointerException e){
+							dateClosedAsLong = -1;
+						}
+						if(dateOpenedAsLong != -1){
+							Calendar c = Calendar.getInstance();
+							c.setTimeInMillis(dateOpenedAsLong);
+							dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+						}
+						doc.add(new LongField("dateOpened", dateOpenedAsLong, Field.Store.YES));
+						doc.add(new LongField("dateClosed", dateClosedAsLong, Field.Store.YES));
+						doc.add(new TextField("status", nextLine[4], Field.Store.YES));
+						if(nextLine[5] == null){
+							doc.add(new StringField("statusNotes", "n/A", Field.Store.YES));
+						} else {
+							doc.add(new StringField("statusNotes", nextLine[5], Field.Store.YES));
+						}
+						doc.add(new StringField("category", nextLine[7], Field.Store.YES));
+						if(nextLine[10] == null){
+							doc.add(new TextField("address", "n/A", Field.Store.YES));
+						} else {
+							doc.add(new TextField("address", nextLine[10], Field.Store.YES));
+						}
+						if(nextLine[12] == null){
+							doc.add(new StringField("neighbourhood", "n/A", Field.Store.YES));
+						} else {
+							doc.add(new StringField("neighbourhood", nextLine[12], Field.Store.YES));
+						}
+						String[] coordinateStrings = nextLine[13].substring(1, nextLine[13].length()-1).split(",");
+						doc.add(new DoubleField("lat", Double.valueOf(coordinateStrings[0]), Field.Store.YES));
+						doc.add(new DoubleField("lon", Double.valueOf(coordinateStrings[1]), Field.Store.YES));
+						if(nextLine[15] == null){
+							doc.add(new StringField("mediaUrl", "n/A", Field.Store.YES));
+						} else {
+							doc.add(new StringField("mediaUrl", nextLine[15], Field.Store.YES));
+						}
+						doc.add(new IntField("dayOfWeek", dayOfWeek, Field.Store.YES));
+						indexWriter.addDocument(doc);
+					} catch (NumberFormatException e){
+						emptyEntries++;
 					}
-					if(dateOpenedAsLong != -1){
-						Calendar c = Calendar.getInstance();
-						c.setTimeInMillis(dateOpenedAsLong);
-						dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-					}
-					doc.add(new LongField("dateOpened", dateOpenedAsLong, Field.Store.YES));
-					doc.add(new LongField("dateClosed", dateClosedAsLong, Field.Store.YES));
-					doc.add(new TextField("address", nextLine[9], Field.Store.YES));
-					doc.add(new StringField("category", nextLine[6], Field.Store.YES));
-					String[] coordinateStrings = nextLine[12].substring(1, nextLine[12].length()-1).split(",");
-					doc.add(new DoubleField("lat", Double.valueOf(coordinateStrings[0]), Field.Store.YES));
-					doc.add(new DoubleField("lon", Double.valueOf(coordinateStrings[1]), Field.Store.YES));
-					doc.add(new IntField("dayOfWeek", dayOfWeek, Field.Store.YES));
-					indexWriter.addDocument(doc);
-				} catch (NumberFormatException e){
-					emptyEntries++;
 				}
 			}
 			indexWriter.close();
-			reader.close();
+			parser.stopParsing();
+			System.out.println(deletedRows);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -155,7 +191,6 @@ public class CrimeCaseDatabase {
 		}
 		tempTime = System.currentTimeMillis()-startTime;
 		System.out.println("Indexing done ("+(tempTime/1000f)+" sec)");
-		System.out.println(emptyEntries+" empty entries in CSV found and ignored");
 	}
 	
 	/**
@@ -193,9 +228,16 @@ public class CrimeCaseDatabase {
 			Document doc;
 			for(ScoreDoc sDoc : docs.scoreDocs){
 				 doc = indexSearcher.doc(sDoc.doc);
-				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("address"), doc.get("category"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")"));
+				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaURL")));
 			}
 		}
+		this.currentData.sort(new Comparator<CaseReport>() {
+
+			@Override
+			public int compare(CaseReport cR1, CaseReport cR2) {
+				return cR1.compareTo(cR2);
+			}
+		});
 	}
 	
 	/**

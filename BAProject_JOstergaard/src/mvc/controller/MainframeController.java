@@ -12,6 +12,9 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.CategoryPlot;
@@ -25,6 +28,7 @@ import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
 import mvc.model.CustomBarRenderer;
 import mvc.view.Mainframe;
+import mvc.view.ResultDetailFrame;
 
 /**
  * 
@@ -42,6 +46,7 @@ public class MainframeController {
 	private int[] weekdays = {1,2,3,4,5,6,7};
 	private String currentCategory;
 	private MapController mapController;
+	private ResultDetailFrame detailFrame;
 	
 	//Timeline:
 	private int timelineSmallestTimeInterval = 1;
@@ -74,8 +79,8 @@ public class MainframeController {
 	 */
 	private void init() throws ParseException{
 		//Globaldates
-		this.globalFromDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("01/01/2011 12:00:01 AM");
-		this.globalToDate = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a").parse("28/01/2011 12:00:01 AM");
+		this.globalFromDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("10/11/2015 12:00:01 AM");
+		this.globalToDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("08/12/2015 11:59:59 PM");
 		//Radiobutton
 		this.mainframe.filtermenu_interval_radioButtonWeeks.setSelected(true);
 		this.timelineDateSteps = 2; // weeks
@@ -119,8 +124,7 @@ public class MainframeController {
 		//Chart:
 		this.refreshChart();
 		//reportListArea
-		this.mainframe.selectedCaseDetails_textArea.setEditable(false);
-		this.mainframe.selectedCaseDetails_textArea.setLineWrap(true);
+		((DefaultListCellRenderer)this.mainframe.reportList.getCellRenderer()).setHorizontalAlignment(JLabel.RIGHT);
 		//daytime checkboxes
 		this.mainframe.checkBox_daytime_morning.setSelected(true);
 		this.mainframe.checkBox_daytime_noon.setSelected(true);
@@ -163,7 +167,7 @@ public class MainframeController {
 		}
 		this.timelineMaxValue = timeUnitDiffs;
 		this.timelineSmallestTimeInterval = 1;
-		this.timelineHigherValue = 1;
+		this.timelineHigherValue = this.timelineMaxValue;
 		this.timelineLowerValue = 0;
 		this.mainframe.timeLineBiSlider.setValues(0, this.timelineMaxValue);
 		this.mainframe.timeLineBiSlider.setMaximumColoredValue(this.timelineHigherValue);
@@ -258,9 +262,10 @@ public class MainframeController {
 	 */
 	public void fromDateAction(Date newDate){
 		System.out.println("fromDate changed");
+		Date newDateMinusOneWeek = new Date(newDate.getTime() + 604799999); //+7 Days
 		String newDateText = this.standardGUIDateOutputFormat.format(newDate);
-		if(this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate().before(newDate)) {
-			this.setToDate(new Date(newDate.getTime() + 86400000)); // + 1 Day from newDate
+		if(this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate().before(newDateMinusOneWeek)) {
+			this.setToDate(newDateMinusOneWeek);
 			this.mainframe.filtermenu_dates_leftCalendarButton.setText(newDateText);
 			this.mainframe.timeline_panel_fromDate_label.setText(newDateText);
 		} else {
@@ -278,9 +283,10 @@ public class MainframeController {
 	 */
 	public void toDateAction(Date newDate){
 		System.out.println("toDate changed");
+		Date newDateMinusOneWeek = new Date(newDate.getTime() - 604799999); //-7 Days
 		String newDateText;
-		if(this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate().after(newDate)) {
-			this.setFromDate(new Date(newDate.getTime() - 86400000)); // -1 Day from newDate
+		if(this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate().after(newDateMinusOneWeek)) {
+			this.setFromDate(newDateMinusOneWeek);
 			newDateText = this.standardGUIDateOutputFormat.format(newDate);
 			this.mainframe.filtermenu_dates_rightCalendarButton.setText(newDateText);
 			this.mainframe.timeline_panel_toDate_label.setText(newDateText);
@@ -499,10 +505,18 @@ public class MainframeController {
 				result += s+"\n";
 			}
 		}
-		this.mainframe.selectedCaseDetails_textArea.setText(result);
+		this.createDetailFrame(result);
 		this.mainframe.repaint();
 	}
 	
+	private void createDetailFrame(String result) {
+		if(this.detailFrame != null){
+			this.detailFrame.setVisible(false);
+			this.detailFrame.dispose();
+		}
+		this.detailFrame = new ResultDetailFrame(result);
+	}
+
 	/**
 	 * 
 	 * @return the current timeLineDateSteps value
