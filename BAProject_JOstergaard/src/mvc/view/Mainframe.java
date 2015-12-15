@@ -10,12 +10,12 @@ import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
-
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Color;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -107,6 +107,7 @@ public class Mainframe extends JFrame {
 	public JCheckBox checkBox_daytime_midnight;
 	public JCheckBox checkBox_daytime_latenight;
 	private JPanel filtermenu_daytime_panel;
+	private JButton reportList_details_button;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -593,21 +594,63 @@ public class Mainframe extends JFrame {
 				GridBagConstraints gbc_reportList_panel = new GridBagConstraints();
 				gbc_reportList_panel.anchor = GridBagConstraints.WEST;
 				gbc_reportList_panel.fill = GridBagConstraints.BOTH;
-				gbc_reportList_panel.weightx = 0.5;
-				gbc_reportList_panel.insets = new Insets(0, 0, 0, 5);
+				gbc_reportList_panel.weightx = 0.1;
 				gbc_reportList_panel.gridx = 0;
 				gbc_reportList_panel.gridy = 0;
 				getContentPane().add(reportList_panel, gbc_reportList_panel);
 				
 				this.reportListModel = new DefaultListModel<CaseReport>();
-				this.reportList_panel.setLayout(new BoxLayout(reportList_panel, BoxLayout.Y_AXIS));
+				GridBagLayout gbl_reportList_panel = new GridBagLayout();
+				gbl_reportList_panel.columnWidths = new int[] {0};
+				gbl_reportList_panel.rowHeights = new int[] {0, 0};
+				gbl_reportList_panel.columnWeights = new double[]{0.0};
+				gbl_reportList_panel.rowWeights = new double[]{0.0, 0.0};
+				reportList_panel.setLayout(gbl_reportList_panel);
 				this.reportList = new MyJList<CaseReport>(this.reportListModel);
 				this.reportList.setToolTipText("");
 				this.reportList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				this.reportList.setLayoutOrientation(JList.VERTICAL);
 				this.reportList.setVisibleRowCount(-1);
 				JScrollPane reportList_scrollPane = new JScrollPane(reportList);
-				this.reportList_panel.add(reportList_scrollPane);
+				GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
+				gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
+				gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;
+				gbc_reportList_scrollPane.weighty = 0.9;
+				gbc_reportList_scrollPane.weightx = 1.0;
+				gbc_reportList_scrollPane.gridx = 0;
+				gbc_reportList_scrollPane.gridy = 0;
+				this.reportList_panel.add(reportList_scrollPane, gbc_reportList_scrollPane);
+				
+				this.reportList.addListSelectionListener(new ListSelectionListener() {
+					
+					@Override
+					public void valueChanged(ListSelectionEvent e) {
+						if(!e.getValueIsAdjusting()){
+							Mainframe.this.controller.onNewCaseSelection();
+						}
+					}
+				});
+				
+				this.reportList_details_button = new JButton("Details");
+				reportList_details_button.setAlignmentX(Component.CENTER_ALIGNMENT);
+				GridBagConstraints gbc_reportList_details_button = new GridBagConstraints();
+				gbc_reportList_details_button.fill = GridBagConstraints.BOTH;
+				gbc_reportList_details_button.weighty = 0.1;
+				gbc_reportList_details_button.weightx = 1.0;
+				gbc_reportList_details_button.gridx = 0;
+				gbc_reportList_details_button.gridy = 1;
+				reportList_panel.add(reportList_details_button, gbc_reportList_details_button);
+				
+				
+				
+				// =================== EVENTHANDLER: =================== 
+				this.reportList_details_button.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Mainframe.this.controller.detailsButtonClicked();
+					}
+				});
 		
 		JMenuBar menuBar = new JMenuBar();
 		GridBagConstraints gbc_menuBar = new GridBagConstraints();
@@ -623,10 +666,6 @@ public class Mainframe extends JFrame {
 		fileMenu.add(fileMenu_item_exit);
 		
 		this.setJMenuBar(menuBar);
-		
-		
-		
-		// =================== EVENTHANDLER: =================== 
 		this.timeLineBiSlider.addMouseListener(new MouseListener() {
 			
 			@Override
@@ -758,16 +797,6 @@ public class Mainframe extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Default button.");
 				Mainframe.this.controller.defaultSettings();
-			}
-		});
-		
-		this.reportList.addListSelectionListener(new ListSelectionListener() {
-			
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				if(!e.getValueIsAdjusting()){
-					Mainframe.this.controller.onNewCaseSelection();
-				}
 			}
 		});
 	}

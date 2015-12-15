@@ -30,7 +30,7 @@ public class ResultDetailFrame extends JFrame {
 		this.detailTextArea.setText(this.content);
 		this.pack();
 		this.setVisible(true);
-		this.testURLImage();
+//		this.testURLImage();
 	}
 
 	private void initGUI() {

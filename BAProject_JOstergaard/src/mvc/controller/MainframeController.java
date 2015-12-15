@@ -493,19 +493,9 @@ public class MainframeController {
 		CaseReport cR = this.mainframe.reportList.getSelectedValue();
 		String result;
 		if(cR == null){
-			result = "";
 		} else {
 			this.mapController.setSelectedMarker(cR.getPoint());
-			result = cR.toString2();
-			result = result.substring(11, result.length()-1);
-			Pattern pattern = Pattern.compile(Pattern.quote("%$sepa&%$"));
-			String[] tokens = pattern.split(result);
-			result = "Selected Case:\n";
-			for(String s : tokens){
-				result += s+"\n";
-			}
 		}
-		this.createDetailFrame(result);
 		this.mainframe.repaint();
 	}
 	
@@ -531,5 +521,28 @@ public class MainframeController {
 	 */
 	public Date getGlobalFromDate(){
 		return this.globalFromDate;
+	}
+	
+	/**
+	 * This method is called when the details button is clicked.
+	 * It will open a new Window containing detailed information of the selected report.
+	 */
+	public void detailsButtonClicked() {
+		CaseReport cR = this.mainframe.reportList.getSelectedValue();
+		String result;
+		if(cR == null){
+		} else {
+			this.mapController.setSelectedMarker(cR.getPoint());
+			result = cR.toString2();
+			result = result.substring(11, result.length()-1);
+			Pattern pattern = Pattern.compile(Pattern.quote("%$sepa&%$"));
+			String[] tokens = pattern.split(result);
+			result = "Selected Case:\n";
+			for(String s : tokens){
+				result += s+"\n";
+			}
+			this.createDetailFrame(result);
+		}
+		this.mainframe.repaint();
 	}
 }
