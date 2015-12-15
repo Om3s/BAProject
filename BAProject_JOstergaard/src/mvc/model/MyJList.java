@@ -11,6 +11,9 @@ import javax.swing.JList;
  */
 public class MyJList<E> extends JList<E> {
 	
+	public MyJList(){
+		super();
+	}
 	public MyJList(DefaultListModel<E> dLM){
 		super(dLM);
 	}

@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JPanel;
 
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -611,6 +612,7 @@ public class Mainframe extends JFrame {
 				this.reportList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				this.reportList.setLayoutOrientation(JList.VERTICAL);
 				this.reportList.setVisibleRowCount(-1);
+				((DefaultListCellRenderer)this.reportList.getCellRenderer()).setHorizontalTextPosition(SwingConstants.LEFT);
 				JScrollPane reportList_scrollPane = new JScrollPane(reportList);
 				GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
 				gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
