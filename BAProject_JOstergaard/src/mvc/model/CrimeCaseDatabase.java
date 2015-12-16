@@ -228,7 +228,7 @@ public class CrimeCaseDatabase {
 			Document doc;
 			for(ScoreDoc sDoc : docs.scoreDocs){
 				 doc = indexSearcher.doc(sDoc.doc);
-				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaURL")));
+				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl")));
 			}
 		}
 		this.currentData.sort(new Comparator<CaseReport>() {

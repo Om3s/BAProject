@@ -1,7 +1,5 @@
 package mvc.model;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
@@ -16,7 +14,7 @@ public class CaseReport {
 	private Date dateOpened, dateClosed;
 	private String address, category, mediaURLPath, neighbourhood, status, statusNotes;
 	private GeoPoint point;
-	private boolean currentSelected = false, isClosed;
+	private boolean currentSelected = false, isClosed, hasAPictureLink;
 	
 	public CaseReport(){
 		
@@ -35,6 +33,18 @@ public class CaseReport {
 			this.dateClosed = new Date(Long.valueOf(dateClosed));
 		} else {
 			this.dateClosed = null;
+		}
+		if(!mediaUrl.equals("n/A")){
+			this.mediaURLPath = mediaUrl;
+			this.hasAPictureLink = true;
+		} else {
+			this.mediaURLPath = "Not Available";
+			this.hasAPictureLink = false;
+		}
+		if(status.equals("Open")){
+			this.isClosed = false;
+		} else if(status.equals("Closed")) {
+			this.isClosed = true;
 		}
 		this.point.setRelatedCaseReport(this);
 	}
@@ -67,7 +77,7 @@ public class CaseReport {
 	 * @return the representative String for the details window
 	 */
 	public String toString2(){
-		return "CaseReport[CaseID: "+this.caseID+"%$sepa&%$Opened: "+this.dateOpened+"%$sepa&%$Closed: "+this.dateClosed+"%$sepa&%$Address: "+this.address+"%$sepa&%$Category: "+this.category+"%$sepa&%$Point: ("+this.point.getLat()+", "+this.point.getLon()+")]";
+		return "CaseReport[CaseID: "+this.caseID+"%$sepa&%$Category: "+this.category+"%$sepa&%$Opened: "+this.dateOpened+"%$sepa&%$Closed: "+this.dateClosed+"%$sepa&%$Status: "+this.status+"%$sepa&%$StatusNotes: "+this.statusNotes+"Address: "+this.address+"%$sepa&%$Neighbourhood: "+this.neighbourhood+"%$sepa&%$Point: ("+this.point.getLat()+", "+this.point.getLon()+")%$sepa&%$Image: "+this.mediaURLPath+"]";
 	}
 	
 	/**
@@ -149,5 +159,9 @@ public class CaseReport {
 
 	public String getStatusNotes() {
 		return statusNotes;
+	}
+
+	public boolean hasAPictureLink() {
+		return hasAPictureLink;
 	}
 }

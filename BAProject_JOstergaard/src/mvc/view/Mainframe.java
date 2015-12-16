@@ -28,6 +28,7 @@ import javax.swing.ListSelectionModel;
 
 import mvc.controller.MainframeController;
 import mvc.controller.MapController;
+import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.MyJList;
 
@@ -162,14 +163,11 @@ public class Mainframe extends JFrame {
 	private void init(){
 		// =================== WINDOW SETTINGS: =================== 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		int screenWidth, screenHeight, frameWidth, frameHeight;
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		screenWidth = gd.getDisplayMode().getWidth(); 
-		screenHeight = gd.getDisplayMode().getHeight();
-		frameWidth = (int) (screenWidth / 1.75);
+		int frameWidth, frameHeight;
+		frameWidth = (int) (Main.screenWidth / 1.75);
 		frameHeight = (int) (frameWidth * 0.75);
 		this.setSize(frameWidth, frameHeight);
-		this.setLocation((int)((screenWidth / 2) - (frameWidth / 2)), (int)((screenHeight / 2) - (frameHeight / 2 )));
+		this.setLocation((int)((Main.screenWidth / 2) - (frameWidth / 2)), (int)((Main.screenHeight / 2) - (frameHeight / 2 )));
 		this.setMinimumSize(new Dimension(800, 450));
 		
 		
@@ -225,8 +223,8 @@ public class Mainframe extends JFrame {
 		gbl_timeline_panel.rowWeights = new double[]{0.0, 0.0};
 		timeline_panel.setLayout(gbl_timeline_panel);
 		
-		timeline_panel_toDate_label = new JLabel("toDate");
-		timeline_panel_toDate_label.setVerticalAlignment(SwingConstants.TOP);
+		this.timeline_panel_toDate_label = new JLabel("toDate");
+		this.timeline_panel_toDate_label.setVerticalAlignment(SwingConstants.TOP);
 		GridBagConstraints gbc_timeline_panel_toDate_label = new GridBagConstraints();
 		gbc_timeline_panel_toDate_label.weighty = 0.01;
 		gbc_timeline_panel_toDate_label.weightx = 1.0;
@@ -234,7 +232,7 @@ public class Mainframe extends JFrame {
 		gbc_timeline_panel_toDate_label.insets = new Insets(0, 0, 5, 0);
 		gbc_timeline_panel_toDate_label.gridx = 2;
 		gbc_timeline_panel_toDate_label.gridy = 0;
-		timeline_panel.add(timeline_panel_toDate_label, gbc_timeline_panel_toDate_label);
+		timeline_panel.add(this.timeline_panel_toDate_label, gbc_timeline_panel_toDate_label);
 		
 		this.timeLineBiSlider = new BiSlider();
 		this.timeLineBiSlider.setMinimumSize(new Dimension(350, 50));
@@ -248,10 +246,10 @@ public class Mainframe extends JFrame {
 		gbc_timeLineBiSlider.fill = GridBagConstraints.BOTH;
 		gbc_timeLineBiSlider.gridx = 0;
 		gbc_timeLineBiSlider.gridy = 1;
-		timeline_panel.add(timeLineBiSlider, gbc_timeLineBiSlider);
+		timeline_panel.add(this.timeLineBiSlider, gbc_timeLineBiSlider);
 		
-		timeline_panel_fromDate_label = new JLabel("fromDate");
-		timeline_panel_fromDate_label.setVerticalAlignment(SwingConstants.TOP);
+		this.timeline_panel_fromDate_label = new JLabel("fromDate");
+		this.timeline_panel_fromDate_label.setVerticalAlignment(SwingConstants.TOP);
 		GridBagConstraints gbc_timeline_panel_fromDate_label = new GridBagConstraints();
 		gbc_timeline_panel_fromDate_label.insets = new Insets(0, 0, 5, 0);
 		gbc_timeline_panel_fromDate_label.weighty = 0.01;
@@ -259,17 +257,17 @@ public class Mainframe extends JFrame {
 		gbc_timeline_panel_fromDate_label.anchor = GridBagConstraints.NORTHWEST;
 		gbc_timeline_panel_fromDate_label.gridx = 0;
 		gbc_timeline_panel_fromDate_label.gridy = 0;
-		timeline_panel.add(timeline_panel_fromDate_label, gbc_timeline_panel_fromDate_label);
+		timeline_panel.add(this.timeline_panel_fromDate_label, gbc_timeline_panel_fromDate_label);
 		
-		timeLine_range_label = new JLabel("Range");
-		timeLine_range_label.setVerticalAlignment(SwingConstants.TOP);
+		this.timeLine_range_label = new JLabel("Range");
+		this.timeLine_range_label.setVerticalAlignment(SwingConstants.TOP);
 		GridBagConstraints gbc_timeLine_range_label = new GridBagConstraints();
 		gbc_timeLine_range_label.weighty = 0.01;
 		gbc_timeLine_range_label.weightx = 1.0;
 		gbc_timeLine_range_label.anchor = GridBagConstraints.NORTH;
 		gbc_timeLine_range_label.gridx = 1;
 		gbc_timeLine_range_label.gridy = 0;
-		timeline_panel.add(timeLine_range_label, gbc_timeLine_range_label);
+		timeline_panel.add(this.timeLine_range_label, gbc_timeLine_range_label);
 //		this.rangeSlider = new JRangeSlider(0, 100, 0, 50, 1);
 //		panel.add(this.rangeSlider, BorderLayout.PAGE_END);
 		
@@ -374,43 +372,43 @@ public class Mainframe extends JFrame {
 		gbc_checkBox_Mon.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Mon.gridx = 0;
 		gbc_checkBox_Mon.gridy = 1;
-		filtermenu_specific_dow_panel.add(checkBox_Mon, gbc_checkBox_Mon);
+		filtermenu_specific_dow_panel.add(this.checkBox_Mon, gbc_checkBox_Mon);
 
 		GridBagConstraints gbc_checkBox_Tue = new GridBagConstraints();
 		gbc_checkBox_Tue.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Tue.gridx = 1;
 		gbc_checkBox_Tue.gridy = 1;
-		filtermenu_specific_dow_panel.add(checkBox_Tue, gbc_checkBox_Tue);
+		filtermenu_specific_dow_panel.add(this.checkBox_Tue, gbc_checkBox_Tue);
 
 		GridBagConstraints gbc_checkBox_Wed = new GridBagConstraints();
 		gbc_checkBox_Wed.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Wed.gridx = 2;
 		gbc_checkBox_Wed.gridy = 1;
-		filtermenu_specific_dow_panel.add(checkBox_Wed, gbc_checkBox_Wed);
+		filtermenu_specific_dow_panel.add(this.checkBox_Wed, gbc_checkBox_Wed);
 
 		GridBagConstraints gbc_checkBox_Thu_ = new GridBagConstraints();
 		gbc_checkBox_Thu_.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Thu_.gridx = 0;
 		gbc_checkBox_Thu_.gridy = 2;
-		filtermenu_specific_dow_panel.add(checkBox_Thu, gbc_checkBox_Thu_);
+		filtermenu_specific_dow_panel.add(this.checkBox_Thu, gbc_checkBox_Thu_);
 
 		GridBagConstraints gbc_checkBox_Fri = new GridBagConstraints();
 		gbc_checkBox_Fri.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Fri.gridx = 1;
 		gbc_checkBox_Fri.gridy = 2;
-		filtermenu_specific_dow_panel.add(checkBox_Fri, gbc_checkBox_Fri);
+		filtermenu_specific_dow_panel.add(this.checkBox_Fri, gbc_checkBox_Fri);
 
 		GridBagConstraints gbc_checkBox_Sat = new GridBagConstraints();
 		gbc_checkBox_Sat.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Sat.gridx = 2;
 		gbc_checkBox_Sat.gridy = 2;
-		filtermenu_specific_dow_panel.add(checkBox_Sat, gbc_checkBox_Sat);
+		filtermenu_specific_dow_panel.add(this.checkBox_Sat, gbc_checkBox_Sat);
 
 		GridBagConstraints gbc_checkBox_Sun = new GridBagConstraints();
 		gbc_checkBox_Sun.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_Sun.gridx = 0;
 		gbc_checkBox_Sun.gridy = 3;
-		filtermenu_specific_dow_panel.add(checkBox_Sun, gbc_checkBox_Sun);
+		filtermenu_specific_dow_panel.add(this.checkBox_Sun, gbc_checkBox_Sun);
 		
 		JLabel filtermenu_specific_dow_label = new JLabel("Weekdays:");
 		GridBagConstraints gbc_filtermenu_specific_dow_label = new GridBagConstraints();
@@ -420,7 +418,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_specific_dow_label.gridy = 0;
 		filtermenu_specific_dow_panel.add(filtermenu_specific_dow_label, gbc_filtermenu_specific_dow_label);
 
-		filtermenu_daytime_panel = new JPanel();
+		this.filtermenu_daytime_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_daytime_panel = new GridBagConstraints();
 		gbc_filtermenu_daytime_panel.anchor = GridBagConstraints.NORTH;
 		gbc_filtermenu_daytime_panel.weighty = 0.1;
@@ -430,69 +428,69 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_daytime_panel.gridx = 0;
 		gbc_filtermenu_daytime_panel.gridy = 4;
 		
-		filtermenu_panel.add(filtermenu_daytime_panel, gbc_filtermenu_daytime_panel);
+		filtermenu_panel.add(this.filtermenu_daytime_panel, gbc_filtermenu_daytime_panel);
 		GridBagLayout gbl_filtermenu_daytime_panel = new GridBagLayout();
 		gbl_filtermenu_daytime_panel.columnWidths = new int[] {0, 0};
 		gbl_filtermenu_daytime_panel.rowHeights = new int[] {0, 0, 0, 0};
 		gbl_filtermenu_daytime_panel.columnWeights = new double[]{Double.MIN_VALUE};
 		gbl_filtermenu_daytime_panel.rowWeights = new double[]{Double.MIN_VALUE, 0.0, 0.0, 0.0};
-		filtermenu_daytime_panel.setLayout(gbl_filtermenu_daytime_panel);
+		this.filtermenu_daytime_panel.setLayout(gbl_filtermenu_daytime_panel);
 		
-		checkBox_daytime_latenight = new JCheckBox("Early Morning");
-		checkBox_daytime_latenight.setToolTipText("2 AM to 6 AM");
+		this.checkBox_daytime_latenight = new JCheckBox("Early Morning");
+		this.checkBox_daytime_latenight.setToolTipText("2 AM to 6 AM");
 		GridBagConstraints gbc_checkBox_daytime_latenight = new GridBagConstraints();
 		gbc_checkBox_daytime_latenight.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_latenight.gridx = 1;
 		gbc_checkBox_daytime_latenight.gridy = 3;
-		filtermenu_daytime_panel.add(checkBox_daytime_latenight, gbc_checkBox_daytime_latenight);
+		filtermenu_daytime_panel.add(this.checkBox_daytime_latenight, gbc_checkBox_daytime_latenight);
 		
-		checkBox_daytime_midnight = new JCheckBox("Midnight");
-		checkBox_daytime_midnight.setToolTipText("10 PM to 2 AM");
+		this.checkBox_daytime_midnight = new JCheckBox("Midnight");
+		this.checkBox_daytime_midnight.setToolTipText("10 PM to 2 AM");
 		GridBagConstraints gbc_checkBox_daytime_midnight = new GridBagConstraints();
 		gbc_checkBox_daytime_midnight.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_midnight.gridx = 0;
 		gbc_checkBox_daytime_midnight.gridy = 3;
-		filtermenu_daytime_panel.add(checkBox_daytime_midnight, gbc_checkBox_daytime_midnight);
+		filtermenu_daytime_panel.add(this.checkBox_daytime_midnight, gbc_checkBox_daytime_midnight);
 		
-		checkBox_daytime_evening = new JCheckBox("Evening");
-		checkBox_daytime_evening.setToolTipText("6 PM to 10 PM");
+		this.checkBox_daytime_evening = new JCheckBox("Evening");
+		this.checkBox_daytime_evening.setToolTipText("6 PM to 10 PM");
 		GridBagConstraints gbc_checkBox_daytime_evening = new GridBagConstraints();
 		gbc_checkBox_daytime_evening.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_evening.gridx = 1;
 		gbc_checkBox_daytime_evening.gridy = 2;
-		filtermenu_daytime_panel.add(checkBox_daytime_evening, gbc_checkBox_daytime_evening);
+		filtermenu_daytime_panel.add(this.checkBox_daytime_evening, gbc_checkBox_daytime_evening);
 		
-		checkBox_daytime_afternoon = new JCheckBox("Afternoon");
-		checkBox_daytime_afternoon.setToolTipText("2:00 PM to 6 PM");
+		this.checkBox_daytime_afternoon = new JCheckBox("Afternoon");
+		this.checkBox_daytime_afternoon.setToolTipText("2:00 PM to 6 PM");
 		GridBagConstraints gbc_checkBox_daytime_afternoon = new GridBagConstraints();
 		gbc_checkBox_daytime_afternoon.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_afternoon.gridx = 0;
 		gbc_checkBox_daytime_afternoon.gridy = 2;
-		filtermenu_daytime_panel.add(checkBox_daytime_afternoon, gbc_checkBox_daytime_afternoon);
+		filtermenu_daytime_panel.add(this.checkBox_daytime_afternoon, gbc_checkBox_daytime_afternoon);
 		
-		checkBox_daytime_noon = new JCheckBox("Noon");
-		checkBox_daytime_noon.setToolTipText("10:00 AM to 2:00 PM");
+		this.checkBox_daytime_noon = new JCheckBox("Noon");
+		this.checkBox_daytime_noon.setToolTipText("10:00 AM to 2:00 PM");
 		GridBagConstraints gbc_checkBox_daytime_noon = new GridBagConstraints();
 		gbc_checkBox_daytime_noon.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_noon.gridx = 1;
 		gbc_checkBox_daytime_noon.gridy = 1;
-		filtermenu_daytime_panel.add(checkBox_daytime_noon, gbc_checkBox_daytime_noon);
+		filtermenu_daytime_panel.add(this.checkBox_daytime_noon, gbc_checkBox_daytime_noon);
 		
-		checkBox_daytime_morning = new JCheckBox("Morning");
-		checkBox_daytime_morning.setToolTipText("6:00 AM to 10:00 AM");
+		this.checkBox_daytime_morning = new JCheckBox("Morning");
+		this.checkBox_daytime_morning.setToolTipText("6:00 AM to 10:00 AM");
 		GridBagConstraints gbc_checkBox_daytime_morning = new GridBagConstraints();
 		gbc_checkBox_daytime_morning.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_morning.gridx = 0;
 		gbc_checkBox_daytime_morning.gridy = 1;
-		filtermenu_daytime_panel.add(checkBox_daytime_morning, gbc_checkBox_daytime_morning);
+		this.filtermenu_daytime_panel.add(this.checkBox_daytime_morning, gbc_checkBox_daytime_morning);
 		
-		filtermenu_specific_dow_daytime_label = new JLabel("Daytime:");
+		this.filtermenu_specific_dow_daytime_label = new JLabel("Daytime:");
 		GridBagConstraints gbc_filtermenu_specific_dow_daytime_label = new GridBagConstraints();
 		gbc_filtermenu_specific_dow_daytime_label.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_specific_dow_daytime_label.gridwidth = 2;
 		gbc_filtermenu_specific_dow_daytime_label.gridx = 0;
 		gbc_filtermenu_specific_dow_daytime_label.gridy = 0;
-		filtermenu_daytime_panel.add(filtermenu_specific_dow_daytime_label, gbc_filtermenu_specific_dow_daytime_label);
+		this.filtermenu_daytime_panel.add(this.filtermenu_specific_dow_daytime_label, gbc_filtermenu_specific_dow_daytime_label);
 		
 		JPanel filtermenu_buttons_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_buttons_panel = new GridBagConstraints();
@@ -510,35 +508,35 @@ public class Mainframe extends JFrame {
 		filtermenu_buttons_panel.add(filtermenu_buttons_applyButton);
 		filtermenu_buttons_panel.add(filtermenu_buttons_defaultButton);
 		
-		((JLabel)filtermenu_comboBox_category.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
-		filtermenu_comboBox_category.addItem("All categories");
-		filtermenu_comboBox_category.addItem("SFHA Requests");
-		filtermenu_comboBox_category.addItem("Abandoned Vehicle");
-		filtermenu_comboBox_category.addItem("Street and Sidewalk Cleaning");
-		filtermenu_comboBox_category.addItem("Litter Receptacles");
-		filtermenu_comboBox_category.addItem("Sign Repair");
-		filtermenu_comboBox_category.addItem("Residential Building Request");
-		filtermenu_comboBox_category.addItem("Graffiti Public Property");
-		filtermenu_comboBox_category.addItem("Streetlights");
-		filtermenu_comboBox_category.addItem("Damaged Property");
-		filtermenu_comboBox_category.addItem("Street Defects");
-		filtermenu_comboBox_category.addItem("Blocked Street or SideWalk");
-		filtermenu_comboBox_category.addItem("Tree Maintenance");
-		filtermenu_comboBox_category.addItem("MUNI Feedback");
-		filtermenu_comboBox_category.addItem("Illegal Postings");
-		filtermenu_comboBox_category.addItem("Color Curb");
-		filtermenu_comboBox_category.addItem("General Requests");
-		filtermenu_comboBox_category.addItem("Sewer Issues");
-		filtermenu_comboBox_category.addItem("Rec and Park Requests");
-		filtermenu_comboBox_category.addItem("Temporary Sign Request");
-		filtermenu_comboBox_category.addItem("Graffiti Private Property");
-		filtermenu_comboBox_category.addItem("311 External Request");
-		filtermenu_comboBox_category.addItem("Sidewalk or Curb");
-		filtermenu_comboBox_category.addItem("Catch Basin Maintenance");
-		filtermenu_comboBox_category.addItem("Interdepartmental Request");
-		filtermenu_comboBox_category.addItem("DPW Volunteer Programs");
-		filtermenu_comboBox_category.addItem("Unpermitted Cab Complaint");
-		filtermenu_comboBox_category.addItem("Construction Zone Permits");
+		((JLabel)this.filtermenu_comboBox_category.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
+		this.filtermenu_comboBox_category.addItem("All categories");
+		this.filtermenu_comboBox_category.addItem("SFHA Requests");
+		this.filtermenu_comboBox_category.addItem("Abandoned Vehicle");
+		this.filtermenu_comboBox_category.addItem("Street and Sidewalk Cleaning");
+		this.filtermenu_comboBox_category.addItem("Litter Receptacles");
+		this.filtermenu_comboBox_category.addItem("Sign Repair");
+		this.filtermenu_comboBox_category.addItem("Residential Building Request");
+		this.filtermenu_comboBox_category.addItem("Graffiti Public Property");
+		this.filtermenu_comboBox_category.addItem("Streetlights");
+		this.filtermenu_comboBox_category.addItem("Damaged Property");
+		this.filtermenu_comboBox_category.addItem("Street Defects");
+		this.filtermenu_comboBox_category.addItem("Blocked Street or SideWalk");
+		this.filtermenu_comboBox_category.addItem("Tree Maintenance");
+		this.filtermenu_comboBox_category.addItem("MUNI Feedback");
+		this.filtermenu_comboBox_category.addItem("Illegal Postings");
+		this.filtermenu_comboBox_category.addItem("Color Curb");
+		this.filtermenu_comboBox_category.addItem("General Requests");
+		this.filtermenu_comboBox_category.addItem("Sewer Issues");
+		this.filtermenu_comboBox_category.addItem("Rec and Park Requests");
+		this.filtermenu_comboBox_category.addItem("Temporary Sign Request");
+		this.filtermenu_comboBox_category.addItem("Graffiti Private Property");
+		this.filtermenu_comboBox_category.addItem("311 External Request");
+		this.filtermenu_comboBox_category.addItem("Sidewalk or Curb");
+		this.filtermenu_comboBox_category.addItem("Catch Basin Maintenance");
+		this.filtermenu_comboBox_category.addItem("Interdepartmental Request");
+		this.filtermenu_comboBox_category.addItem("DPW Volunteer Programs");
+		this.filtermenu_comboBox_category.addItem("Unpermitted Cab Complaint");
+		this.filtermenu_comboBox_category.addItem("Construction Zone Permits");
 		GridBagConstraints gbc_filtermenu_comboBox_category = new GridBagConstraints();
 		gbc_filtermenu_comboBox_category.weighty = 0.1;
 		gbc_filtermenu_comboBox_category.insets = new Insets(0, 3, 5, 3);
@@ -546,7 +544,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_comboBox_category.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_comboBox_category.gridx = 0;
 		gbc_filtermenu_comboBox_category.gridy = 0;
-		filtermenu_panel.add(filtermenu_comboBox_category, gbc_filtermenu_comboBox_category);
+		filtermenu_panel.add(this.filtermenu_comboBox_category, gbc_filtermenu_comboBox_category);
 		
 		JPanel filtermenu_dates_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_dates_panel = new GridBagConstraints();
@@ -565,94 +563,89 @@ public class Mainframe extends JFrame {
 		gbl_filtermenu_dates_panel.rowWeights = new double[]{0.0, 0.0};
 		filtermenu_dates_panel.setLayout(gbl_filtermenu_dates_panel);
 				
-				JLabel filtermenu_dates_label = new JLabel("Choose time span:");
-				GridBagConstraints gbc_filtermenu_dates_label = new GridBagConstraints();
-				gbc_filtermenu_dates_label.gridwidth = 2;
-				gbc_filtermenu_dates_label.insets = new Insets(0, 0, 5, 5);
-				gbc_filtermenu_dates_label.gridx = 0;
-				gbc_filtermenu_dates_label.gridy = 0;
-				filtermenu_dates_panel.add(filtermenu_dates_label, gbc_filtermenu_dates_label);
+		JLabel filtermenu_dates_label = new JLabel("Choose time span:");
+		GridBagConstraints gbc_filtermenu_dates_label = new GridBagConstraints();
+		gbc_filtermenu_dates_label.gridwidth = 2;
+		gbc_filtermenu_dates_label.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_dates_label.gridx = 0;
+		gbc_filtermenu_dates_label.gridy = 0;
+		filtermenu_dates_panel.add(filtermenu_dates_label, gbc_filtermenu_dates_label);
+
+		this.filtermenu_dates_leftCalendarButton.setText("From");
+		GridBagConstraints gbc_filtermenu_dates_leftCalendarButton = new GridBagConstraints();
+		gbc_filtermenu_dates_leftCalendarButton.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_dates_leftCalendarButton.insets = new Insets(0, 3, 3, 5);
+		gbc_filtermenu_dates_leftCalendarButton.gridx = 0;
+		gbc_filtermenu_dates_leftCalendarButton.gridy = 1;
+		filtermenu_dates_panel.add(this.filtermenu_dates_leftCalendarButton, gbc_filtermenu_dates_leftCalendarButton);
+
+		this.filtermenu_dates_rightCalendarButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		this.filtermenu_dates_rightCalendarButton.setText("To");
+		GridBagConstraints gbc_filtermenu_dates_rightCalendarButton = new GridBagConstraints();
+		gbc_filtermenu_dates_rightCalendarButton.insets = new Insets(0, 3, 3, 3);
+		gbc_filtermenu_dates_rightCalendarButton.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_dates_rightCalendarButton.gridx = 1;
+		gbc_filtermenu_dates_rightCalendarButton.gridy = 1;
+		filtermenu_dates_panel.add(this.filtermenu_dates_rightCalendarButton, gbc_filtermenu_dates_rightCalendarButton);
 		
-				this.filtermenu_dates_leftCalendarButton.setText("From");
-				GridBagConstraints gbc_filtermenu_dates_leftCalendarButton = new GridBagConstraints();
-				gbc_filtermenu_dates_leftCalendarButton.fill = GridBagConstraints.BOTH;
-				gbc_filtermenu_dates_leftCalendarButton.insets = new Insets(0, 3, 3, 5);
-				gbc_filtermenu_dates_leftCalendarButton.gridx = 0;
-				gbc_filtermenu_dates_leftCalendarButton.gridy = 1;
-				filtermenu_dates_panel.add(this.filtermenu_dates_leftCalendarButton, gbc_filtermenu_dates_leftCalendarButton);
-				
-				this.filtermenu_dates_rightCalendarButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
-				this.filtermenu_dates_rightCalendarButton.setText("To");
-				GridBagConstraints gbc_filtermenu_dates_rightCalendarButton = new GridBagConstraints();
-				gbc_filtermenu_dates_rightCalendarButton.insets = new Insets(0, 3, 3, 3);
-				gbc_filtermenu_dates_rightCalendarButton.fill = GridBagConstraints.BOTH;
-				gbc_filtermenu_dates_rightCalendarButton.gridx = 1;
-				gbc_filtermenu_dates_rightCalendarButton.gridy = 1;
-				filtermenu_dates_panel.add(this.filtermenu_dates_rightCalendarButton, gbc_filtermenu_dates_rightCalendarButton);
-				
-				
-				this.reportList_panel = new JPanel();
-				GridBagConstraints gbc_reportList_panel = new GridBagConstraints();
-				gbc_reportList_panel.anchor = GridBagConstraints.WEST;
-				gbc_reportList_panel.fill = GridBagConstraints.BOTH;
-				gbc_reportList_panel.weightx = 0.1;
-				gbc_reportList_panel.gridx = 0;
-				gbc_reportList_panel.gridy = 0;
-				getContentPane().add(reportList_panel, gbc_reportList_panel);
-				
-				this.reportListModel = new DefaultListModel<CaseReport>();
-				GridBagLayout gbl_reportList_panel = new GridBagLayout();
-				gbl_reportList_panel.columnWidths = new int[] {0};
-				gbl_reportList_panel.rowHeights = new int[] {0, 0};
-				gbl_reportList_panel.columnWeights = new double[]{0.0};
-				gbl_reportList_panel.rowWeights = new double[]{0.0, 0.0};
-				reportList_panel.setLayout(gbl_reportList_panel);
-				this.reportList = new MyJList<CaseReport>(this.reportListModel);
-				this.reportList.setToolTipText("");
-				this.reportList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-				this.reportList.setLayoutOrientation(JList.VERTICAL);
-				this.reportList.setVisibleRowCount(-1);
-				((DefaultListCellRenderer)this.reportList.getCellRenderer()).setHorizontalTextPosition(SwingConstants.LEFT);
-				JScrollPane reportList_scrollPane = new JScrollPane(reportList);
-				GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
-				gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
-				gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;
-				gbc_reportList_scrollPane.weighty = 0.9;
-				gbc_reportList_scrollPane.weightx = 1.0;
-				gbc_reportList_scrollPane.gridx = 0;
-				gbc_reportList_scrollPane.gridy = 0;
-				this.reportList_panel.add(reportList_scrollPane, gbc_reportList_scrollPane);
-				
-				this.reportList.addListSelectionListener(new ListSelectionListener() {
-					
-					@Override
-					public void valueChanged(ListSelectionEvent e) {
-						if(!e.getValueIsAdjusting()){
-							Mainframe.this.controller.onNewCaseSelection();
-						}
-					}
-				});
-				
-				this.reportList_details_button = new JButton("Details");
-				reportList_details_button.setAlignmentX(Component.CENTER_ALIGNMENT);
-				GridBagConstraints gbc_reportList_details_button = new GridBagConstraints();
-				gbc_reportList_details_button.fill = GridBagConstraints.BOTH;
-				gbc_reportList_details_button.weighty = 0.1;
-				gbc_reportList_details_button.weightx = 1.0;
-				gbc_reportList_details_button.gridx = 0;
-				gbc_reportList_details_button.gridy = 1;
-				reportList_panel.add(reportList_details_button, gbc_reportList_details_button);
-				
-				
-				
-				// =================== EVENTHANDLER: =================== 
-				this.reportList_details_button.addActionListener(new ActionListener() {
-					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						Mainframe.this.controller.detailsButtonClicked();
-					}
-				});
+		this.reportList_panel = new JPanel();
+		GridBagConstraints gbc_reportList_panel = new GridBagConstraints();
+		gbc_reportList_panel.anchor = GridBagConstraints.WEST;
+		gbc_reportList_panel.fill = GridBagConstraints.BOTH;
+		gbc_reportList_panel.weightx = 0.1;
+		gbc_reportList_panel.gridx = 0;
+		gbc_reportList_panel.gridy = 0;
+		getContentPane().add(reportList_panel, gbc_reportList_panel);
+		
+		this.reportListModel = new DefaultListModel<CaseReport>();
+		GridBagLayout gbl_reportList_panel = new GridBagLayout();
+		gbl_reportList_panel.columnWidths = new int[] {0};
+		gbl_reportList_panel.rowHeights = new int[] {0, 0};
+		gbl_reportList_panel.columnWeights = new double[]{0.0};
+		gbl_reportList_panel.rowWeights = new double[]{0.0, 0.0};
+		reportList_panel.setLayout(gbl_reportList_panel);
+		this.reportList = new MyJList<CaseReport>(this.reportListModel);
+		this.reportList.setToolTipText("");
+		this.reportList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.reportList.setLayoutOrientation(JList.VERTICAL);
+		this.reportList.setVisibleRowCount(-1);
+		((DefaultListCellRenderer)this.reportList.getCellRenderer()).setHorizontalTextPosition(SwingConstants.LEFT);
+		JScrollPane reportList_scrollPane = new JScrollPane(reportList);
+		GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
+		gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
+		gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_reportList_scrollPane.weighty = 0.9;
+		gbc_reportList_scrollPane.weightx = 1.0;
+		gbc_reportList_scrollPane.gridx = 0;
+		gbc_reportList_scrollPane.gridy = 0;
+		this.reportList_panel.add(reportList_scrollPane, gbc_reportList_scrollPane);
+		this.reportList_details_button = new JButton("Details");
+		reportList_details_button.setAlignmentX(Component.CENTER_ALIGNMENT);
+		GridBagConstraints gbc_reportList_details_button = new GridBagConstraints();
+		gbc_reportList_details_button.fill = GridBagConstraints.BOTH;
+		gbc_reportList_details_button.weighty = 0.1;
+		gbc_reportList_details_button.weightx = 1.0;
+		gbc_reportList_details_button.gridx = 0;
+		gbc_reportList_details_button.gridy = 1;
+		reportList_panel.add(reportList_details_button, gbc_reportList_details_button);
+		
+		// =================== EVENTHANDLER: =================== 
+		this.reportList.addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(!e.getValueIsAdjusting()){
+					Mainframe.this.controller.onNewCaseSelection();
+				}
+			}
+		});
+		
+		this.reportList_details_button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Mainframe.this.controller.detailsButtonClicked();
+			}
+		});
 		
 		JMenuBar menuBar = new JMenuBar();
 		GridBagConstraints gbc_menuBar = new GridBagConstraints();

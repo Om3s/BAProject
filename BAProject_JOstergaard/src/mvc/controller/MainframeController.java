@@ -499,12 +499,13 @@ public class MainframeController {
 		this.mainframe.repaint();
 	}
 	
-	private void createDetailFrame(String result) {
+	private void createDetailFrame(CaseReport cR) {
 		if(this.detailFrame != null){
 			this.detailFrame.setVisible(false);
-			this.detailFrame.dispose();
 		}
-		this.detailFrame = new ResultDetailFrame(result);
+		this.detailFrame = new ResultDetailFrame(cR);
+		this.mainframe.setVisible(false);
+		this.mainframe.setVisible(true);
 	}
 
 	/**
@@ -529,19 +530,11 @@ public class MainframeController {
 	 */
 	public void detailsButtonClicked() {
 		CaseReport cR = this.mainframe.reportList.getSelectedValue();
-		String result;
+		
 		if(cR == null){
 		} else {
 			this.mapController.setSelectedMarker(cR.getPoint());
-			result = cR.toString2();
-			result = result.substring(11, result.length()-1);
-			Pattern pattern = Pattern.compile(Pattern.quote("%$sepa&%$"));
-			String[] tokens = pattern.split(result);
-			result = "Selected Case:\n";
-			for(String s : tokens){
-				result += s+"\n";
-			}
-			this.createDetailFrame(result);
+			this.createDetailFrame(cR);
 		}
 		this.mainframe.repaint();
 	}

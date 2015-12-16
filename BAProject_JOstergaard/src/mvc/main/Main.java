@@ -1,6 +1,8 @@
 package mvc.main;
 
 import java.awt.Color;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseEvent;
 
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
@@ -17,7 +19,7 @@ import mvc.view.Mainframe;
  */
 public class Main {
 	public static Color[] weekDayColors,weekDayColorsWithAlpha;
-	public static int colorAlpha = 50;
+	public static int colorAlpha = 50, screenWidth, screenHeight;
 	public static Color
 		mondayColor = new Color(213,207,11), //YELLOW
 		tuesdayColor = new Color(0,200,240), //CYAN
@@ -36,6 +38,7 @@ public class Main {
 	
 	public static void main(String[] args) throws Exception {
 		defineColors();
+		determineScreenSize();
 		CrimeCaseDatabase dataBase;
 		boolean testing = false;
 		boolean reIndex = false;
@@ -68,6 +71,12 @@ public class Main {
 //		System.exit(0); //testing
 	}
 	
+	private static void determineScreenSize() {
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		Main.screenWidth = gd.getDisplayMode().getWidth(); 
+		Main.screenHeight = gd.getDisplayMode().getHeight();
+	}
+
 	/**
 	 * This method sets up the colorarray with the static defined
 	 * colors for each day. The index of the array is the same index
