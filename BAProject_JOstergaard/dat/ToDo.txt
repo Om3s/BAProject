@@ -9,7 +9,7 @@ TODO:
 	- 
 - details sektion entfernen
 - detailfenster mit button öffnen
-- GUI elemente entfernen (details, rangelabel, currentFromDate, currentToDate, BISLIDER!)
+- GUI elemente entfernen (rangelabel, currentFromDate, currentToDate, BISLIDER!)?
 - Logic to DayTimes
 - barchart ändern (Wochentage/Tageszeiten etc.)
 
