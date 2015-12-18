@@ -142,15 +142,24 @@ public class MainframeController {
 		long diffInMillis = toDate.getTime() - fromDate.getTime();
 		int timeUnitDiffs;
 		if(this.mainframe.filtermenu_interval_radioButtonHours.isSelected()){
-			timeUnitDiffs = (int)TimeUnit.HOURS.convert(diffInMillis, TimeUnit.MILLISECONDS) + 1;
+			timeUnitDiffs = (int)TimeUnit.HOURS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+			if(timeUnitDiffs == 0){
+				timeUnitDiffs = 1;
+			}
 			this.timelineDateSteps = 0;
 			this.intervalName = "Hours";
 		} else if (this.mainframe.filtermenu_interval_radioButtonDays.isSelected()) {
-			timeUnitDiffs = (int)TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS) + 1;
+			timeUnitDiffs = (int)TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+			if(timeUnitDiffs == 0){
+				timeUnitDiffs = 1;
+			}
 			this.timelineDateSteps = 1;
 			this.intervalName = "Days";
 		} else if (this.mainframe.filtermenu_interval_radioButtonWeeks.isSelected()) {
-			timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 7) + 1;
+			timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 7);
+			if(timeUnitDiffs == 0){
+				timeUnitDiffs = 1;
+			}
 			this.timelineDateSteps = 2;
 			this.intervalName = "Weeks";
 		} else {
@@ -160,7 +169,10 @@ public class MainframeController {
 			endCalendar.setTime(toDate);
 			timeUnitDiffs = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
 			System.out.println(timeUnitDiffs);
-			timeUnitDiffs = (timeUnitDiffs * 12) + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH) + 1;
+			timeUnitDiffs = (timeUnitDiffs * 12) + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+			if(timeUnitDiffs == 0){
+				timeUnitDiffs = 1;
+			}
 			System.out.println(timeUnitDiffs);
 			this.timelineDateSteps = 3;
 			this.intervalName = "Months";
@@ -504,8 +516,8 @@ public class MainframeController {
 			this.detailFrame.setVisible(false);
 		}
 		this.detailFrame = new ResultDetailFrame(cR);
-		this.mainframe.setVisible(false);
-		this.mainframe.setVisible(true);
+//		this.mainframe.setVisible(false);
+//		this.mainframe.setVisible(true);
 	}
 
 	/**

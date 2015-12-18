@@ -65,7 +65,11 @@ public class MapController extends DefaultMapController {
 		for(CaseReport cR : reports){
 			cal.setTime(cR.getDateOpened());
 			dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-			cR.getPoint().setColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
+			if(Main.colorAlpha == 255){
+				cR.getPoint().setColor(Color.BLACK);
+			} else {
+				cR.getPoint().setColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
+			}
 			cR.getPoint().setBackColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
 			this.currentPoints.add(cR.getPoint());
 		}
