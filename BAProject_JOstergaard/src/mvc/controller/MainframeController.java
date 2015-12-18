@@ -443,35 +443,7 @@ public class MainframeController {
 	 * based on the selected filter values.
 	 */
 	public void refreshChart(){
-		this.mainframe.gui_chart_panel.removeAll();
-		this.mainframe.getContentPane().revalidate();
-		//Create Chart:
-		this.mainframe.barChart = ChartFactory.createBarChart(null, this.intervalName, null, this.createDataset(), PlotOrientation.VERTICAL, false, true, false);
-		//Choose Renderer
-		final CategoryPlot plot;
-		if(this.mainframe.barChart != null){
-			plot = this.mainframe.barChart.getCategoryPlot();
-			if(this.timelineDateSteps == 0) { //hours
-				
-			} else if(this.timelineDateSteps == 1){ //days
-				CategoryItemRenderer customBarRenderer;
-				customBarRenderer = new CustomBarRenderer(this);
-				plot.setRenderer(customBarRenderer);
-			} else if(this.timelineDateSteps == 2){ //weeks
-				
-			} else { //months
-				
-			}
-		}
-		this.mainframe.innerChartPanel = new ChartPanel(this.mainframe.barChart);
-		this.mainframe.gui_chart_panel.setLayout(new BorderLayout());
-		this.mainframe.gui_chart_panel.add(this.mainframe.innerChartPanel);
-		this.mainframe.gui_chart_panel.repaint();
-		//Remove Mouselisteners:
-		MouseListener[] mListeners = this.mainframe.innerChartPanel.getMouseListeners();
-		for(MouseListener mL : mListeners){
-			this.mainframe.innerChartPanel.removeMouseListener(mL);
-		}
+		this.mainframe.matrix_chart_panel.newData(new int[7][6]); // DATA MISSING
 	}
 	
 	/**

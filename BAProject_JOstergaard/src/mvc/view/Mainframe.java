@@ -33,8 +33,6 @@ import mvc.model.CaseReport;
 import mvc.model.MyJList;
 
 import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import com.visutools.nav.bislider.BiSlider;
@@ -91,9 +89,6 @@ public class Mainframe extends JFrame {
 	public final JButton filtermenu_buttons_applyButton;
 	public final JButton filtermenu_buttons_defaultButton;
 	public final JComboBox<String> filtermenu_comboBox_category;
-	public ChartPanel innerChartPanel;
-	public JFreeChart barChart;
-	public final JPanel gui_chart_panel;
 	private JPanel reportList_panel;
 	public MyJList<CaseReport> reportList;
 	public DefaultListModel<CaseReport> reportListModel;
@@ -110,6 +105,7 @@ public class Mainframe extends JFrame {
 	public JCheckBox checkBox_daytime_latenight;
 	private JPanel filtermenu_daytime_panel;
 	private JButton reportList_details_button;
+	public MatrixVisualization matrix_chart_panel;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -144,7 +140,7 @@ public class Mainframe extends JFrame {
 		//Combobox Categories:
 		this.filtermenu_comboBox_category = new JComboBox();
 		//ChartPanel
-		this.gui_chart_panel = new JPanel();
+		this.matrix_chart_panel = new MatrixVisualization(new int[7][6]);
 		
 		this.init();
 	}
@@ -174,9 +170,9 @@ public class Mainframe extends JFrame {
 		
 		// =================== GUI LAYOUT: =================== 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {100, 200, 200, 100};
+		gridBagLayout.columnWidths = new int[] {0, 0, 0};
 		gridBagLayout.rowHeights = new int[] {0};
-		gridBagLayout.columnWeights = new double[]{1.0, 0.2, 0.0, 0.0};
+		gridBagLayout.columnWeights = new double[]{0,0,0};
 		gridBagLayout.rowWeights = new double[]{1.0};
 		getContentPane().setLayout(gridBagLayout);
 		
@@ -268,15 +264,14 @@ public class Mainframe extends JFrame {
 		gbc_timeLine_range_label.gridx = 1;
 		gbc_timeLine_range_label.gridy = 0;
 		timeline_panel.add(this.timeLine_range_label, gbc_timeLine_range_label);
-//		this.rangeSlider = new JRangeSlider(0, 100, 0, 50, 1);
-//		panel.add(this.rangeSlider, BorderLayout.PAGE_END);
-		
-		GridBagConstraints gbc_chart_panel = new GridBagConstraints();
-		gbc_chart_panel.weighty = 0.1;
-		gbc_chart_panel.fill = GridBagConstraints.BOTH;
-		gbc_chart_panel.gridx = 0;
-		gbc_chart_panel.gridy = 2;
-		analysis_panel.add(this.gui_chart_panel, gbc_chart_panel);
+
+		GridBagConstraints gbc_matrix_chart_panel = new GridBagConstraints();
+		gbc_matrix_chart_panel.gridwidth = 2;
+		gbc_matrix_chart_panel.weightx = 1.0;
+		gbc_matrix_chart_panel.fill = GridBagConstraints.BOTH;
+		gbc_matrix_chart_panel.gridx = 0;
+		gbc_matrix_chart_panel.gridy = 2;
+		analysis_panel.add(this.matrix_chart_panel, gbc_matrix_chart_panel);
 						
 		JPanel filtermenu_panel = new JPanel();
 		filtermenu_panel.setBackground(new Color(230,230,230));
