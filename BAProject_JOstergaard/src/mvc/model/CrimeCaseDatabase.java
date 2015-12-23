@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -175,6 +176,7 @@ public class CrimeCaseDatabase {
 							doc.add(new StringField("mediaUrl", nextLine[15], Field.Store.YES));
 						}
 						doc.add(new IntField("dayOfWeek", dayOfWeek, Field.Store.YES));
+						doc.add(new IntField("dayTimeValue", this.determineDayTimeInMillis(dateOpenedAsLong), Field.Store.YES));
 						indexWriter.addDocument(doc);
 					} catch (NumberFormatException e){
 						emptyEntries++;
@@ -193,6 +195,23 @@ public class CrimeCaseDatabase {
 		System.out.println("Indexing done ("+(tempTime/1000f)+" sec)");
 	}
 	
+	private int determineDayTimeInMillis(long dateOpen) {
+		GregorianCalendar dateOpened = new GregorianCalendar();
+		dateOpened.setTimeInMillis(dateOpen);
+		long timeDifference = dateOpened.getTimeInMillis() - (new GregorianCalendar(dateOpened.get(Calendar.YEAR),dateOpened.get(Calendar.MONTH),dateOpened.get(Calendar.DAY_OF_MONTH))).getTimeInMillis();
+		int dayTimeInMillis;
+		if(timeDifference <= 21600000){
+			dayTimeInMillis = 0; // Midnight (0:00 - 6:00)
+		} else if(timeDifference <= 43200000){
+			dayTimeInMillis = 1; // Morning (6:00 - 12:00)
+		} else if(timeDifference <= 64800000){
+			dayTimeInMillis = 2; // Aternoon (12:00 - 18:00)
+		} else {
+			dayTimeInMillis = 3; // Evening (18:00 - 0:00)
+		}
+		return dayTimeInMillis;
+	}
+
 	/**
 	 * deletes all entries in the currentData list
 	 */
@@ -210,7 +229,7 @@ public class CrimeCaseDatabase {
 	 * @param weekdays specifies which weekdays we want to look at (Sunday[1],Monday[2],...,Saturday[7])
 	 * @throws IOException 
 	 */
-	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, int[] weekdays, String category) throws IOException {
+	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, int[] weekdays, String category, int[] dayTimeValueList) throws IOException {
 		this.clearCurrentData();
 		for(int day : weekdays){
 			BooleanQuery boolQuery = new BooleanQuery();
@@ -221,6 +240,10 @@ public class CrimeCaseDatabase {
 			if(!category.equals("All categories")){
 				Query query3 = new TermQuery(new Term("category", category));
 				boolQuery.add(query3, BooleanClause.Occur.MUST);
+			}
+			for(int dayTimeValue : dayTimeValueList){
+				Query query4 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
+				boolQuery.add(query4, BooleanClause.Occur.MUST);
 			}
 			TopDocs docs = this.indexSearcher.search(boolQuery, 1500);
 			System.out.println(boolQuery);
@@ -254,14 +277,14 @@ public class CrimeCaseDatabase {
 	 * 
 	 * @param fromDate begin of the timespan
 	 * @param toDate end of the timespan
-	 * @param weekdays array of all selected weekdays
+	 * @param checkedWeekdays array of all selected weekdays
 	 * @param category String with the selected category
 	 * @return the amount of all CaseReports filtered by the parameters
 	 * @throws IOException
 	 */
-	public int countCaseReportsFromTo(Date fromDate, Date toDate, int[] weekdays, String category) throws IOException{
+	public int countCaseReportsFromTo(Date fromDate, Date toDate, int[] checkedWeekdays, String category) throws IOException{
 		int totalHits = 0;
-		for(int day : weekdays){
+		for(int day : checkedWeekdays){
 			TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
 			BooleanQuery boolQuery = new BooleanQuery();
 			Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
@@ -275,6 +298,25 @@ public class CrimeCaseDatabase {
 			this.indexSearcher.search(boolQuery, hitCountCollector);
 			totalHits += hitCountCollector.getTotalHits();
 		}
+		return totalHits;
+	}
+	
+	public int countCaseReportsFromToWithDayTimes(Date fromDate, Date toDate, int[] checkedWeekdays, String category, int dayTimeValue, int actualWeekday) throws IOException{
+		int totalHits = 0;
+		TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
+		BooleanQuery boolQuery = new BooleanQuery();
+		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
+		boolQuery.add(query1, BooleanClause.Occur.MUST);
+		if(!category.equals("All categories")){
+			Query query2 = new TermQuery(new Term("category", category));
+			boolQuery.add(query2, BooleanClause.Occur.MUST);
+		}
+		Query query3 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
+		boolQuery.add(query3, BooleanClause.Occur.MUST);
+		Query query4 = NumericRangeQuery.newIntRange("dayOfWeek", actualWeekday+1, actualWeekday+1, true, true);
+		boolQuery.add(query4, BooleanClause.Occur.MUST);
+		this.indexSearcher.search(boolQuery, hitCountCollector);
+		totalHits += hitCountCollector.getTotalHits();
 		return totalHits;
 	}
 }

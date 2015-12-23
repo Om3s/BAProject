@@ -98,11 +98,9 @@ public class Mainframe extends JFrame {
 	private JLabel timeLine_range_label;
 	private JLabel filtermenu_specific_dow_daytime_label;
 	public JCheckBox checkBox_daytime_morning;
-	public JCheckBox checkBox_daytime_noon;
 	public JCheckBox checkBox_daytime_afternoon;
 	public JCheckBox checkBox_daytime_evening;
 	public JCheckBox checkBox_daytime_midnight;
-	public JCheckBox checkBox_daytime_latenight;
 	private JPanel filtermenu_daytime_panel;
 	private JButton reportList_details_button;
 	public MatrixVisualization matrix_chart_panel;
@@ -140,7 +138,7 @@ public class Mainframe extends JFrame {
 		//Combobox Categories:
 		this.filtermenu_comboBox_category = new JComboBox();
 		//ChartPanel
-		this.matrix_chart_panel = new MatrixVisualization(new int[7][6]);
+		this.matrix_chart_panel = new MatrixVisualization(new int[7][4]);
 		
 		this.init();
 	}
@@ -166,19 +164,17 @@ public class Mainframe extends JFrame {
 		this.setLocation((int)((Main.screenWidth / 2) - (frameWidth / 2)), (int)((Main.screenHeight / 2) - (frameHeight / 2 )));
 		this.setMinimumSize(new Dimension(800, 450));
 		
-		
-		
 		// =================== GUI LAYOUT: =================== 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {0, 0, 0};
 		gridBagLayout.rowHeights = new int[] {0};
-		gridBagLayout.columnWeights = new double[]{0,0,0};
+		gridBagLayout.columnWeights = new double[]{0.1,1,0.1};
 		gridBagLayout.rowWeights = new double[]{1.0};
 		getContentPane().setLayout(gridBagLayout);
 		
 		JPanel analysis_panel = new JPanel();
 		GridBagConstraints gbc_analysis_panel = new GridBagConstraints();
-		gbc_analysis_panel.gridwidth = 2;
+		gbc_analysis_panel.gridwidth = 1;
 		gbc_analysis_panel.weightx = 1.0;
 		gbc_analysis_panel.fill = GridBagConstraints.BOTH;
 		gbc_analysis_panel.gridx = 1;
@@ -188,15 +184,12 @@ public class Mainframe extends JFrame {
 		gbl_analysis_panel.columnWidths = new int[]{0};
 		gbl_analysis_panel.rowHeights = new int[] {0, 0, 0};
 		gbl_analysis_panel.columnWeights = new double[]{1.0};
-		gbl_analysis_panel.rowWeights = new double[]{0.6, 0.35, 1.0};
+		gbl_analysis_panel.rowWeights = new double[]{0.0, 0.0};
 		analysis_panel.setLayout(gbl_analysis_panel);
 		
 		JPanel geomap_panel = new JPanel();
-		geomap_panel.setBackground(Color.GREEN);
-		geomap_panel.setForeground(Color.BLACK);
-		geomap_panel.setToolTipText("GeoMap for Hotspot visualization");
 		GridBagConstraints gbc_geomap_panel = new GridBagConstraints();
-		gbc_geomap_panel.weighty = 0.85;
+		gbc_geomap_panel.weighty = 1.0;
 		gbc_geomap_panel.insets = new Insets(0, 0, 0, 0);
 		gbc_geomap_panel.fill = GridBagConstraints.BOTH;
 		gbc_geomap_panel.gridx = 0;
@@ -206,71 +199,71 @@ public class Mainframe extends JFrame {
 		GridLayout gl_geomap_panel = new GridLayout();
 		geomap_panel.setLayout(gl_geomap_panel);
 		
-		JPanel timeline_panel = new JPanel();
-		GridBagConstraints gbc_timeline_panel = new GridBagConstraints();
-		gbc_timeline_panel.fill = GridBagConstraints.BOTH;
-		gbc_timeline_panel.gridx = 0;
-		gbc_timeline_panel.gridy = 1;
-		analysis_panel.add(timeline_panel, gbc_timeline_panel);
-		GridBagLayout gbl_timeline_panel = new GridBagLayout();
-		gbl_timeline_panel.columnWidths = new int[] {30, 30, 30};
-		gbl_timeline_panel.rowHeights = new int[] {10, 30};
-		gbl_timeline_panel.columnWeights = new double[]{0.0, 0.0, 0.0};
-		gbl_timeline_panel.rowWeights = new double[]{0.0, 0.0};
-		timeline_panel.setLayout(gbl_timeline_panel);
+//		JPanel timeline_panel = new JPanel();
+//		GridBagConstraints gbc_timeline_panel = new GridBagConstraints();
+//		gbc_timeline_panel.fill = GridBagConstraints.BOTH;
+//		gbc_timeline_panel.gridx = 0;
+//		gbc_timeline_panel.gridy = 1;
+//		analysis_panel.add(timeline_panel, gbc_timeline_panel);
+//		GridBagLayout gbl_timeline_panel = new GridBagLayout();
+//		gbl_timeline_panel.columnWidths = new int[] {30, 30, 30};
+//		gbl_timeline_panel.rowHeights = new int[] {10, 30};
+//		gbl_timeline_panel.columnWeights = new double[]{0.0, 0.0, 0.0};
+//		gbl_timeline_panel.rowWeights = new double[]{0.0, 0.0};
+//		timeline_panel.setLayout(gbl_timeline_panel);
 		
-		this.timeline_panel_toDate_label = new JLabel("toDate");
-		this.timeline_panel_toDate_label.setVerticalAlignment(SwingConstants.TOP);
-		GridBagConstraints gbc_timeline_panel_toDate_label = new GridBagConstraints();
-		gbc_timeline_panel_toDate_label.weighty = 0.01;
-		gbc_timeline_panel_toDate_label.weightx = 1.0;
-		gbc_timeline_panel_toDate_label.anchor = GridBagConstraints.NORTHEAST;
-		gbc_timeline_panel_toDate_label.insets = new Insets(0, 0, 5, 0);
-		gbc_timeline_panel_toDate_label.gridx = 2;
-		gbc_timeline_panel_toDate_label.gridy = 0;
-		timeline_panel.add(this.timeline_panel_toDate_label, gbc_timeline_panel_toDate_label);
+//		this.timeline_panel_toDate_label = new JLabel("toDate");
+//		this.timeline_panel_toDate_label.setVerticalAlignment(SwingConstants.TOP);
+//		GridBagConstraints gbc_timeline_panel_toDate_label = new GridBagConstraints();
+//		gbc_timeline_panel_toDate_label.weighty = 0.01;
+//		gbc_timeline_panel_toDate_label.weightx = 1.0;
+//		gbc_timeline_panel_toDate_label.anchor = GridBagConstraints.NORTHEAST;
+//		gbc_timeline_panel_toDate_label.insets = new Insets(0, 0, 5, 0);
+//		gbc_timeline_panel_toDate_label.gridx = 2;
+//		gbc_timeline_panel_toDate_label.gridy = 0;
+//		timeline_panel.add(this.timeline_panel_toDate_label, gbc_timeline_panel_toDate_label);
 		
-		this.timeLineBiSlider = new BiSlider();
-		this.timeLineBiSlider.setMinimumSize(new Dimension(350, 50));
-		this.timeLineBiSlider.setMinimumColor(Color.GRAY);
-		this.timeLineBiSlider.setMaximumColor(Color.LIGHT_GRAY);
-		GridBagConstraints gbc_timeLineBiSlider = new GridBagConstraints();
-		gbc_timeLineBiSlider.weighty = 1.0;
-		gbc_timeLineBiSlider.insets = new Insets(0, 13, 5, 0);
-		gbc_timeLineBiSlider.weightx = 1.0;
-		gbc_timeLineBiSlider.gridwidth = 3;
-		gbc_timeLineBiSlider.fill = GridBagConstraints.BOTH;
-		gbc_timeLineBiSlider.gridx = 0;
-		gbc_timeLineBiSlider.gridy = 1;
-		timeline_panel.add(this.timeLineBiSlider, gbc_timeLineBiSlider);
+//		this.timeLineBiSlider = new BiSlider();
+//		this.timeLineBiSlider.setMinimumSize(new Dimension(350, 50));
+//		this.timeLineBiSlider.setMinimumColor(Color.GRAY);
+//		this.timeLineBiSlider.setMaximumColor(Color.LIGHT_GRAY);
+//		GridBagConstraints gbc_timeLineBiSlider = new GridBagConstraints();
+//		gbc_timeLineBiSlider.weighty = 1.0;
+//		gbc_timeLineBiSlider.insets = new Insets(0, 13, 5, 0);
+//		gbc_timeLineBiSlider.weightx = 1.0;
+//		gbc_timeLineBiSlider.gridwidth = 3;
+//		gbc_timeLineBiSlider.fill = GridBagConstraints.BOTH;
+//		gbc_timeLineBiSlider.gridx = 0;
+//		gbc_timeLineBiSlider.gridy = 1;
+//		timeline_panel.add(this.timeLineBiSlider, gbc_timeLineBiSlider);
 		
-		this.timeline_panel_fromDate_label = new JLabel("fromDate");
-		this.timeline_panel_fromDate_label.setVerticalAlignment(SwingConstants.TOP);
-		GridBagConstraints gbc_timeline_panel_fromDate_label = new GridBagConstraints();
-		gbc_timeline_panel_fromDate_label.insets = new Insets(0, 0, 5, 0);
-		gbc_timeline_panel_fromDate_label.weighty = 0.01;
-		gbc_timeline_panel_fromDate_label.weightx = 1.0;
-		gbc_timeline_panel_fromDate_label.anchor = GridBagConstraints.NORTHWEST;
-		gbc_timeline_panel_fromDate_label.gridx = 0;
-		gbc_timeline_panel_fromDate_label.gridy = 0;
-		timeline_panel.add(this.timeline_panel_fromDate_label, gbc_timeline_panel_fromDate_label);
+//		this.timeline_panel_fromDate_label = new JLabel("fromDate");
+//		this.timeline_panel_fromDate_label.setVerticalAlignment(SwingConstants.TOP);
+//		GridBagConstraints gbc_timeline_panel_fromDate_label = new GridBagConstraints();
+//		gbc_timeline_panel_fromDate_label.insets = new Insets(0, 0, 5, 0);
+//		gbc_timeline_panel_fromDate_label.weighty = 0.01;
+//		gbc_timeline_panel_fromDate_label.weightx = 1.0;
+//		gbc_timeline_panel_fromDate_label.anchor = GridBagConstraints.NORTHWEST;
+//		gbc_timeline_panel_fromDate_label.gridx = 0;
+//		gbc_timeline_panel_fromDate_label.gridy = 0;
+//		timeline_panel.add(this.timeline_panel_fromDate_label, gbc_timeline_panel_fromDate_label);
 		
-		this.timeLine_range_label = new JLabel("Range");
-		this.timeLine_range_label.setVerticalAlignment(SwingConstants.TOP);
-		GridBagConstraints gbc_timeLine_range_label = new GridBagConstraints();
-		gbc_timeLine_range_label.weighty = 0.01;
-		gbc_timeLine_range_label.weightx = 1.0;
-		gbc_timeLine_range_label.anchor = GridBagConstraints.NORTH;
-		gbc_timeLine_range_label.gridx = 1;
-		gbc_timeLine_range_label.gridy = 0;
-		timeline_panel.add(this.timeLine_range_label, gbc_timeLine_range_label);
+//		this.timeLine_range_label = new JLabel("Range");
+//		this.timeLine_range_label.setVerticalAlignment(SwingConstants.TOP);
+//		GridBagConstraints gbc_timeLine_range_label = new GridBagConstraints();
+//		gbc_timeLine_range_label.weighty = 0.01;
+//		gbc_timeLine_range_label.weightx = 1.0;
+//		gbc_timeLine_range_label.anchor = GridBagConstraints.NORTH;
+//		gbc_timeLine_range_label.gridx = 1;
+//		gbc_timeLine_range_label.gridy = 0;
+//		timeline_panel.add(this.timeLine_range_label, gbc_timeLine_range_label);
 
 		GridBagConstraints gbc_matrix_chart_panel = new GridBagConstraints();
-		gbc_matrix_chart_panel.gridwidth = 2;
+		gbc_matrix_chart_panel.gridwidth = 1;
 		gbc_matrix_chart_panel.weightx = 1.0;
 		gbc_matrix_chart_panel.fill = GridBagConstraints.BOTH;
 		gbc_matrix_chart_panel.gridx = 0;
-		gbc_matrix_chart_panel.gridy = 2;
+		gbc_matrix_chart_panel.gridy = 1;
 		analysis_panel.add(this.matrix_chart_panel, gbc_matrix_chart_panel);
 						
 		JPanel filtermenu_panel = new JPanel();
@@ -418,7 +411,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_daytime_panel.anchor = GridBagConstraints.NORTH;
 		gbc_filtermenu_daytime_panel.weighty = 0.1;
 		gbc_filtermenu_daytime_panel.gridwidth = 2;
-		gbc_filtermenu_daytime_panel.insets = new Insets(0, 3, 5, 3);
+		gbc_filtermenu_daytime_panel.insets = new Insets(0, 0, 0, 0);
 		gbc_filtermenu_daytime_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_daytime_panel.gridx = 0;
 		gbc_filtermenu_daytime_panel.gridy = 4;
@@ -426,29 +419,21 @@ public class Mainframe extends JFrame {
 		filtermenu_panel.add(this.filtermenu_daytime_panel, gbc_filtermenu_daytime_panel);
 		GridBagLayout gbl_filtermenu_daytime_panel = new GridBagLayout();
 		gbl_filtermenu_daytime_panel.columnWidths = new int[] {0, 0};
-		gbl_filtermenu_daytime_panel.rowHeights = new int[] {0, 0, 0, 0};
+		gbl_filtermenu_daytime_panel.rowHeights = new int[] {0, 0, 0};
 		gbl_filtermenu_daytime_panel.columnWeights = new double[]{Double.MIN_VALUE};
 		gbl_filtermenu_daytime_panel.rowWeights = new double[]{Double.MIN_VALUE, 0.0, 0.0, 0.0};
 		this.filtermenu_daytime_panel.setLayout(gbl_filtermenu_daytime_panel);
 		
-		this.checkBox_daytime_latenight = new JCheckBox("Early Morning");
-		this.checkBox_daytime_latenight.setToolTipText("2 AM to 6 AM");
-		GridBagConstraints gbc_checkBox_daytime_latenight = new GridBagConstraints();
-		gbc_checkBox_daytime_latenight.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_daytime_latenight.gridx = 1;
-		gbc_checkBox_daytime_latenight.gridy = 3;
-		filtermenu_daytime_panel.add(this.checkBox_daytime_latenight, gbc_checkBox_daytime_latenight);
-		
 		this.checkBox_daytime_midnight = new JCheckBox("Midnight");
-		this.checkBox_daytime_midnight.setToolTipText("10 PM to 2 AM");
+		this.checkBox_daytime_midnight.setToolTipText("0 AM to 6 AM");
 		GridBagConstraints gbc_checkBox_daytime_midnight = new GridBagConstraints();
 		gbc_checkBox_daytime_midnight.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_midnight.gridx = 0;
-		gbc_checkBox_daytime_midnight.gridy = 3;
+		gbc_checkBox_daytime_midnight.gridy = 1;
 		filtermenu_daytime_panel.add(this.checkBox_daytime_midnight, gbc_checkBox_daytime_midnight);
 		
 		this.checkBox_daytime_evening = new JCheckBox("Evening");
-		this.checkBox_daytime_evening.setToolTipText("6 PM to 10 PM");
+		this.checkBox_daytime_evening.setToolTipText("6 PM to 0 AM");
 		GridBagConstraints gbc_checkBox_daytime_evening = new GridBagConstraints();
 		gbc_checkBox_daytime_evening.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_evening.gridx = 1;
@@ -456,26 +441,18 @@ public class Mainframe extends JFrame {
 		filtermenu_daytime_panel.add(this.checkBox_daytime_evening, gbc_checkBox_daytime_evening);
 		
 		this.checkBox_daytime_afternoon = new JCheckBox("Afternoon");
-		this.checkBox_daytime_afternoon.setToolTipText("2:00 PM to 6 PM");
+		this.checkBox_daytime_afternoon.setToolTipText("12:00 PM to 6 PM");
 		GridBagConstraints gbc_checkBox_daytime_afternoon = new GridBagConstraints();
 		gbc_checkBox_daytime_afternoon.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_afternoon.gridx = 0;
 		gbc_checkBox_daytime_afternoon.gridy = 2;
 		filtermenu_daytime_panel.add(this.checkBox_daytime_afternoon, gbc_checkBox_daytime_afternoon);
 		
-		this.checkBox_daytime_noon = new JCheckBox("Noon");
-		this.checkBox_daytime_noon.setToolTipText("10:00 AM to 2:00 PM");
-		GridBagConstraints gbc_checkBox_daytime_noon = new GridBagConstraints();
-		gbc_checkBox_daytime_noon.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_daytime_noon.gridx = 1;
-		gbc_checkBox_daytime_noon.gridy = 1;
-		filtermenu_daytime_panel.add(this.checkBox_daytime_noon, gbc_checkBox_daytime_noon);
-		
 		this.checkBox_daytime_morning = new JCheckBox("Morning");
-		this.checkBox_daytime_morning.setToolTipText("6:00 AM to 10:00 AM");
+		this.checkBox_daytime_morning.setToolTipText("6:00 AM to 12:00 PM");
 		GridBagConstraints gbc_checkBox_daytime_morning = new GridBagConstraints();
 		gbc_checkBox_daytime_morning.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_daytime_morning.gridx = 0;
+		gbc_checkBox_daytime_morning.gridx = 1;
 		gbc_checkBox_daytime_morning.gridy = 1;
 		this.filtermenu_daytime_panel.add(this.checkBox_daytime_morning, gbc_checkBox_daytime_morning);
 		
@@ -656,51 +633,51 @@ public class Mainframe extends JFrame {
 		fileMenu.add(fileMenu_item_exit);
 		
 		this.setJMenuBar(menuBar);
-		this.timeLineBiSlider.addMouseListener(new MouseListener() {
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				BiSlider src = (BiSlider) e.getSource();
-				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
-			}
-		});
+//		this.timeLineBiSlider.addMouseListener(new MouseListener() {
+//			
+//			@Override
+//			public void mouseReleased(MouseEvent e) {
+//				
+//			}
+//			
+//			@Override
+//			public void mousePressed(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void mouseExited(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void mouseEntered(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				BiSlider src = (BiSlider) e.getSource();
+//				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
+//			}
+//		});
 		
-		this.timeLineBiSlider.addMouseMotionListener(new MouseMotionListener() {
-			
-			@Override
-			public void mouseMoved(MouseEvent e) {
-
-			}
-			
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				BiSlider src = (BiSlider) e.getSource();
-				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
-			}
-		});
+//		this.timeLineBiSlider.addMouseMotionListener(new MouseMotionListener() {
+//			
+//			@Override
+//			public void mouseMoved(MouseEvent e) {
+//
+//			}
+//			
+//			@Override
+//			public void mouseDragged(MouseEvent e) {
+//				BiSlider src = (BiSlider) e.getSource();
+//				Mainframe.this.controller.timeLineChanged(src.getMinimumColoredValue(), src.getMaximumColoredValue());
+//			}
+//		});
 		
 		this.fileMenu_item_exit.addActionListener(new ActionListener() {
 			@Override
