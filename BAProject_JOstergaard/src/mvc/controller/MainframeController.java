@@ -128,6 +128,7 @@ public class MainframeController {
 		this.refreshWeekdays();
 		//Chart:
 		this.refreshChart();
+		this.mainframe.matrix_chart_panel.setTransformationMode(0);
 		//Map:
 		this.refreshMapData();
 		

@@ -15,6 +15,7 @@ public class MatrixVisualization extends JPanel {
 	//Offset space on each side
 	private double xOuterOffset,yOuterOffset,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange;
 	private int dataMaxValue, dataMinValue;
+	private int transformationMode = 0;
 	private int[][] dataMatrix;
 		
 	public MatrixVisualization(int[][] matrix){
@@ -87,7 +88,7 @@ public class MatrixVisualization extends JPanel {
 					g2d.setColor(Color.GRAY);
 					System.out.print("n/A | \t");
 				} else {
-					relativeFieldValue = (int)((double)(this.dataMatrix[x][y]-this.dataMinValue)/(this.dataMaxValue-this.dataMinValue) * 255);
+					relativeFieldValue = (int)(this.transformFieldValue(this.dataMatrix[x][y],transformationMode)*255);
 					g2d.setColor(new Color(relativeFieldValue,255-relativeFieldValue,80));
 					System.out.print(this.dataMatrix[x][y] +":"+relativeFieldValue+" | \t");
 				}
@@ -98,6 +99,29 @@ public class MatrixVisualization extends JPanel {
 		}
 		System.out.println("MAX: "+this.dataMaxValue);
 		System.out.println("MIN: "+this.dataMinValue);
+	}
+	
+	/**
+	 * transforms the given value into the range from 0 to 1 with the max and min value
+	 * of the current given data. With the transformationMode you can choose between
+	 * linear, log and square.
+	 * 
+	 * @param value
+	 * @param transformationMode 0 for linear, 1 for logarithmic, 2 for square
+	 * @return the transformed value between 0 and 1
+	 */
+	private double transformFieldValue(int value, int transformationMode) {
+		double result;
+		if(transformationMode == 0){
+			result = (double)(value-this.dataMinValue)/(this.dataMaxValue-this.dataMinValue);
+		} else if (transformationMode == 1){
+			result = (double)(Math.log(value)-Math.log(this.dataMinValue))/(Math.log(this.dataMaxValue)-Math.log(this.dataMinValue));
+		} else if (transformationMode == 2){
+			result = (double)(Math.sqrt(value)-Math.sqrt(this.dataMinValue))/(Math.sqrt(this.dataMaxValue)-Math.sqrt(this.dataMinValue));
+		} else {
+			return -1.0;
+		}
+		return result;
 	}
 
 	private double determineRecWidth(int amount) {
@@ -112,5 +136,19 @@ public class MatrixVisualization extends JPanel {
 	
 	public int[][] getDataMatrix(){
 		return this.dataMatrix;
+	}
+	
+	/**
+	 * Sets the fieldValue transformationMode.
+	 * 
+	 * @param transformationMode 0 for linear transformation, 1 for logarithmic transformation, 2 for squared transformation
+	 */
+	public void setTransformationMode(int transformationMode) {
+		if(transformationMode < 0 || transformationMode > 2){
+			System.out.println("Wrong transformationMode set, default of 0 is set.");
+			this.transformationMode = 0;
+		} else {
+			this.transformationMode = transformationMode;
+		}
 	}
 }
