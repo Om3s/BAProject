@@ -25,7 +25,7 @@ import mvc.view.MatrixVisualization;
  */
 public class Main {
 	public static Color[] weekDayColors,weekDayColorsWithAlpha;
-	public static int colorAlpha = 50, screenWidth, screenHeight;
+	public static int colorAlpha = 255, screenWidth, screenHeight;
 	public static Color
 		mondayColor = new Color(213,207,11), //YELLOW
 		tuesdayColor = new Color(0,200,240), //CYAN
@@ -46,8 +46,8 @@ public class Main {
 		defineColors();
 		determineScreenSize();
 		CrimeCaseDatabase dataBase;
-		boolean testing = true;
-		boolean reIndex = true;
+		boolean testing = false;
+		boolean reIndex = false;
 		if(testing){
 			dataBase = new CrimeCaseDatabase("dat\\testData.csv", reIndex);	
 		} else {
