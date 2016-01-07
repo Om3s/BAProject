@@ -14,6 +14,7 @@ import mvc.main.Main;
 public class MatrixVisualization extends JPanel {
 	//Offset space on each side
 	private double xOuterOffset,yOuterOffset,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange;
+	private int dataMaxValue, dataMinValue;
 	private int[][] dataMatrix;
 		
 	public MatrixVisualization(int[][] matrix){
@@ -36,7 +37,24 @@ public class MatrixVisualization extends JPanel {
 	
 	public void setData(int[][] data){
 		this.dataMatrix = data;
+		this.computeDataValues();
 		this.repaint();
+	}
+
+	private void computeDataValues() {
+		this.dataMinValue = Integer.MAX_VALUE;
+		this.dataMaxValue = 0;
+		for(int x = 0; x<this.dataMatrix.length; x++){
+			for(int y = 0; y<this.dataMatrix[0].length; y++){
+				if(this.dataMatrix[x][y] == -1){
+					
+				} else if(this.dataMinValue > this.dataMatrix[x][y]){
+					this.dataMinValue = this.dataMatrix[x][y];
+				} else if (this.dataMaxValue < this.dataMatrix[x][y]){
+					this.dataMaxValue = this.dataMatrix[x][y];
+				}
+			}
+		}
 	}
 
 	public void paint(Graphics g){
@@ -51,24 +69,35 @@ public class MatrixVisualization extends JPanel {
 		g2d.setColor(backgroundColor);
 		g2d.fill(new Rectangle2D.Double(0,0,this.getWidth(),this.getHeight()));
 		for(int i = 0; i<this.dataMatrix.length; i++){
-			g2d.setColor(Main.weekDayColors[(i+1)%7]);
+			g2d.setColor(Main.weekDayColors[(i)%7]);
 			posX = this.xOuterOffset+i*(dataRectWidth+this.xInnerOffset);
 			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yOuterOffset-this.yOuterOffset/3*2, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffset/3*2));
 			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yDrawRange+this.yOuterOffset, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffset/3*2));
 		}
 		//DRAW RECTANGLES:
-		int randomInt; //TESTING NEED DATA FIRST
-		for(int x = 0; x<this.dataMatrix.length; x++){
+		int relativeFieldValue;
+		for(int x=0; x<this.dataMatrix.length; x++){
+			System.out.print("Day "+x+":\t | \t");
 			posX = this.xOuterOffset+x*(dataRectWidth+this.xInnerOffset);
-			for(int y = 0; y<this.dataMatrix[0].length; y++){
+			for(int y=0; y<this.dataMatrix[0].length; y++){
 				posY = this.yOuterOffset+y*(dataRectHeight+yInnerOffset);
-				randomInt = (int)(Math.random()*255+0.5); //TESTING
 				g2d.setColor(backgroundColor);
 				g2d.fill(new Rectangle2D.Double(posX, posY, dataRectWidth, dataRectHeight));
-				g2d.setColor(new Color(randomInt,255-randomInt,80));
+				if(this.dataMatrix[x][y] == -1){
+					g2d.setColor(Color.GRAY);
+					System.out.print("n/A | \t");
+				} else {
+					relativeFieldValue = (int)((double)(this.dataMatrix[x][y]-this.dataMinValue)/(this.dataMaxValue-this.dataMinValue) * 255);
+					g2d.setColor(new Color(relativeFieldValue,255-relativeFieldValue,80));
+					System.out.print(this.dataMatrix[x][y] +":"+relativeFieldValue+" | \t");
+				}
 				g2d.fill(new Rectangle2D.Double(posX+3, posY+3, dataRectWidth-6, dataRectHeight-6));
+				
 			}
+			System.out.println("");
 		}
+		System.out.println("MAX: "+this.dataMaxValue);
+		System.out.println("MIN: "+this.dataMinValue);
 	}
 
 	private double determineRecWidth(int amount) {

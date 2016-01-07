@@ -52,6 +52,7 @@ public class MainframeController {
 	//Chart:
 	private String intervalName = null;
 	private int[][] currentDataMatrix;
+	private ArrayList<Integer> selectedWeekdaysAsList;
 
 	//DEPRECATED CONTENT:
 //	//Timeline:
@@ -234,29 +235,29 @@ public class MainframeController {
 	 * reads the checkboxes of the filtermenu and creates the new weekday array
 	 */
 	private void refreshWeekdays() {
-		ArrayList<Integer> tempWeekdayList = new ArrayList<Integer>();
+		this.selectedWeekdaysAsList = new ArrayList<Integer>();
 		if(this.mainframe.checkBox_Sun.isSelected()){
-			tempWeekdayList.add(1);
+			selectedWeekdaysAsList.add(1);
 		}
 		if(this.mainframe.checkBox_Mon.isSelected()){
-			tempWeekdayList.add(2);
+			selectedWeekdaysAsList.add(2);
 		}
 		if(this.mainframe.checkBox_Tue.isSelected()){
-			tempWeekdayList.add(3);
+			selectedWeekdaysAsList.add(3);
 		}
 		if(this.mainframe.checkBox_Wed.isSelected()){
-			tempWeekdayList.add(4);
+			selectedWeekdaysAsList.add(4);
 		}
 		if(this.mainframe.checkBox_Thu.isSelected()){
-			tempWeekdayList.add(5);
+			selectedWeekdaysAsList.add(5);
 		}
 		if(this.mainframe.checkBox_Fri.isSelected()){
-			tempWeekdayList.add(6);
+			selectedWeekdaysAsList.add(6);
 		}
 		if(this.mainframe.checkBox_Sat.isSelected()){
-			tempWeekdayList.add(7);
+			selectedWeekdaysAsList.add(7);
 		}
-		Integer[] tempArray = ((Integer[]) tempWeekdayList.toArray(new Integer[0]));
+		Integer[] tempArray = ((Integer[]) selectedWeekdaysAsList.toArray(new Integer[0]));
 		this.selectedWeekdays = new int[tempArray.length];
 		for(int i = 0; i<tempArray.length; i++){
 			this.selectedWeekdays[i] = tempArray[i];
@@ -492,13 +493,6 @@ public class MainframeController {
 	public void refreshChart(){
 		this.createDataMatrix();
 		this.mainframe.matrix_chart_panel.setData(this.currentDataMatrix);
-		for(int i=0; i<7;i++){
-			System.out.print("Day "+i+":\t");
-			for(int j=0; j<4;j++){
-				System.out.print(this.currentDataMatrix[i][j] +" | ");
-			}
-			System.out.println("");
-		}
 	}
 	
 	//DEPRECATED CONTENT:
@@ -528,21 +522,23 @@ public class MainframeController {
 	
 	private void createDataMatrix(){
 		this.currentDataMatrix = new int[7][4];
-		boolean dayTimeIsChecked;
 		this.determineSelectedDayTimesList();
 		for(int x = 0; x<this.currentDataMatrix.length; x++){
-			for(int y = 0; y<this.currentDataMatrix[0].length; y++){
-				if(this.selectedDayTimesAsList.contains(y)){
-					dayTimeIsChecked = true;
-				} else {
-					dayTimeIsChecked = false;
-				}
-				if(dayTimeIsChecked){
-					try {
-						this.currentDataMatrix[x][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
-					} catch (IOException e) {
-						e.printStackTrace();
+			if(this.selectedWeekdaysAsList.contains(x+1)){
+				for(int y = 0; y<this.currentDataMatrix[0].length; y++){
+					if(this.selectedDayTimesAsList.contains(y)){
+						try {
+							this.currentDataMatrix[x][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} else {
+						this.currentDataMatrix[x][y] = -1;
 					}
+				}
+			} else {
+				for(int y=0; y<this.currentDataMatrix[0].length; y++){
+					this.currentDataMatrix[x][y] = -1;
 				}
 			}
 			System.out.println("");
