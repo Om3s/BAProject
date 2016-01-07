@@ -38,7 +38,7 @@ import mvc.view.ResultDetailFrame;
 public class MainframeController {
 	public Mainframe mainframe;
 	private CrimeCaseDatabase cCaseDatabase;
-	private Date globalFromDate, globalToDate, currentFromDate, currentToDate;
+	private Date globalFromDate, globalToDate;
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat standardGUIDateTimeOutputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private int timelineDateSteps;
@@ -48,15 +48,17 @@ public class MainframeController {
 	private String currentCategory;
 	private MapController mapController;
 	private ResultDetailFrame detailFrame;
-	
-	//Timeline:
-	private int timelineSmallestTimeInterval = 1;
-	//DEPRECATED CONTENT:
-//	private int timelineMaxValue, timelineLowerValue, timelineHigherValue;
-	
+
 	//Chart:
 	private String intervalName = null;
 	private int[][] currentDataMatrix;
+
+	//DEPRECATED CONTENT:
+//	//Timeline:
+//	private Date currentFromDate, currentToDate;
+//	private int timelineSmallestTimeInterval = 1;
+//	private int timelineMaxValue, timelineLowerValue, timelineHigherValue;
+	
 	
 	/**
 	 * 
@@ -86,10 +88,10 @@ public class MainframeController {
 		this.globalToDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("08/12/2015 11:59:59 PM");
 		//Radiobutton
 		this.mainframe.filtermenu_interval_radioButtonWeeks.setSelected(true);
-		this.timelineDateSteps = 2; // weeks
 		this.mainframe.filtermenu_interval_radioButtonDays.setEnabled(false);
 		this.mainframe.filtermenu_interval_radioButtonHours.setEnabled(false);
 		this.mainframe.filtermenu_interval_radioButtonMonths.setEnabled(false);
+		this.timelineDateSteps = 2; // weeks
 		//Day of Week Checkboxes:
 		this.mainframe.checkBox_Mon.setSelected(true);
 		this.mainframe.checkBox_Mon.setBackground(Main.mondayColor);
@@ -110,30 +112,33 @@ public class MainframeController {
 		this.mainframe.filtermenu_dates_rightCalendarButton.setTargetDate(globalToDate);
 		String fromDateString = this.standardGUIDateOutputFormat.format(this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate());
 		String toDateString = this.standardGUIDateOutputFormat.format(this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate());
-		this.mainframe.filtermenu_dates_rightCalendarButton.setText(toDateString);
 		this.mainframe.filtermenu_dates_leftCalendarButton.setText(fromDateString);
-//		this.mainframe.timeline_panel_fromDate_label.setText(fromDateString);
-//		this.mainframe.timeline_panel_toDate_label.setText(toDateString);
-		//TimeLine:
-//		this.refreshTimelineAttributes();
-//		this.mainframe.timeLineBiSlider.setPrecise(true);
-//		this.mainframe.timeLineBiSlider.setUniformSegment(true);
+		this.mainframe.filtermenu_dates_rightCalendarButton.setText(toDateString);
 		//Category
 		this.currentCategory = "All categories";
-		//Weekdays:
-		this.refreshWeekdays();
-		//DEPRECATED CONTENT:
-//		this.timelineLowerValue = -1; //definetly change HACK
-//		this.timeLineChanged(0, 1);
-		//Chart:
-		this.refreshChart();
 		//reportListArea
-		((DefaultListCellRenderer)this.mainframe.reportList.getCellRenderer()).setHorizontalAlignment(JLabel.RIGHT);
+		((DefaultListCellRenderer)this.mainframe.reportList.getCellRenderer()).setHorizontalAlignment(JLabel.LEFT);
 		//daytime checkboxes
 		this.mainframe.checkBox_daytime_morning.setSelected(true);
 		this.mainframe.checkBox_daytime_afternoon.setSelected(true);
 		this.mainframe.checkBox_daytime_evening.setSelected(true);
 		this.mainframe.checkBox_daytime_midnight.setSelected(true);
+		//Weekdays:
+		this.refreshWeekdays();
+		//Chart:
+		this.refreshChart();
+		//Map:
+		this.refreshMapData();
+		
+		//DEPRECATED CONTENT:
+//		//TimeLine:
+//		this.mainframe.timeline_panel_fromDate_label.setText(fromDateString);
+//		this.mainframe.timeline_panel_toDate_label.setText(toDateString);
+//		this.refreshTimelineAttributes();
+//		this.mainframe.timeLineBiSlider.setPrecise(true);
+//		this.mainframe.timeLineBiSlider.setUniformSegment(true);
+//		this.timelineLowerValue = -1; //definetly change HACK
+//		this.timeLineChanged(0, 1);
 	}
 	/**
 	 * Refreshes the TimeLine with the actual Filtersettings
@@ -150,6 +155,7 @@ public class MainframeController {
 		}
 		this.timelineDateSteps = 2;
 		this.intervalName = "Weeks";
+		
 		//DEPRECATED CONTENT
 //		if(this.mainframe.filtermenu_interval_radioButtonWeeks.isSelected()){
 //			timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 7);
@@ -208,10 +214,12 @@ public class MainframeController {
 		this.refreshTimelineAttributes();
 		this.refreshWeekdays();
 		this.refreshCurrentCategory();
+		this.refreshChart();
+		this.refreshMapData();
+		
 		//DEPRECATED CONTENT:
 //		this.timelineLowerValue = -1; //definetly change HACK
 //		this.timeLineChanged(0, 1);
-		this.refreshChart();
 	}
 	
 	/**
@@ -250,10 +258,8 @@ public class MainframeController {
 		}
 		Integer[] tempArray = ((Integer[]) tempWeekdayList.toArray(new Integer[0]));
 		this.selectedWeekdays = new int[tempArray.length];
-		System.out.println(this.selectedWeekdays.length);
 		for(int i = 0; i<tempArray.length; i++){
 			this.selectedWeekdays[i] = tempArray[i];
-			System.out.println(i + " : " + this.selectedWeekdays[i]);
 		}
 	}
 	
@@ -367,17 +373,25 @@ public class MainframeController {
 //		
 //	}
 	
-	private void filterChanged(){
+	private void refreshMapData(){
 		//DEPRECATED CONTENT:
 //		this.timelineLowerValue = (int) (minColorValue+0.5);
 //		this.timelineHigherValue = (int) (maxColorValue+0.5);
 //		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 		try {
-			int[] selecteDayTimes = new int[this.selectedDayTimesAsList.size()];
-			for(int i = 0; i<selecteDayTimes.length; i++){
-				selecteDayTimes[i] = this.selectedDayTimesAsList.get(i);
+			ArrayList<Integer> notSelectedDayTimeList = new ArrayList<Integer>();
+			for(int i = 0; i<4; i++){
+				if(!this.selectedDayTimesAsList.contains(i)){
+					notSelectedDayTimeList.add(i);
+					System.out.println("NOT SELECTED "+i);
+				}
 			}
-			this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.selectedWeekdays, this.currentCategory, selecteDayTimes);
+			int[] notSelectedDayTimes = new int[notSelectedDayTimeList.size()];
+			for(int i = 0; i<notSelectedDayTimeList.size(); i++){
+				notSelectedDayTimes[i] = notSelectedDayTimeList.get(i);
+			}
+			this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.selectedWeekdays, this.currentCategory, notSelectedDayTimes);
+			System.out.println("currentData#: "+this.cCaseDatabase.getCurrentData().size());
 			this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());
 			this.fillReportListWith(this.cCaseDatabase.getCurrentData());
 			this.geoMapController.setShowCurrentPoints(true);
@@ -477,7 +491,7 @@ public class MainframeController {
 	 */
 	public void refreshChart(){
 		this.createDataMatrix();
-		this.mainframe.matrix_chart_panel.newData(this.currentDataMatrix);
+		this.mainframe.matrix_chart_panel.setData(this.currentDataMatrix);
 		for(int i=0; i<7;i++){
 			System.out.print("Day "+i+":\t");
 			for(int j=0; j<4;j++){
@@ -525,27 +539,28 @@ public class MainframeController {
 				}
 				if(dayTimeIsChecked){
 					try {
-						this.currentDataMatrix[x][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.selectedWeekdays, this.currentCategory, y, x);
+						this.currentDataMatrix[x][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 			}
+			System.out.println("");
 		}
 	}
 
 	private void determineSelectedDayTimesList() {
 		this.selectedDayTimesAsList = new ArrayList<Integer>();
-		if(!this.mainframe.checkBox_daytime_midnight.isSelected()){
+		if (this.mainframe.checkBox_daytime_midnight.isSelected()){
 			selectedDayTimesAsList.add(0);
 		}
-		if (!this.mainframe.checkBox_daytime_morning.isSelected()){
+		if (this.mainframe.checkBox_daytime_morning.isSelected()){
 			selectedDayTimesAsList.add(1);
 		}
-		if(!this.mainframe.checkBox_daytime_afternoon.isSelected()){
+		if (this.mainframe.checkBox_daytime_afternoon.isSelected()){
 			selectedDayTimesAsList.add(2);
 		}
-		if(!this.mainframe.checkBox_daytime_evening.isSelected()){
+		if (this.mainframe.checkBox_daytime_evening.isSelected()){
 			selectedDayTimesAsList.add(3);
 		}
 	}

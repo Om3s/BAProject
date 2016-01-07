@@ -71,7 +71,6 @@ public class CrimeCaseDatabase {
 		
 		// Testing:
 //		this.readCategoriesFromIndex();
-		System.out.println("CurrentData#: "+this.currentData.size());
 	}
 	
 	@SuppressWarnings("unused")
@@ -185,7 +184,6 @@ public class CrimeCaseDatabase {
 			}
 			indexWriter.close();
 			parser.stopParsing();
-			System.out.println(deletedRows);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -193,23 +191,24 @@ public class CrimeCaseDatabase {
 		}
 		tempTime = System.currentTimeMillis()-startTime;
 		System.out.println("Indexing done ("+(tempTime/1000f)+" sec)");
+		System.out.println(i+" entries indexed");;
 	}
 	
 	private int determineDayTimeInMillis(long dateOpen) {
 		GregorianCalendar dateOpened = new GregorianCalendar();
 		dateOpened.setTimeInMillis(dateOpen);
 		long timeDifference = dateOpened.getTimeInMillis() - (new GregorianCalendar(dateOpened.get(Calendar.YEAR),dateOpened.get(Calendar.MONTH),dateOpened.get(Calendar.DAY_OF_MONTH))).getTimeInMillis();
-		int dayTimeInMillis;
+		int dayTimeValue;
 		if(timeDifference <= 21600000){
-			dayTimeInMillis = 0; // Midnight (0:00 - 6:00)
+			dayTimeValue = 0; // Midnight (0:00 - 6:00)
 		} else if(timeDifference <= 43200000){
-			dayTimeInMillis = 1; // Morning (6:00 - 12:00)
+			dayTimeValue = 1; // Morning (6:00 - 12:00)
 		} else if(timeDifference <= 64800000){
-			dayTimeInMillis = 2; // Aternoon (12:00 - 18:00)
+			dayTimeValue = 2; // Aternoon (12:00 - 18:00)
 		} else {
-			dayTimeInMillis = 3; // Evening (18:00 - 0:00)
+			dayTimeValue = 3; // Evening (18:00 - 0:00)
 		}
-		return dayTimeInMillis;
+		return dayTimeValue;
 	}
 
 	/**
@@ -243,7 +242,7 @@ public class CrimeCaseDatabase {
 			}
 			for(int dayTimeValue : dayTimeValueList){
 				Query query4 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
-				boolQuery.add(query4, BooleanClause.Occur.MUST);
+				boolQuery.add(query4, BooleanClause.Occur.MUST_NOT);
 			}
 			TopDocs docs = this.indexSearcher.search(boolQuery, 1500);
 			System.out.println(boolQuery);
@@ -301,7 +300,7 @@ public class CrimeCaseDatabase {
 		return totalHits;
 	}
 	
-	public int countCaseReportsFromToWithDayTimes(Date fromDate, Date toDate, int[] checkedWeekdays, String category, int dayTimeValue, int actualWeekday) throws IOException{
+	public int countCaseReportsFromToWithDayTimes(Date fromDate, Date toDate, String category, int dayTimeValue, int actualWeekday) throws IOException{
 		int totalHits = 0;
 		TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
 		BooleanQuery boolQuery = new BooleanQuery();

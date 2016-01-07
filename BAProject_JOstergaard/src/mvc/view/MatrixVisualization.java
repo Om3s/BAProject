@@ -34,7 +34,7 @@ public class MatrixVisualization extends JPanel {
 		this.yDrawRange = this.getHeight()*(1.0-this.yOuterOffset/this.getHeight()*2);
 	}
 	
-	public void newData(int[][] data){
+	public void setData(int[][] data){
 		this.dataMatrix = data;
 		this.repaint();
 	}

@@ -52,7 +52,6 @@ public class Main {
 			dataBase = new CrimeCaseDatabase("dat\\testData.csv", reIndex);	
 		} else {
 			dataBase = new CrimeCaseDatabase("dat\\Case_Data_from_San_Francisco_311__SF311_.csv", reIndex);
-			
 		}
 		
 		System.out.println("Create Map...");
@@ -74,7 +73,7 @@ public class Main {
 		map.updateUI();
 		System.out.println("All Done, program is running.");
 		
-//		System.exit(0); //testing
+		//Testing:
 	}
 	
 	private static void determineScreenSize() {
