@@ -14,6 +14,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JTextArea;
 
+import mvc.controller.MainframeController;
 import mvc.main.Main;
 import mvc.model.CaseReport;
 
@@ -128,9 +130,12 @@ public class ResultDetailFrame extends JFrame {
                 	String path = ResultDetailFrame.this.cR.getMediaURLPath();
                     System.out.println("Get Image from " + path);
                     URL url = new URL(path);
-                    BufferedImage image = ImageIO.read(url);
+                    ImageIcon imageIcon = new ImageIcon(ImageIO.read(url));
+                    Dimension boundary = new Dimension(500, 500);
+                    boundary = MainframeController.getScaledDimension(new Dimension(imageIcon.getIconWidth(),imageIcon.getIconHeight()), boundary);
+                    imageIcon.setImage(imageIcon.getImage().getScaledInstance(boundary.width, boundary.height, Image.SCALE_DEFAULT));
                     System.out.println("Load image into frame...");
-                    JLabel label = new JLabel(new ImageIcon(image));
+                    JLabel label = new JLabel(imageIcon);
                     JFrame f = new JFrame();
                     f.getContentPane().add(label);
                     f.pack();

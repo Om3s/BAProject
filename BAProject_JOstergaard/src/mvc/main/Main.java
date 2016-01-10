@@ -1,14 +1,9 @@
 package mvc.main;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
-
-import javax.swing.JFrame;
 
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
@@ -16,7 +11,6 @@ import mvc.controller.MainframeController;
 import mvc.controller.MapController;
 import mvc.model.CrimeCaseDatabase;
 import mvc.view.Mainframe;
-import mvc.view.MatrixVisualization;
 
 /**
  * 

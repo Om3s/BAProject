@@ -424,32 +424,28 @@ public class Mainframe extends JFrame {
 		gbl_filtermenu_daytime_panel.rowWeights = new double[]{Double.MIN_VALUE, 0.0, 0.0, 0.0};
 		this.filtermenu_daytime_panel.setLayout(gbl_filtermenu_daytime_panel);
 		
-		this.checkBox_daytime_midnight = new JCheckBox("Midnight");
-		this.checkBox_daytime_midnight.setToolTipText("0 AM to 6 AM");
+		this.checkBox_daytime_midnight = new JCheckBox("00:00 - 06:00");
 		GridBagConstraints gbc_checkBox_daytime_midnight = new GridBagConstraints();
 		gbc_checkBox_daytime_midnight.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_midnight.gridx = 0;
 		gbc_checkBox_daytime_midnight.gridy = 1;
 		filtermenu_daytime_panel.add(this.checkBox_daytime_midnight, gbc_checkBox_daytime_midnight);
 		
-		this.checkBox_daytime_evening = new JCheckBox("Evening");
-		this.checkBox_daytime_evening.setToolTipText("6 PM to 0 AM");
+		this.checkBox_daytime_evening = new JCheckBox("18:00 - 00:00");
 		GridBagConstraints gbc_checkBox_daytime_evening = new GridBagConstraints();
 		gbc_checkBox_daytime_evening.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_evening.gridx = 1;
 		gbc_checkBox_daytime_evening.gridy = 2;
 		filtermenu_daytime_panel.add(this.checkBox_daytime_evening, gbc_checkBox_daytime_evening);
 		
-		this.checkBox_daytime_afternoon = new JCheckBox("Afternoon");
-		this.checkBox_daytime_afternoon.setToolTipText("12:00 PM to 6 PM");
+		this.checkBox_daytime_afternoon = new JCheckBox("12:00 - 18:00");
 		GridBagConstraints gbc_checkBox_daytime_afternoon = new GridBagConstraints();
 		gbc_checkBox_daytime_afternoon.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_afternoon.gridx = 0;
 		gbc_checkBox_daytime_afternoon.gridy = 2;
 		filtermenu_daytime_panel.add(this.checkBox_daytime_afternoon, gbc_checkBox_daytime_afternoon);
 		
-		this.checkBox_daytime_morning = new JCheckBox("Morning");
-		this.checkBox_daytime_morning.setToolTipText("6:00 AM to 12:00 PM");
+		this.checkBox_daytime_morning = new JCheckBox("06:00 - 12:00");
 		GridBagConstraints gbc_checkBox_daytime_morning = new GridBagConstraints();
 		gbc_checkBox_daytime_morning.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_morning.gridx = 1;

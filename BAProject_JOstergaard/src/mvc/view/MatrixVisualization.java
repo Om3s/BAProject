@@ -13,7 +13,7 @@ import mvc.main.Main;
 @SuppressWarnings("serial")
 public class MatrixVisualization extends JPanel {
 	//Offset space on each side
-	private double xOuterOffset,yOuterOffset,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange;
+	private double leftStringWidth,xOuterOffsetLeft,xOuterOffsetRight,yOuterOffsetTop,yOuterOffsetBot,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange;
 	private int dataMaxValue, dataMinValue;
 	private int transformationMode = 0;
 	private int[][] dataMatrix;
@@ -28,12 +28,14 @@ public class MatrixVisualization extends JPanel {
 	}
 	
 	private void refreshLayoutSettings() {
-		this.xOuterOffset = this.getWidth()*0.07;
-		this.yOuterOffset = this.getHeight()*0.1;
+		this.xOuterOffsetLeft = this.leftStringWidth*1.2;
+		this.xOuterOffsetRight = this.getWidth()*0.05;
+		this.yOuterOffsetTop = this.getHeight()*0.15;
+		this.yOuterOffsetBot = this.getHeight()*0.15;
 		this.xInnerOffset = this.getWidth()*0.05;
 		this.yInnerOffset = this.getHeight()*0.02;
-		this.xDrawRange = this.getWidth()*(1.0-this.xOuterOffset/this.getWidth()*2);
-		this.yDrawRange = this.getHeight()*(1.0-this.yOuterOffset/this.getHeight()*2);
+		this.xDrawRange = this.getWidth()*(1.0-(this.xOuterOffsetLeft+this.xOuterOffsetRight)/this.getWidth());
+		this.yDrawRange = this.getHeight()*(1.0-(this.yOuterOffsetTop+this.yOuterOffsetBot)/this.getHeight());
 	}
 	
 	public void setData(int[][] data){
@@ -51,7 +53,8 @@ public class MatrixVisualization extends JPanel {
 					
 				} else if(this.dataMinValue > this.dataMatrix[x][y]){
 					this.dataMinValue = this.dataMatrix[x][y];
-				} else if (this.dataMaxValue < this.dataMatrix[x][y]){
+				}
+				if (this.dataMaxValue < this.dataMatrix[x][y]){
 					this.dataMaxValue = this.dataMatrix[x][y];
 				}
 			}
@@ -60,8 +63,10 @@ public class MatrixVisualization extends JPanel {
 
 	public void paint(Graphics g){
 		//INIT:
-		this.refreshLayoutSettings();
 		Graphics2D g2d = (Graphics2D)g;
+		this.leftStringWidth = g2d.getFontMetrics().stringWidth("0:00AM-6:00AM");
+		this.refreshLayoutSettings();
+		this.computeDataValues();
 		double dataRectWidth = this.determineRecWidth(this.dataMatrix.length);
 		double dataRectHeight = this.determineRecHeight(this.dataMatrix[0].length);
 		double posX,posY;
@@ -71,34 +76,68 @@ public class MatrixVisualization extends JPanel {
 		g2d.fill(new Rectangle2D.Double(0,0,this.getWidth(),this.getHeight()));
 		for(int i = 0; i<this.dataMatrix.length; i++){
 			g2d.setColor(Main.weekDayColors[(i)%7]);
-			posX = this.xOuterOffset+i*(dataRectWidth+this.xInnerOffset);
-			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yOuterOffset-this.yOuterOffset/3*2, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffset/3*2));
-			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yDrawRange+this.yOuterOffset, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffset/3*2));
+			posX = this.xOuterOffsetLeft+i*(dataRectWidth+this.xInnerOffset);
+//			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yOuterOffsetTop-this.yOuterOffsetTop/3*2, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffsetTop/3*2));
+			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yDrawRange+this.yOuterOffsetTop, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffsetBot/3));
 		}
 		//DRAW RECTANGLES:
-		int relativeFieldValue;
+		double relativeFieldValue;
 		for(int x=0; x<this.dataMatrix.length; x++){
-			System.out.print("Day "+x+":\t | \t");
-			posX = this.xOuterOffset+x*(dataRectWidth+this.xInnerOffset);
+//			System.out.print("Day "+x+":\t | \t");
+			posX = this.xOuterOffsetLeft+x*(dataRectWidth+this.xInnerOffset);
 			for(int y=0; y<this.dataMatrix[0].length; y++){
-				posY = this.yOuterOffset+y*(dataRectHeight+yInnerOffset);
+				posY = this.yOuterOffsetTop+y*(dataRectHeight+yInnerOffset);
 				g2d.setColor(backgroundColor);
 				g2d.fill(new Rectangle2D.Double(posX, posY, dataRectWidth, dataRectHeight));
 				if(this.dataMatrix[x][y] == -1){
 					g2d.setColor(Color.GRAY);
-					System.out.print("n/A | \t");
+//					System.out.print("n/A | \t");
 				} else {
-					relativeFieldValue = (int)(this.transformFieldValue(this.dataMatrix[x][y],transformationMode)*255);
-					g2d.setColor(new Color(relativeFieldValue,255-relativeFieldValue,80));
-					System.out.print(this.dataMatrix[x][y] +":"+relativeFieldValue+" | \t");
+					relativeFieldValue = (this.transformFieldValue(this.dataMatrix[x][y],this.transformationMode)*0.33f);
+					Color fieldColor = Color.getHSBColor((float)(0.33f-relativeFieldValue), 1, 1);
+					g2d.setColor(fieldColor);
+//					g2d.setColor(new Color(relativeFieldValue,255-relativeFieldValue,80));
+//					System.out.print(this.dataMatrix[x][y] +":"+relativeFieldValue+" | \t");
 				}
 				g2d.fill(new Rectangle2D.Double(posX+3, posY+3, dataRectWidth-6, dataRectHeight-6));
 				
 			}
-			System.out.println("");
+//			System.out.println("");
 		}
-		System.out.println("MAX: "+this.dataMaxValue);
-		System.out.println("MIN: "+this.dataMinValue);
+//		System.out.println("MAX: "+this.dataMaxValue);
+//		System.out.println("MIN: "+this.dataMinValue);
+		//DRAW TEXT LEFT:
+		g2d.setColor(Color.BLACK);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+0*(dataRectHeight+yInnerOffset);
+		g2d.drawString("00:00 - 06:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+1*(dataRectHeight+yInnerOffset);
+		g2d.drawString("06:00 - 12:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+2*(dataRectHeight+yInnerOffset);
+		g2d.drawString("12:00 - 18:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+3*(dataRectHeight+yInnerOffset);
+		g2d.drawString("18:00 - 00:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		//DRAW TEXT TOP:
+		posX = this.xOuterOffsetLeft+0*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.sundayColor);
+		g2d.drawString("Sunday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sunday")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		posX = this.xOuterOffsetLeft+1*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.mondayColor);
+		g2d.drawString("Monday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Monday")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		posX = this.xOuterOffsetLeft+2*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.tuesdayColor);
+		g2d.drawString("Tuesday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Tuesday")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		posX = this.xOuterOffsetLeft+3*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.wednesdayColor);
+		g2d.drawString("Wednesday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Wednesday")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		posX = this.xOuterOffsetLeft+4*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.thursdayColor);
+		g2d.drawString("Thursday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Thursday")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		posX = this.xOuterOffsetLeft+5*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.fridayColor);
+		g2d.drawString("Friday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Friday")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.saturdayColor);
+		g2d.drawString("Saturday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Saturday")*0.5), (float)(this.yOuterOffsetTop/1.25));
 	}
 	
 	/**

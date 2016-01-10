@@ -1,32 +1,19 @@
 package mvc.controller;
 
-import java.awt.BorderLayout;
-import java.awt.event.MouseListener;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
-
 import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
-import mvc.model.CustomBarRenderer;
 import mvc.view.Mainframe;
 import mvc.view.ResultDetailFrame;
 
@@ -128,7 +115,7 @@ public class MainframeController {
 		this.refreshWeekdays();
 		//Chart:
 		this.refreshChart();
-		this.mainframe.matrix_chart_panel.setTransformationMode(0);
+		this.mainframe.matrix_chart_panel.setTransformationMode(1);
 		//Map:
 		this.refreshMapData();
 		
@@ -613,5 +600,32 @@ public class MainframeController {
 			this.createDetailFrame(cR);
 		}
 		this.mainframe.repaint();
+	}
+	
+	public static Dimension getScaledDimension(Dimension imgSize, Dimension boundary){
+		int original_width = imgSize.width;
+	    int original_height = imgSize.height;
+	    int bound_width = boundary.width;
+	    int bound_height = boundary.height;
+	    int new_width = original_width;
+	    int new_height = original_height;
+
+	    // first check if we need to scale width
+	    if (original_width > bound_width) {
+	        //scale width to fit
+	        new_width = bound_width;
+	        //scale height to maintain aspect ratio
+	        new_height = (new_width * original_height) / original_width;
+	    }
+
+	    // then check if we need to scale even with the new height
+	    if (new_height > bound_height) {
+	        //scale height to fit instead
+	        new_height = bound_height;
+	        //scale width to maintain aspect ratio
+	        new_width = (new_height * original_width) / original_height;
+	    }
+
+	    return new Dimension(new_width, new_height);
 	}
 }
