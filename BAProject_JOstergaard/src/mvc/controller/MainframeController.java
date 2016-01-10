@@ -115,7 +115,7 @@ public class MainframeController {
 		this.refreshWeekdays();
 		//Chart:
 		this.refreshChart();
-		this.mainframe.matrix_chart_panel.setTransformationMode(1);
+		this.mainframe.matrix_chart_panel.setTransformationMode(2);
 		//Map:
 		this.refreshMapData();
 		
@@ -285,10 +285,12 @@ public class MainframeController {
 		if(this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate().before(newDateMinusOneWeek)) {
 			this.setToDate(newDateMinusOneWeek);
 			this.mainframe.filtermenu_dates_leftCalendarButton.setText(newDateText);
-			this.mainframe.timeline_panel_fromDate_label.setText(newDateText);
+			//DEPRECATED CONTENT
+//			this.mainframe.timeline_panel_fromDate_label.setText(newDateText);
 		} else {
 			this.mainframe.filtermenu_dates_leftCalendarButton.setText(newDateText);
-			this.mainframe.timeline_panel_fromDate_label.setText(newDateText);
+			//DEPRECATED CONTENT
+//			this.mainframe.timeline_panel_fromDate_label.setText(newDateText);
 		}
 		this.mainframe.repaint();
 	}
@@ -307,11 +309,13 @@ public class MainframeController {
 			this.setFromDate(newDateMinusOneWeek);
 			newDateText = this.standardGUIDateOutputFormat.format(newDate);
 			this.mainframe.filtermenu_dates_rightCalendarButton.setText(newDateText);
-			this.mainframe.timeline_panel_toDate_label.setText(newDateText);
+			//DEPRECATED CONTENT
+//			this.mainframe.timeline_panel_toDate_label.setText(newDateText);
 		} else {
 			newDateText = this.standardGUIDateOutputFormat.format(newDate);
 			this.mainframe.filtermenu_dates_rightCalendarButton.setText(newDateText);
-			this.mainframe.timeline_panel_toDate_label.setText(newDateText);
+			//DEPRECATED CONTENT
+//			this.mainframe.timeline_panel_toDate_label.setText(newDateText);
 		}
 	}
 	

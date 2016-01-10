@@ -1,5 +1,6 @@
 package mvc.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
@@ -68,7 +69,18 @@ public class CaseReport {
 	 * @return the representative String for the CaseReport List elements
 	 */
 	public String toString(){
-		return this.dateOpened.toString();
+		String result = "";
+		SimpleDateFormat caseListDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		result += caseListDateFormat.format(this.dateOpened);
+		if(this.isClosed){
+			result += ", Closed";
+		} else {
+			result += ", Open";
+		}
+		if(!this.mediaURLPath.equals("Not Available")){
+			result += ", +";
+		}
+		return result;
 	}
 	
 	/**

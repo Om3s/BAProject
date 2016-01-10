@@ -2,6 +2,7 @@ package mvc.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -32,7 +33,7 @@ public class MatrixVisualization extends JPanel {
 		this.xOuterOffsetRight = this.getWidth()*0.05;
 		this.yOuterOffsetTop = this.getHeight()*0.15;
 		this.yOuterOffsetBot = this.getHeight()*0.15;
-		this.xInnerOffset = this.getWidth()*0.05;
+		this.xInnerOffset = this.getWidth()*0.02;
 		this.yInnerOffset = this.getHeight()*0.02;
 		this.xDrawRange = this.getWidth()*(1.0-(this.xOuterOffsetLeft+this.xOuterOffsetRight)/this.getWidth());
 		this.yDrawRange = this.getHeight()*(1.0-(this.yOuterOffsetTop+this.yOuterOffsetBot)/this.getHeight());
@@ -64,6 +65,7 @@ public class MatrixVisualization extends JPanel {
 	public void paint(Graphics g){
 		//INIT:
 		Graphics2D g2d = (Graphics2D)g;
+		g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
 		this.leftStringWidth = g2d.getFontMetrics().stringWidth("0:00AM-6:00AM");
 		this.refreshLayoutSettings();
 		this.computeDataValues();
@@ -89,18 +91,20 @@ public class MatrixVisualization extends JPanel {
 				posY = this.yOuterOffsetTop+y*(dataRectHeight+yInnerOffset);
 				g2d.setColor(backgroundColor);
 				g2d.fill(new Rectangle2D.Double(posX, posY, dataRectWidth, dataRectHeight));
+				String cellContent = "";
 				if(this.dataMatrix[x][y] == -1){
 					g2d.setColor(Color.GRAY);
 //					System.out.print("n/A | \t");
 				} else {
 					relativeFieldValue = (this.transformFieldValue(this.dataMatrix[x][y],this.transformationMode)*0.33f);
-					Color fieldColor = Color.getHSBColor((float)(0.33f-relativeFieldValue), 1, 1);
-					g2d.setColor(fieldColor);
+					g2d.setColor(Color.getHSBColor((float)(0.33f-relativeFieldValue), 1, 1));
 //					g2d.setColor(new Color(relativeFieldValue,255-relativeFieldValue,80));
 //					System.out.print(this.dataMatrix[x][y] +":"+relativeFieldValue+" | \t");
+					cellContent += this.dataMatrix[x][y];
 				}
 				g2d.fill(new Rectangle2D.Double(posX+3, posY+3, dataRectWidth-6, dataRectHeight-6));
-				
+				g2d.setColor(Color.BLACK);
+				g2d.drawString(cellContent, (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth(cellContent)/2), (float)(posY+dataRectHeight/2+5));
 			}
 //			System.out.println("");
 		}
@@ -117,6 +121,7 @@ public class MatrixVisualization extends JPanel {
 		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+3*(dataRectHeight+yInnerOffset);
 		g2d.drawString("18:00 - 00:00", (float)(this.leftStringWidth*0.15), (float)posY);
 		//DRAW TEXT TOP:
+		g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		posX = this.xOuterOffsetLeft+0*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.sundayColor);
 		g2d.drawString("Sunday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sunday")*0.5), (float)(this.yOuterOffsetTop/1.25));
@@ -138,6 +143,7 @@ public class MatrixVisualization extends JPanel {
 		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.saturdayColor);
 		g2d.drawString("Saturday", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Saturday")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.dispose();
 	}
 	
 	/**
