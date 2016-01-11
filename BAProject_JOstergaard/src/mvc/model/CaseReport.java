@@ -11,7 +11,7 @@ import org.openstreetmap.gui.jmapviewer.Coordinate;
  *
  */
 public class CaseReport {
-	private int caseID;
+	private int caseID, dayTimeValue, dayOfWeek;
 	private Date dateOpened, dateClosed;
 	private String address, category, mediaURLPath, neighbourhood, status, statusNotes;
 	private GeoPoint point;
@@ -21,8 +21,10 @@ public class CaseReport {
 		
 	}
 	
-	public CaseReport(int caseID, String dateOpened, String dateClosed, String status, String statusNotes, String category, String address, String neighbourhood, String point, String mediaUrl){
+	public CaseReport(int caseID, String dateOpened, String dateClosed, String dayTimeValue, String dayOfWeek, String status, String statusNotes, String category, String address, String neighbourhood, String point, String mediaUrl){
 		this.caseID = caseID;
+		this.dayTimeValue = Integer.valueOf(dayTimeValue);
+		this.dayOfWeek = Integer.valueOf(dayOfWeek);
 		this.status = status;
 		this.statusNotes = statusNotes;
 		this.category = category;
@@ -70,6 +72,15 @@ public class CaseReport {
 	 */
 	public String toString(){
 		String result = "";
+		switch(this.dayOfWeek){
+			case(0): result += "Sun, "; break;
+			case(1): result += "Mon, "; break;
+			case(2): result += "Tue, "; break;
+			case(3): result += "Wed, "; break;
+			case(4): result += "Thu, "; break;
+			case(5): result += "Fri, "; break;
+			case(6): result += "Sat, "; break;
+		}
 		SimpleDateFormat caseListDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		result += caseListDateFormat.format(this.dateOpened);
 		if(this.isClosed){
@@ -175,5 +186,13 @@ public class CaseReport {
 
 	public boolean hasAPictureLink() {
 		return hasAPictureLink;
+	}
+
+	public int getDayTimeValue() {
+		return dayTimeValue;
+	}
+
+	public int getDayOfWeek() {
+		return dayOfWeek;
 	}
 }

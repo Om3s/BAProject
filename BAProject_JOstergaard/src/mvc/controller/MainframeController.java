@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
+import javax.swing.JList;
 
 import mvc.main.Main;
 import mvc.model.CaseReport;
@@ -34,7 +35,6 @@ public class MainframeController {
 	private ArrayList<Integer> selectedDayTimesAsList;
 	private String currentCategory;
 	private MapController mapController;
-	private ResultDetailFrame detailFrame;
 
 	//Chart:
 	private String intervalName = null;
@@ -106,6 +106,7 @@ public class MainframeController {
 		this.currentCategory = "All categories";
 		//reportListArea
 		((DefaultListCellRenderer)this.mainframe.reportList.getCellRenderer()).setHorizontalAlignment(JLabel.LEFT);
+		this.mainframe.reportList.setLayoutOrientation(this.mainframe.reportList.HORIZONTAL_WRAP);
 		//daytime checkboxes
 		this.mainframe.checkBox_daytime_morning.setSelected(true);
 		this.mainframe.checkBox_daytime_afternoon.setSelected(true);
@@ -567,10 +568,7 @@ public class MainframeController {
 	}
 	
 	private void createDetailFrame(CaseReport cR) {
-		if(this.detailFrame != null){
-			this.detailFrame.setVisible(false);
-		}
-		this.detailFrame = new ResultDetailFrame(cR);
+		new ResultDetailFrame(cR);
 //		this.mainframe.setVisible(false);
 //		this.mainframe.setVisible(true);
 	}

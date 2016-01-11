@@ -579,11 +579,13 @@ public class Mainframe extends JFrame {
 		this.reportList.setVisibleRowCount(-1);
 		((DefaultListCellRenderer)this.reportList.getCellRenderer()).setHorizontalTextPosition(SwingConstants.LEFT);
 		JScrollPane reportList_scrollPane = new JScrollPane(reportList);
+		reportList_scrollPane.setMinimumSize(new Dimension(210,0));
 		GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
 		gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
 		gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_reportList_scrollPane.weighty = 0.9;
 		gbc_reportList_scrollPane.weightx = 1.0;
+		
 		gbc_reportList_scrollPane.gridx = 0;
 		gbc_reportList_scrollPane.gridy = 0;
 		this.reportList_panel.add(reportList_scrollPane, gbc_reportList_scrollPane);

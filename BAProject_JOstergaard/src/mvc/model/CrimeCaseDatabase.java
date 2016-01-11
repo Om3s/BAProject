@@ -244,13 +244,13 @@ public class CrimeCaseDatabase {
 				Query query4 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
 				boolQuery.add(query4, BooleanClause.Occur.MUST_NOT);
 			}
-			TopDocs docs = this.indexSearcher.search(boolQuery, 1500);
+			TopDocs docs = this.indexSearcher.search(boolQuery, 10000);
 			System.out.println(boolQuery);
 			System.out.println("Total hits: " + docs.totalHits);
 			Document doc;
 			for(ScoreDoc sDoc : docs.scoreDocs){
 				 doc = indexSearcher.doc(sDoc.doc);
-				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl")));
+				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("dayTimeValue"), doc.get("dayOfWeek"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl")));
 			}
 		}
 		this.currentData.sort(new Comparator<CaseReport>() {
