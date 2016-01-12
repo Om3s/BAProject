@@ -18,12 +18,14 @@ public class PictureWorker extends SwingWorker<ImageIcon, ImageIcon> {
 	private String path;
 	private JLabel jLabel;
 	private JPanel mainPanel;
+	private ResultDetailFrame frame;
 	private Dimension maxImageBoundary = new Dimension(500,500);
 	
-	public PictureWorker(String path, JPanel panel, JLabel jLabel){
+	public PictureWorker(String path, JPanel panel, JLabel jLabel, ResultDetailFrame frame){
 		this.path = path;
 		this.jLabel = jLabel;
 		this.mainPanel = panel;
+		this.frame = frame;
 	}
 	
 	@Override
@@ -47,6 +49,8 @@ public class PictureWorker extends SwingWorker<ImageIcon, ImageIcon> {
 			gbc_jLabel.gridx = 0;
 			gbc_jLabel.gridy = 9;
 			this.mainPanel.add(this.jLabel, gbc_jLabel);
+			this.mainPanel.repaint();
+			this.frame.repaint();
 			
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();

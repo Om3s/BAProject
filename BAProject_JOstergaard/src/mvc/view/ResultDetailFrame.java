@@ -266,7 +266,7 @@ public class ResultDetailFrame extends JFrame {
 		if(cR.hasAPictureLink()){
 			// load picture:
 			this.image_label.setText("Loading image...");
-			new PictureWorker(cR.getMediaURLPath(), this.detailFrame_main_panel, image_label);
+			new PictureWorker(cR.getMediaURLPath(), this.detailFrame_main_panel, image_label, this).execute();
 		}
 		
 		//EVENTHANDLERS:
