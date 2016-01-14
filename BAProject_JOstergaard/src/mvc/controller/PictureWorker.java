@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
+import mvc.main.Main;
 import mvc.view.ResultDetailFrame;
 
 public class PictureWorker extends SwingWorker<ImageIcon, ImageIcon> {
@@ -41,6 +42,7 @@ public class PictureWorker extends SwingWorker<ImageIcon, ImageIcon> {
 	
 	protected void done(){
 		try {
+			this.mainPanel.remove(this.jLabel);
 			this.jLabel = new JLabel(this.get());
 			GridBagConstraints gbc_jLabel = new GridBagConstraints();
 			gbc_jLabel.anchor = GridBagConstraints.CENTER;
@@ -51,6 +53,7 @@ public class PictureWorker extends SwingWorker<ImageIcon, ImageIcon> {
 			this.mainPanel.add(this.jLabel, gbc_jLabel);
 			this.mainPanel.repaint();
 			this.frame.repaint();
+			this.frame.pack();
 			
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();

@@ -72,7 +72,7 @@ public class CaseReport {
 	 */
 	public String toString(){
 		String result = "";
-		switch(this.dayOfWeek){
+		switch((this.dayOfWeek-1)){
 			case(0): result += "Sun, "; break;
 			case(1): result += "Mon, "; break;
 			case(2): result += "Tue, "; break;
@@ -150,6 +150,14 @@ public class CaseReport {
 	 */
 	public Date getDateOpened(){
 		return this.dateOpened;
+	}
+	
+	/**
+	 * 
+	 * @return the date when this CaseReport has been closed
+	 */
+	public Date getDateClosed(){
+		return this.dateClosed;
 	}
 	
 	/**

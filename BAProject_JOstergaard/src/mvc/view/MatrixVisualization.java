@@ -20,6 +20,7 @@ public class MatrixVisualization extends JPanel {
 	private int[][] dataMatrix;
 		
 	public MatrixVisualization(int[][] matrix){
+		super();
 		this.dataMatrix = matrix;
 		Dimension size = new Dimension(500, 200);
 		this.setMinimumSize(size);

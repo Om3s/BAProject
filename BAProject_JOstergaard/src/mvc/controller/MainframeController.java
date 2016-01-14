@@ -15,6 +15,7 @@ import javax.swing.JList;
 import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
+import mvc.model.GeoPoint;
 import mvc.view.Mainframe;
 import mvc.view.ResultDetailFrame;
 
@@ -568,7 +569,7 @@ public class MainframeController {
 	}
 	
 	private void createDetailFrame(CaseReport cR) {
-		new ResultDetailFrame(cR);
+		new ResultDetailFrame(cR, this);
 //		this.mainframe.setVisible(false);
 //		this.mainframe.setVisible(true);
 	}
@@ -629,5 +630,15 @@ public class MainframeController {
 	    }
 
 	    return new Dimension(new_width, new_height);
+	}
+	
+	/**
+	 * This method is called by the center_to_point button of the ResultDetailFrame.
+	 * It will focus the GeoMap (center and zoom) on the selected CaseReport's Point.
+	 * 
+	 * @param point
+	 */
+	public void center_to_point(CaseReport cR) {
+		//TODO center on selected point on geomap (mainframe) 
 	}
 }
