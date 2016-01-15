@@ -1,5 +1,6 @@
 package mvc.controller;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
@@ -51,12 +52,14 @@ public class PictureWorker extends SwingWorker<ImageIcon, ImageIcon> {
 			gbc_jLabel.gridx = 0;
 			gbc_jLabel.gridy = 9;
 			this.mainPanel.add(this.jLabel, gbc_jLabel);
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			this.jLabel.setForeground(Color.ORANGE);
+			this.jLabel.setText("Could not load Image");
+		} finally {
 			this.mainPanel.repaint();
 			this.frame.repaint();
 			this.frame.pack();
-			
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
 		}
 	}
 }

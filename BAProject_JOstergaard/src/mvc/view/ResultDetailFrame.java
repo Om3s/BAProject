@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -62,13 +63,13 @@ public class ResultDetailFrame extends JFrame {
 		for(String s : tokens){
 			System.out.println("["+(i++)+"]"+s);
 		}
-		this.caseId_textArea.setText(tokens[0]);
-		this.category_textArea.setText(tokens[1]);
+		this.caseId_textArea.setText(tokens[0].substring(8, tokens[0].length()));
+		this.category_textArea.setText(tokens[1].substring(10, tokens[1].length()));
 		SimpleDateFormat dateOutputFormat = new SimpleDateFormat("EEE dd/MM/yyyy HH:mm");
 		this.dateOpened_textArea.setText(dateOutputFormat.format(this.cR.getDateOpened()));
 		this.statusNotes_textArea.setText(tokens[5].substring(13, tokens[5].length()));
-		this.neighbourhood_textArea.setText(tokens[6]);
-		this.position_textArea.setText(tokens[7]);
+		this.neighbourhood_textArea.setText(tokens[6].substring(15, tokens[6].length()));
+		this.position_textArea.setText(tokens[7].substring(7, tokens[7].length()));
 
 		//Correcting GUI Components based on the information:
 		if(this.cR.isClosed()){
@@ -149,6 +150,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_detailFrame_main_panel.gridx = 0;
 		gbc_detailFrame_main_panel.gridy = 0;
 		getContentPane().add(detailFrame_main_panel, gbc_detailFrame_main_panel);
+		Insets standardInsets = new Insets (2,0,2,0);
 		
 		this.caseId_label = new JLabel("CaseID:");
 		GridBagConstraints gbc_caseId_label = new GridBagConstraints();
@@ -156,6 +158,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_caseId_label.fill = GridBagConstraints.BOTH;
 		gbc_caseId_label.gridx = 0;
 		gbc_caseId_label.gridy = 0;
+		gbc_caseId_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.caseId_label, gbc_caseId_label);
 		
 		this.caseId_textArea = new JTextArea("testID");
@@ -165,6 +168,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_caseId_textArea.gridwidth = 3;
 		gbc_caseId_textArea.gridx = 1;
 		gbc_caseId_textArea.gridy = 0;
+		gbc_caseId_textArea.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.caseId_textArea, gbc_caseId_textArea);
 		
 		this.category_label = new JLabel("Category:");
@@ -173,6 +177,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_category_label.fill = GridBagConstraints.BOTH;
 		gbc_category_label.gridx = 0;
 		gbc_category_label.gridy = 1;
+		gbc_category_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.category_label, gbc_category_label);
 		
 		this.category_textArea = new JTextArea("testCategory");
@@ -182,6 +187,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_category_textArea.gridwidth = 3;
 		gbc_category_textArea.gridx = 1;
 		gbc_category_textArea.gridy = 1;
+		gbc_category_textArea.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.category_textArea, gbc_category_textArea);
 		
 		this.status_label = new JLabel("Status:");
@@ -190,6 +196,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_status_label.fill = GridBagConstraints.BOTH;
 		gbc_status_label.gridx = 0;
 		gbc_status_label.gridy = 2;
+		gbc_status_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.status_label, gbc_status_label);
 		
 		this.status_graphic_label = new JLabel("<status_graphic>", SwingConstants.LEFT);
@@ -199,6 +206,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_status_graphic_label.gridwidth = 3;
 		gbc_status_graphic_label.gridx = 1;
 		gbc_status_graphic_label.gridy = 2;
+		gbc_status_graphic_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.status_graphic_label, gbc_status_graphic_label);
 		
 		this.statusNotes_label = new JLabel("StatusNotes:");
@@ -207,6 +215,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_statusNotes_label.fill = GridBagConstraints.BOTH;
 		gbc_statusNotes_label.gridx = 0;
 		gbc_statusNotes_label.gridy = 3;
+		gbc_statusNotes_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.statusNotes_label, gbc_statusNotes_label);
 		
 		this.statusNotes_textArea = new JTextArea("test StatusNotes Text");
@@ -216,6 +225,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_statusNotes_textArea.gridwidth = 3;
 		gbc_statusNotes_textArea.gridx = 1;
 		gbc_statusNotes_textArea.gridy = 3;
+		gbc_statusNotes_textArea.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.statusNotes_textArea, gbc_statusNotes_textArea);
 		
 		this.dateOpened_label = new JLabel("Opened:");
@@ -224,6 +234,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_dateOpened_label.fill = GridBagConstraints.BOTH;
 		gbc_dateOpened_label.gridx = 0;
 		gbc_dateOpened_label.gridy = 4;
+		gbc_dateOpened_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.dateOpened_label, gbc_dateOpened_label);
 		
 		this.dateOpened_graphic_label = new SimpleWeekDayGraphic(this.cR, true, this.dateGraphicSize);
@@ -232,6 +243,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_dateOpened_graphic_label.fill = GridBagConstraints.BOTH;
 		gbc_dateOpened_graphic_label.gridx = 1;
 		gbc_dateOpened_graphic_label.gridy = 4;
+		gbc_dateOpened_graphic_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.dateOpened_graphic_label, gbc_dateOpened_graphic_label);
 		
 		this.dateOpened_textArea = new JTextArea("dateOpened text");
@@ -240,6 +252,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_dateOpened_textArea.fill = GridBagConstraints.BOTH;
 		gbc_dateOpened_textArea.gridx = 3;
 		gbc_dateOpened_textArea.gridy = 4;
+		gbc_dateOpened_textArea.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.dateOpened_textArea, gbc_dateOpened_textArea);
 		
 
@@ -249,6 +262,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_dateClosed_label.fill = GridBagConstraints.BOTH;
 		gbc_dateClosed_label.gridx = 0;
 		gbc_dateClosed_label.gridy = 5;
+		gbc_dateClosed_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.dateClosed_label, gbc_dateClosed_label);
 		
 		this.dateClosed_graphic_label = new SimpleWeekDayGraphic(this.cR, false, this.dateGraphicSize);
@@ -257,6 +271,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_dateClosed_graphic_label.fill = GridBagConstraints.BOTH;
 		gbc_dateClosed_graphic_label.gridx = 1;
 		gbc_dateClosed_graphic_label.gridy = 5;
+		gbc_dateClosed_graphic_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.dateClosed_graphic_label, gbc_dateClosed_graphic_label);
 		
 		this.dateClosed_graphicText_label = new JLabel("+ x weeks");
@@ -265,6 +280,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_dateClosed_graphicText_label.fill = GridBagConstraints.BOTH;
 		gbc_dateClosed_graphicText_label.gridx = 2;
 		gbc_dateClosed_graphicText_label.gridy = 5;
+		gbc_dateClosed_graphicText_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.dateClosed_graphicText_label, gbc_dateClosed_graphicText_label);
 		
 		this.dateClosed_textArea = new JTextArea("dateClosed text");
@@ -273,6 +289,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_dateClosed_textArea.fill = GridBagConstraints.BOTH;
 		gbc_dateClosed_textArea.gridx = 3;
 		gbc_dateClosed_textArea.gridy = 5;
+		gbc_dateClosed_textArea.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.dateClosed_textArea, gbc_dateClosed_textArea);
 				
 		this.position_label = new JLabel("Position:");
@@ -281,15 +298,17 @@ public class ResultDetailFrame extends JFrame {
 		gbc_position_label.fill = GridBagConstraints.BOTH;
 		gbc_position_label.gridx = 0;
 		gbc_position_label.gridy = 6;
+		gbc_position_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.position_label, gbc_position_label);
 		
 		this.position_textArea = new JTextArea("coordinates");
 		GridBagConstraints gbc_position_textArea = new GridBagConstraints();
 		gbc_position_textArea.anchor = GridBagConstraints.CENTER;
 		gbc_position_textArea.fill = GridBagConstraints.BOTH;
-		gbc_position_textArea.gridwidth = 3;
+		gbc_position_textArea.gridwidth = 2;
 		gbc_position_textArea.gridx = 1;
 		gbc_position_textArea.gridy = 6;
+		gbc_position_textArea.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.position_textArea, gbc_position_textArea);
 		
 		this.neighbourhood_label = new JLabel("Neighbourhood:");
@@ -298,6 +317,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_neighbourh_label.fill = GridBagConstraints.BOTH;
 		gbc_neighbourh_label.gridx = 0;
 		gbc_neighbourh_label.gridy = 7;
+		gbc_neighbourh_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.neighbourhood_label, gbc_neighbourh_label);
 		
 		this.neighbourhood_textArea = new JTextArea("neighbourhood text");
@@ -307,15 +327,17 @@ public class ResultDetailFrame extends JFrame {
 		gbc_neighbourhood_textArea.gridwidth = 3;
 		gbc_neighbourhood_textArea.gridx = 1;
 		gbc_neighbourhood_textArea.gridy = 7;
+		gbc_neighbourhood_textArea.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.neighbourhood_textArea, gbc_neighbourhood_textArea);
 		
 		this.neighbourhood_graphic_label = new JLabel("<Neighbourhood graphic>", SwingConstants.CENTER);
 		GridBagConstraints gbc_neighbourhood_graphic_label = new GridBagConstraints();
 		gbc_neighbourhood_graphic_label.anchor = GridBagConstraints.CENTER;
 		gbc_neighbourhood_graphic_label.fill = GridBagConstraints.BOTH;
-		gbc_neighbourhood_graphic_label.gridwidth = 3;
+		gbc_neighbourhood_graphic_label.gridwidth = 4;
 		gbc_neighbourhood_graphic_label.gridx = 0;
 		gbc_neighbourhood_graphic_label.gridy = 8;
+		gbc_neighbourhood_graphic_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.neighbourhood_graphic_label, gbc_neighbourhood_graphic_label);
 		
 		this.center_to_point_button = new JButton("Center on Map");
@@ -323,7 +345,8 @@ public class ResultDetailFrame extends JFrame {
 		gbc_center_to_point_button.anchor = GridBagConstraints.CENTER;
 		gbc_center_to_point_button.fill = GridBagConstraints.BOTH;
 		gbc_center_to_point_button.gridx = 3;
-		gbc_center_to_point_button.gridy = 8;
+		gbc_center_to_point_button.gridy = 6;
+		gbc_center_to_point_button.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.center_to_point_button, gbc_center_to_point_button);
 
 		this.image_label = new JLabel("no image available", SwingConstants.CENTER);
@@ -334,6 +357,7 @@ public class ResultDetailFrame extends JFrame {
 		gbc_image_label.gridwidth = 4;
 		gbc_image_label.gridx = 0;
 		gbc_image_label.gridy = 9;
+		gbc_image_label.insets = standardInsets;
 		this.detailFrame_main_panel.add(this.image_label, gbc_image_label);
 		
 		if(cR.hasAPictureLink()){

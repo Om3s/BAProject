@@ -61,7 +61,7 @@ public class MapController extends DefaultMapController {
 		this.currentPoints.clear();
 		
 		Calendar cal = Calendar.getInstance();
-		int dayOfWeek = 0;
+		int dayOfWeek;
 		for(CaseReport cR : reports){
 			cal.setTime(cR.getDateOpened());
 			dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
@@ -92,6 +92,26 @@ public class MapController extends DefaultMapController {
 				point.setVisible(false);
 			} else {
 				point.setVisible(true);
+			}
+		}
+		this.map.updateUI();
+	}
+	
+	/**
+	 * Shows or hides all closed/opened currentPoints on the map
+	 * 
+	 * @param showThem true for visible, false for invisible.
+	 */
+	public void setShowOpenedClosedCurrentPoints(boolean showThem, boolean opened){
+		for(GeoPoint point : this.currentPoints){
+			if(showThem && opened && !point.getRelatedCaseReport().isClosed()){
+				point.setVisible(true);
+			} else if(showThem && !opened && point.getRelatedCaseReport().isClosed()) {
+				point.setVisible(true);
+			} else if(!showThem && opened && !point.getRelatedCaseReport().isClosed()){
+				point.setVisible(false);
+			} else if(!showThem && !opened && point.getRelatedCaseReport().isClosed()){
+				point.setVisible(false);
 			}
 		}
 		this.map.updateUI();
@@ -131,6 +151,8 @@ public class MapController extends DefaultMapController {
   	            		this.clearSelectedMapMarker();
   	            		this.selectedMapMarker = mapMarker;
   	            		this.selectedMapMarker.setBackColor(Color.PINK);
+  	            		this.map.removeMapMarker(this.selectedMapMarker);
+  	            		this.map.addMapMarker(this.selectedMapMarker);
 	  	        	}
 	  	        }
 	  	    }
@@ -188,6 +210,8 @@ public class MapController extends DefaultMapController {
 		this.setDefaultColor(this.selectedMapMarker);
 		this.selectedMapMarker = mapMarker;
 		this.selectedMapMarker.setBackColor(Color.PINK);
+  		this.map.removeMapMarker(this.selectedMapMarker);
+  		this.map.addMapMarker(this.selectedMapMarker);
 	}
 	
 	/**
@@ -198,13 +222,17 @@ public class MapController extends DefaultMapController {
 	 */
 	private void setDefaultColor(MapMarker m) {
 		if(m != null){
+			Calendar cal = Calendar.getInstance();
 			for(CaseReport cR : this.dataBase.getCurrentData()){
 				if(cR.getPoint().getLat() == m.getLat() && cR.getPoint().getLon() == m.getLon()){
 					int dayOfWeek;
-					Calendar cal = Calendar.getInstance();
 					cal.setTime(cR.getDateOpened());
 					dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-					cR.getPoint().setColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
+					if(Main.colorAlpha == 255){
+						cR.getPoint().setColor(Color.BLACK);
+					} else {
+						cR.getPoint().setColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
+					}
 					cR.getPoint().setBackColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
 				}
 			}
@@ -218,5 +246,9 @@ public class MapController extends DefaultMapController {
 	 */
 	public void setMainFrameController(MainframeController mFC){
 		this.mainFrameController = mFC;
+	}
+
+	public void setMapLocation(double lat, double lon, int zoom) {
+		this.map.setDisplayPositionByLatLon(lat, lon, zoom);
 	}
 }

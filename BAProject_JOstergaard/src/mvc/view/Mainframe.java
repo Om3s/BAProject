@@ -6,10 +6,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JPanel;
 
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -23,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 
 import mvc.controller.MainframeController;
@@ -45,9 +41,10 @@ import javax.swing.JCheckBox;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -55,10 +52,8 @@ import java.util.Date;
 
 import javax.swing.JScrollPane;
 import javax.swing.JList;
-import javax.swing.BoxLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.border.LineBorder;
 import javax.swing.SwingConstants;
 
 /**
@@ -73,7 +68,7 @@ public class Mainframe extends JFrame {
 	private final JMenuItem fileMenu_item_load;
 	private final JMenuItem fileMenu_item_exit;
 	private MapController geoMapController;
-	public final ButtonGroup filtermenu_interval_buttongroup;
+	public final ButtonGroup filtermenu_interval_RadioButtongroupInterval;
 	public final JRadioButton filtermenu_interval_radioButtonMonths;
 	public final JRadioButton filtermenu_interval_radioButtonWeeks;
 	public final JRadioButton filtermenu_interval_radioButtonDays;
@@ -104,6 +99,8 @@ public class Mainframe extends JFrame {
 	private JPanel filtermenu_daytime_panel;
 	private JButton reportList_details_button;
 	public MatrixVisualization matrix_chart_panel;
+	public JCheckBox reportList_panel_filter_checkBoxOpen;
+	public JCheckBox reportList_panel_filter_checkBoxClosed;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -111,7 +108,7 @@ public class Mainframe extends JFrame {
 		this.geoMap = map;
 		this.geoMapController = geoMapController;
 		//radiobuttons:
-		this.filtermenu_interval_buttongroup = new ButtonGroup();
+		this.filtermenu_interval_RadioButtongroupInterval = new ButtonGroup();
 		this.filtermenu_interval_radioButtonMonths = new JRadioButton("Months");
 		this.filtermenu_interval_radioButtonWeeks = new JRadioButton("Weeks");
 		this.filtermenu_interval_radioButtonDays = new JRadioButton("Days");
@@ -334,10 +331,10 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_interval_radioButtonHours.gridy = 2;
 		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonHours, gbc_filtermenu_interval_radioButtonHours);
 		
-		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonDays);
-		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonWeeks);
-		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonMonths);
-		this.filtermenu_interval_buttongroup.add(this.filtermenu_interval_radioButtonHours);
+		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonDays);
+		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonWeeks);
+		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonMonths);
+		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonHours);
 		
 		JPanel filtermenu_specific_dow_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_specific_dow_panel = new GridBagConstraints();
@@ -564,20 +561,36 @@ public class Mainframe extends JFrame {
 		gbc_reportList_panel.gridx = 0;
 		gbc_reportList_panel.gridy = 0;
 		getContentPane().add(reportList_panel, gbc_reportList_panel);
-		
-		this.reportListModel = new DefaultListModel<CaseReport>();
 		GridBagLayout gbl_reportList_panel = new GridBagLayout();
-		gbl_reportList_panel.columnWidths = new int[] {0};
-		gbl_reportList_panel.rowHeights = new int[] {0, 0};
-		gbl_reportList_panel.columnWeights = new double[]{0.0};
-		gbl_reportList_panel.rowWeights = new double[]{0.0, 0.0};
+		gbl_reportList_panel.columnWidths = new int[] {0, 0};
+		gbl_reportList_panel.rowHeights = new int[] {0, 0, 0};
+		gbl_reportList_panel.columnWeights = new double[]{1.0, 1.0};
+		gbl_reportList_panel.rowWeights = new double[]{0.0, 0.0, 0.0};
 		reportList_panel.setLayout(gbl_reportList_panel);
+		this.reportListModel = new DefaultListModel<CaseReport>();
 		this.reportList = new MyJList<CaseReport>(this.reportListModel);
 		this.reportList.setToolTipText("");
 		this.reportList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.reportList.setLayoutOrientation(JList.VERTICAL);
 		this.reportList.setVisibleRowCount(-1);
 		((DefaultListCellRenderer)this.reportList.getCellRenderer()).setHorizontalTextPosition(SwingConstants.LEFT);
+				
+		this.reportList_panel_filter_checkBoxOpen = new JCheckBox("Open");
+		GridBagConstraints gbc_reportList_panel_filter_radioButtonOpen = new GridBagConstraints();
+		gbc_reportList_panel_filter_radioButtonOpen.anchor = GridBagConstraints.CENTER;
+		gbc_reportList_panel_filter_radioButtonOpen.fill = GridBagConstraints.BOTH;
+		gbc_reportList_panel_filter_radioButtonOpen.gridx = 0;
+		gbc_reportList_panel_filter_radioButtonOpen.gridy = 0;
+		this.reportList_panel.add(this.reportList_panel_filter_checkBoxOpen ,gbc_reportList_panel_filter_radioButtonOpen);
+		
+		this.reportList_panel_filter_checkBoxClosed = new JCheckBox("Closed");
+		GridBagConstraints gbc_reportList_panel_filter_radioButtonClosed = new GridBagConstraints();
+		gbc_reportList_panel_filter_radioButtonClosed.anchor = GridBagConstraints.CENTER;
+		gbc_reportList_panel_filter_radioButtonClosed.fill = GridBagConstraints.BOTH;
+		gbc_reportList_panel_filter_radioButtonClosed.gridx = 1;
+		gbc_reportList_panel_filter_radioButtonClosed.gridy = 0;
+		this.reportList_panel.add(this.reportList_panel_filter_checkBoxClosed ,gbc_reportList_panel_filter_radioButtonClosed);
+		
 		JScrollPane reportList_scrollPane = new JScrollPane(reportList);
 		reportList_scrollPane.setMinimumSize(new Dimension(210,0));
 		GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
@@ -585,9 +598,9 @@ public class Mainframe extends JFrame {
 		gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_reportList_scrollPane.weighty = 0.9;
 		gbc_reportList_scrollPane.weightx = 1.0;
-		
+		gbc_reportList_scrollPane.gridwidth = 2;
 		gbc_reportList_scrollPane.gridx = 0;
-		gbc_reportList_scrollPane.gridy = 0;
+		gbc_reportList_scrollPane.gridy = 1;
 		this.reportList_panel.add(reportList_scrollPane, gbc_reportList_scrollPane);
 		this.reportList_details_button = new JButton("Details");
 		reportList_details_button.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -595,8 +608,9 @@ public class Mainframe extends JFrame {
 		gbc_reportList_details_button.fill = GridBagConstraints.BOTH;
 		gbc_reportList_details_button.weighty = 0.1;
 		gbc_reportList_details_button.weightx = 1.0;
+		gbc_reportList_details_button.gridwidth = 2;
 		gbc_reportList_details_button.gridx = 0;
-		gbc_reportList_details_button.gridy = 1;
+		gbc_reportList_details_button.gridy = 2;
 		reportList_panel.add(reportList_details_button, gbc_reportList_details_button);
 		
 		// =================== EVENTHANDLER: =================== 
@@ -606,6 +620,14 @@ public class Mainframe extends JFrame {
 			public void valueChanged(ListSelectionEvent e) {
 				if(!e.getValueIsAdjusting()){
 					Mainframe.this.controller.onNewCaseSelection();
+				}
+			}
+		});
+		
+		this.reportList.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e){
+				if(e.getClickCount() == 2){
+					Mainframe.this.controller.detailsButtonClicked();
 				}
 			}
 		});
@@ -632,29 +654,6 @@ public class Mainframe extends JFrame {
 		
 		this.setJMenuBar(menuBar);
 //		this.timeLineBiSlider.addMouseListener(new MouseListener() {
-//			
-//			@Override
-//			public void mouseReleased(MouseEvent e) {
-//				
-//			}
-//			
-//			@Override
-//			public void mousePressed(MouseEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void mouseExited(MouseEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void mouseEntered(MouseEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
 //			
 //			@Override
 //			public void mouseClicked(MouseEvent e) {
@@ -700,35 +699,7 @@ public class Mainframe extends JFrame {
 				Mainframe.this.controller.loadData(Mainframe.this.fileChooser.getSelectedFile().getPath());
 			}
 		});
-		
-		this.filtermenu_comboBox_category.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		
-		this.filtermenu_interval_radioButtonDays.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		
-		this.filtermenu_interval_radioButtonWeeks.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		
-		this.filtermenu_interval_radioButtonMonths.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		
+				
 		this.filtermenu_dates_leftCalendarButton.addPropertyChangeListener(new PropertyChangeListener() {
 			
 			@Override
@@ -764,6 +735,26 @@ public class Mainframe extends JFrame {
 				Mainframe.this.controller.defaultSettings();
 			}
 		});
+		
+		this.reportList_panel_filter_checkBoxOpen.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(Mainframe.this.controller != null){
+					Mainframe.this.controller.showOpenedCases(Mainframe.this.reportList_panel_filter_checkBoxOpen.isSelected());
+				}
+			}
+		});;
+		
+		this.reportList_panel_filter_checkBoxClosed.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(Mainframe.this.controller != null){
+					Mainframe.this.controller.showClosedCases(Mainframe.this.reportList_panel_filter_checkBoxClosed.isSelected());
+				}
+			}
+		});;
 	}
 	
 	/**

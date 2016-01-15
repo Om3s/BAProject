@@ -31,7 +31,6 @@ public class MainframeController {
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat standardGUIDateTimeOutputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private int timelineDateSteps;
-	private MapController geoMapController;
 	private int[] selectedWeekdays = {1,2,3,4,5,6,7};
 	private ArrayList<Integer> selectedDayTimesAsList;
 	private String currentCategory;
@@ -59,7 +58,6 @@ public class MainframeController {
 	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase, MapController mC) throws ParseException{
 		this.mainframe = frame;
 		this.cCaseDatabase = dataBase;
-		this.geoMapController = this.mainframe.getGeoMapController();
 		this.mapController = mC;
 		this.mapController.setMainFrameController(this);
 		this.init();
@@ -106,6 +104,8 @@ public class MainframeController {
 		//Category
 		this.currentCategory = "All categories";
 		//reportListArea
+		this.mainframe.reportList_panel_filter_checkBoxOpen.setSelected(true);
+		this.mainframe.reportList_panel_filter_checkBoxClosed.setSelected(true);
 		((DefaultListCellRenderer)this.mainframe.reportList.getCellRenderer()).setHorizontalAlignment(JLabel.LEFT);
 		this.mainframe.reportList.setLayoutOrientation(this.mainframe.reportList.HORIZONTAL_WRAP);
 		//daytime checkboxes
@@ -207,6 +207,8 @@ public class MainframeController {
 		this.refreshCurrentCategory();
 		this.refreshChart();
 		this.refreshMapData();
+		this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
+		this.showClosedCases(this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
 		
 		//DEPRECATED CONTENT:
 //		this.timelineLowerValue = -1; //definetly change HACK
@@ -387,9 +389,9 @@ public class MainframeController {
 			}
 			this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.selectedWeekdays, this.currentCategory, notSelectedDayTimes);
 			System.out.println("currentData#: "+this.cCaseDatabase.getCurrentData().size());
-			this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());
-			this.fillReportListWith(this.cCaseDatabase.getCurrentData());
-			this.geoMapController.setShowCurrentPoints(true);
+			this.mapController.loadPoints(this.cCaseDatabase.getCurrentData());
+			this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
+			this.mapController.setShowCurrentPoints(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -400,10 +402,14 @@ public class MainframeController {
 	 * 
 	 * @param currentData contains the data thas should be listed.
 	 */
-	private void fillReportListWith(ArrayList<CaseReport> currentData) {
+	private void fillReportListWith(boolean openedCases, boolean closedCases) {
 		this.mainframe.reportListModel.clear();
 		for(CaseReport cR : this.cCaseDatabase.getCurrentData()){
-			this.mainframe.reportListModel.addElement(cR);
+			if(cR.isClosed() && closedCases){
+				this.mainframe.reportListModel.addElement(cR);
+			} else if (!cR.isClosed() && openedCases){
+				this.mainframe.reportListModel.addElement(cR);
+			}
 		}
 	}
 	
@@ -639,6 +645,16 @@ public class MainframeController {
 	 * @param point
 	 */
 	public void center_to_point(CaseReport cR) {
-		//TODO center on selected point on geomap (mainframe) 
+		this.mapController.setMapLocation(cR.getPoint().getLat(), cR.getPoint().getLon(), 17);
+	}
+
+	public void showOpenedCases(boolean yes) {
+		this.mapController.setShowOpenedClosedCurrentPoints(yes, true);
+		this.fillReportListWith(yes, this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
+	}
+
+	public void showClosedCases(boolean yes) {
+		this.mapController.setShowOpenedClosedCurrentPoints(yes, false);
+		this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), yes);
 	}
 }
