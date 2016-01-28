@@ -98,7 +98,7 @@ public class Mainframe extends JFrame {
 	public JCheckBox checkBox_daytime_midnight;
 	private JPanel filtermenu_daytime_panel;
 	private JButton reportList_details_button;
-	public MatrixVisualization matrix_chart_panel;
+	public CaseCountMatrix matrix_chart_panel;
 	public JCheckBox reportList_panel_filter_checkBoxOpen;
 	public JCheckBox reportList_panel_filter_checkBoxClosed;
 	
@@ -135,7 +135,7 @@ public class Mainframe extends JFrame {
 		//Combobox Categories:
 		this.filtermenu_comboBox_category = new JComboBox();
 		//ChartPanel
-		this.matrix_chart_panel = new MatrixVisualization(new int[7][4]);
+		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4]);
 		
 		this.init();
 	}
@@ -355,42 +355,49 @@ public class Mainframe extends JFrame {
 				
 		GridBagConstraints gbc_checkBox_Mon = new GridBagConstraints();
 		gbc_checkBox_Mon.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_Mon.fill = GridBagConstraints.BOTH;
 		gbc_checkBox_Mon.gridx = 0;
 		gbc_checkBox_Mon.gridy = 1;
 		filtermenu_specific_dow_panel.add(this.checkBox_Mon, gbc_checkBox_Mon);
 
 		GridBagConstraints gbc_checkBox_Tue = new GridBagConstraints();
 		gbc_checkBox_Tue.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_Tue.fill = GridBagConstraints.BOTH;
 		gbc_checkBox_Tue.gridx = 1;
 		gbc_checkBox_Tue.gridy = 1;
 		filtermenu_specific_dow_panel.add(this.checkBox_Tue, gbc_checkBox_Tue);
 
 		GridBagConstraints gbc_checkBox_Wed = new GridBagConstraints();
 		gbc_checkBox_Wed.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_Wed.fill = GridBagConstraints.BOTH;
 		gbc_checkBox_Wed.gridx = 2;
 		gbc_checkBox_Wed.gridy = 1;
 		filtermenu_specific_dow_panel.add(this.checkBox_Wed, gbc_checkBox_Wed);
 
-		GridBagConstraints gbc_checkBox_Thu_ = new GridBagConstraints();
-		gbc_checkBox_Thu_.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_Thu_.gridx = 0;
-		gbc_checkBox_Thu_.gridy = 2;
-		filtermenu_specific_dow_panel.add(this.checkBox_Thu, gbc_checkBox_Thu_);
+		GridBagConstraints gbc_checkBox_Thu = new GridBagConstraints();
+		gbc_checkBox_Thu.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_Thu.fill = GridBagConstraints.BOTH;
+		gbc_checkBox_Thu.gridx = 0;
+		gbc_checkBox_Thu.gridy = 2;
+		filtermenu_specific_dow_panel.add(this.checkBox_Thu, gbc_checkBox_Thu);
 
 		GridBagConstraints gbc_checkBox_Fri = new GridBagConstraints();
 		gbc_checkBox_Fri.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_Fri.fill = GridBagConstraints.BOTH;
 		gbc_checkBox_Fri.gridx = 1;
 		gbc_checkBox_Fri.gridy = 2;
 		filtermenu_specific_dow_panel.add(this.checkBox_Fri, gbc_checkBox_Fri);
 
 		GridBagConstraints gbc_checkBox_Sat = new GridBagConstraints();
 		gbc_checkBox_Sat.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_Sat.fill = GridBagConstraints.BOTH;
 		gbc_checkBox_Sat.gridx = 2;
 		gbc_checkBox_Sat.gridy = 2;
 		filtermenu_specific_dow_panel.add(this.checkBox_Sat, gbc_checkBox_Sat);
 
 		GridBagConstraints gbc_checkBox_Sun = new GridBagConstraints();
 		gbc_checkBox_Sun.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_Sun.fill = GridBagConstraints.BOTH;
 		gbc_checkBox_Sun.gridx = 0;
 		gbc_checkBox_Sun.gridy = 3;
 		filtermenu_specific_dow_panel.add(this.checkBox_Sun, gbc_checkBox_Sun);

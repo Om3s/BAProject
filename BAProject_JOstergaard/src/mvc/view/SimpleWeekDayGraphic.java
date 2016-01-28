@@ -68,7 +68,7 @@ public class SimpleWeekDayGraphic extends JPanel {
 		posY = this.yOuterOffset;
 		//Draw background:
 		if(this.fromDate){
-			g2d.setColor(Color.WHITE);
+			g2d.setColor(new Color(238,238,238));
 		} else {
 			g2d.setColor(new Color(220,220,220));
 		}
@@ -81,10 +81,17 @@ public class SimpleWeekDayGraphic extends JPanel {
 			g2d.drawRect((int)posX, (int)posY, (int)rectWidth, (int)rectHeight);
 //			g2d.draw(new Rectangle2D.Double(posX,posY,rectWidth,rectHeight));
 		}
-		int dayOfWeek = this.determineDayOfWeek();
-		posX = this.xOuterOffset+dayOfWeek*(rectWidth+this.xInnerOffset);
-		g2d.setColor(Main.weekDayColors[dayOfWeek]);
-		g2d.fill(new Rectangle2D.Double(posX,posY,rectWidth,rectHeight));
+		if(this.fromDate){
+			int dayOfWeek = this.determineDayOfWeek();
+			posX = this.xOuterOffset+dayOfWeek*(rectWidth+this.xInnerOffset);
+			g2d.setColor(Main.weekDayColors[dayOfWeek]);
+			g2d.fill(new Rectangle2D.Double(posX,posY,rectWidth,rectHeight));
+		} else if(this.cR.isClosed()){
+			int dayOfWeek = this.determineDayOfWeek();
+			posX = this.xOuterOffset+dayOfWeek*(rectWidth+this.xInnerOffset);
+			g2d.setColor(Main.weekDayColors[dayOfWeek]);
+			g2d.fill(new Rectangle2D.Double(posX,posY,rectWidth,rectHeight));
+		}
 	}
 	
 	/**

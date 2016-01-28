@@ -71,20 +71,21 @@ public class ResultDetailFrame extends JFrame {
 		this.neighbourhood_textArea.setText(tokens[6].substring(15, tokens[6].length()));
 		this.position_textArea.setText(tokens[7].substring(7, tokens[7].length()));
 
+		String dateClosed_graphicText_string;
+		if(this.dateClosed_graphic_label.getPlusWeeks()>0){
+			dateClosed_graphicText_string = " +"+this.dateClosed_graphic_label.getPlusWeeks()+" week";
+			if(this.dateClosed_graphic_label.getPlusWeeks() != 1){
+				dateClosed_graphicText_string += "s ";
+			} else {
+				dateClosed_graphicText_string += " ";
+			}
+		} else {
+			dateClosed_graphicText_string = "";
+		}
+		this.dateClosed_graphicText_label.setText(dateClosed_graphicText_string);
+		
 		//Correcting GUI Components based on the information:
 		if(this.cR.isClosed()){
-			String dateClosed_graphicText_string;
-			if(this.dateClosed_graphic_label.getPlusWeeks()>0){
-				dateClosed_graphicText_string = " +"+this.dateClosed_graphic_label.getPlusWeeks()+" week";
-				if(this.dateClosed_graphic_label.getPlusWeeks() != 1){
-					dateClosed_graphicText_string += "s ";
-				} else {
-					dateClosed_graphicText_string += " ";
-				}
-			} else {
-				dateClosed_graphicText_string = "";
-			}
-			this.dateClosed_graphicText_label.setText(dateClosed_graphicText_string);
 			this.status_graphic_label.setForeground(Color.GREEN);
 			this.status_graphic_label.setText("Closed");
 			this.dateClosed_textArea.setText(dateOutputFormat.format(this.cR.getDateClosed()));
@@ -92,11 +93,7 @@ public class ResultDetailFrame extends JFrame {
 			//Status
 			this.status_graphic_label.setForeground(Color.ORANGE);
 			this.status_graphic_label.setText("Open");
-			//Remove ClosedDate Line:
-			this.detailFrame_main_panel.remove(this.dateClosed_graphic_label);
-			this.detailFrame_main_panel.remove(this.dateClosed_graphicText_label);
-			this.detailFrame_main_panel.remove(this.dateClosed_label);
-			this.detailFrame_main_panel.remove(this.dateClosed_textArea);
+			this.dateClosed_textArea.setText("");
 		}
 		this.colorizeBackgroundLines();
 		this.repaint();
@@ -107,27 +104,25 @@ public class ResultDetailFrame extends JFrame {
 	 * colorize the lines differently for easier reading of the Details
 	 */
 	private void colorizeBackgroundLines() {
-		Color lightGrayBckgrnd = new Color(220,220,220);
+		Color grayBckgrnd = new Color(220,220,220);
+		Color lightGrayBckgrnd = new Color(238,238,238);
+		this.caseId_textArea.setBackground(lightGrayBckgrnd);
 		this.category_label.setOpaque(true);
-		this.category_label.setBackground(lightGrayBckgrnd);
-		this.category_textArea.setBackground(lightGrayBckgrnd);
+		this.category_label.setBackground(grayBckgrnd);
+		this.category_textArea.setBackground(grayBckgrnd);
 		this.statusNotes_label.setOpaque(true);
-		this.statusNotes_label.setBackground(lightGrayBckgrnd);
-		this.statusNotes_textArea.setBackground(lightGrayBckgrnd);
-		if(this.cR.isClosed()){
-			this.dateClosed_label.setOpaque(true);
-			this.dateClosed_label.setBackground(lightGrayBckgrnd);
-			this.dateClosed_graphicText_label.setOpaque(true);
-			this.dateClosed_graphicText_label.setBackground(lightGrayBckgrnd);
-			this.dateClosed_textArea.setBackground(lightGrayBckgrnd);
-			this.neighbourhood_label.setOpaque(true);
-			this.neighbourhood_label.setBackground(lightGrayBckgrnd);
-			this.neighbourhood_textArea.setBackground(lightGrayBckgrnd);
-		} else {
-			this.position_label.setOpaque(true);
-			this.position_label.setBackground(lightGrayBckgrnd);
-			this.position_textArea.setBackground(lightGrayBckgrnd);
-		}
+		this.statusNotes_label.setBackground(grayBckgrnd);
+		this.statusNotes_textArea.setBackground(grayBckgrnd);
+		this.dateOpened_textArea.setBackground(lightGrayBckgrnd);
+		this.dateClosed_label.setOpaque(true);
+		this.dateClosed_label.setBackground(grayBckgrnd);
+		this.dateClosed_graphicText_label.setOpaque(true);
+		this.dateClosed_graphicText_label.setBackground(grayBckgrnd);
+		this.dateClosed_textArea.setBackground(grayBckgrnd);
+		this.position_textArea.setBackground(lightGrayBckgrnd);
+		this.neighbourhood_label.setOpaque(true);
+		this.neighbourhood_label.setBackground(grayBckgrnd);
+		this.neighbourhood_textArea.setBackground(grayBckgrnd);
 	}
 
 	private void initGUI() {

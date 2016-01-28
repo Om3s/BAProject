@@ -12,14 +12,14 @@ import javax.swing.JPanel;
 import mvc.main.Main;
 
 @SuppressWarnings("serial")
-public class MatrixVisualization extends JPanel {
+public class CaseCountMatrix extends JPanel {
 	//Offset space on each side
 	private double leftStringWidth,xOuterOffsetLeft,xOuterOffsetRight,yOuterOffsetTop,yOuterOffsetBot,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange;
 	private int dataMaxValue, dataMinValue;
 	private int transformationMode = 0;
 	private int[][] dataMatrix;
 		
-	public MatrixVisualization(int[][] matrix){
+	public CaseCountMatrix(int[][] matrix){
 		super();
 		this.dataMatrix = matrix;
 		Dimension size = new Dimension(500, 200);

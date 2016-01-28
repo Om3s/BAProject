@@ -1,11 +1,14 @@
 package mvc.controller;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+
 
 import mvc.main.Main;
 import mvc.model.CaseReport;
@@ -15,7 +18,6 @@ import mvc.model.GeoPoint;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 
 /**
@@ -43,6 +45,7 @@ public class MapController extends DefaultMapController {
 	 * Simply draws all current data initially to the map.
 	 */
 	public void init(){
+//		this.map.setTileSource(new OfflineOsmTileSource("D:/Downloads/jTileDownloader-0-6-1/jTileDownloader/tiles", 11, 18));
 		for(CaseReport cR : dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
 		}
