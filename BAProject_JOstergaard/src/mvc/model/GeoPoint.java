@@ -1,5 +1,7 @@
 package mvc.model;
 
+import java.awt.Graphics;
+
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 
@@ -35,5 +37,13 @@ public class GeoPoint extends MapMarkerDot {
 	 */
 	public void setRelatedCaseReport(CaseReport relatedCaseReport) {
 		this.relatedCaseReport = relatedCaseReport;
+	}
+	
+	public void paint(Graphics g){
+		if(this.relatedCaseReport.isCurrentSelected()){
+			
+		} else {
+			
+		}
 	}
 }

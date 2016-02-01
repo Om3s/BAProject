@@ -13,6 +13,7 @@ import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
 import mvc.model.GeoPoint;
+import mvc.model.GrayOSMTileSource;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
@@ -50,7 +51,7 @@ public class MapController extends DefaultMapController {
 	 * Simply draws all current data initially to the map.
 	 */
 	public void init(){
-		this.map.setTileSource(new MapQuestOpenAerialTileSource());
+		this.map.setTileSource(new GrayOSMTileSource.BWMapnik());
 		for(CaseReport cR : dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
 		}
@@ -134,7 +135,7 @@ public class MapController extends DefaultMapController {
 	 */
 	public void mouseClicked(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1){
-	  		Coordinate geoClickPos = this.map.getPosition(e.getPoint());
+	  		Coordinate geoClickPos = (Coordinate) this.map.getPosition(e.getPoint());
 			Point p = this.map.getMapPosition(geoClickPos);
 			double X = p.x;
 			double Y = p.y;
@@ -257,6 +258,6 @@ public class MapController extends DefaultMapController {
 	}
 
 	public void setMapLocation(double lat, double lon, int zoom) {
-		this.map.setDisplayPositionByLatLon(lat, lon, zoom);
+		this.map.setDisplayPosition(new Coordinate(lat, lon), zoom);
 	}
 }

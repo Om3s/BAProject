@@ -5,6 +5,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseEvent;
 
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import mvc.controller.MainframeController;
@@ -50,7 +51,7 @@ public class Main {
 		
 		System.out.println("Create Map...");
 		JMapViewer map = new JMapViewer();
-		map.setDisplayPositionByLatLon(37.73, -122.45, 11);
+		map.setDisplayPosition(new Coordinate(37.73, -122.45), 11);
 		
 		System.out.println("Create Controller...");
 		MapController geoMapController = new MapController(map, dataBase);
