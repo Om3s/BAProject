@@ -12,8 +12,7 @@ public class GeoPoint extends MapMarkerDot {
 	private CaseReport relatedCaseReport;
 	
 	public GeoPoint(Coordinate coord) {
-		super(coord);
-		this.setVisible(false);
+		this(coord, null);
 	}
 	
 	public GeoPoint(Coordinate coord, CaseReport cR) {
@@ -37,5 +36,4 @@ public class GeoPoint extends MapMarkerDot {
 	public void setRelatedCaseReport(CaseReport relatedCaseReport) {
 		this.relatedCaseReport = relatedCaseReport;
 	}
-
 }
