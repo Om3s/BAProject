@@ -1,6 +1,10 @@
 package mvc.model;
 
+import java.awt.AlphaComposite;
+import java.awt.Composite;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
@@ -39,11 +43,39 @@ public class GeoPoint extends MapMarkerDot {
 		this.relatedCaseReport = relatedCaseReport;
 	}
 	
-	public void paint(Graphics g){
-		if(this.relatedCaseReport.isCurrentSelected()){
-			
+	@Override
+	public void paint(Graphics g, Point position, int radius){
+        int sizeH;
+        int size;
+
+		sizeH = radius;
+		size = sizeH * 2;
+		
+        if (g instanceof Graphics2D && getBackColor() != null) {
+            Graphics2D g2 = (Graphics2D) g;
+            Composite oldComposite = g2.getComposite();
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+            g2.setPaint(getBackColor());
+            
+        	if(this.relatedCaseReport.isCurrentSelected()){
+        		sizeH = radius * 2;
+        		size = sizeH * 2;
+                g.fillOval(position.x - sizeH, position.y - sizeH, size, size);
+    		} else {
+    			g.fillOval(position.x - sizeH, position.y - sizeH, size, size);
+    		}
+            g2.setComposite(oldComposite);
+        }
+        g.setColor(getColor());
+        if(this.relatedCaseReport.isCurrentSelected()){
+    		sizeH = radius * 2;
+    		size = sizeH * 2;
+            g.drawOval(position.x - sizeH, position.y - sizeH, size, size);
 		} else {
-			
+	        g.drawOval(position.x - sizeH, position.y - sizeH, size, size);
 		}
+
+        if (getLayer() == null || getLayer().isVisibleTexts()) paintText(g, position);
+		
 	}
 }

@@ -144,7 +144,6 @@ public class MapController extends DefaultMapController {
 	  	    Iterator<GeoPoint> i = this.currentPoints.iterator();
 	  	    double centerX, centerY,shortestDistance=Double.MAX_VALUE;
 	  	    Point markerPosition = null;
-	  	    this.clearSelectedMapMarker();
 	  	    GeoPoint mapMarker = null;
 	  	    double newDistance;
 	  	    while (i.hasNext()) {
@@ -157,11 +156,7 @@ public class MapController extends DefaultMapController {
 	  	        	
 	  	        	if (newDistance < shortestDistance){
 	  	        		shortestDistance = newDistance;
-  	            		this.clearSelectedMapMarker();
-  	            		this.selectedMapMarker = mapMarker;
-  	            		this.selectedMapMarker.setBackColor(Color.PINK);
-  	            		this.map.removeMapMarker(this.selectedMapMarker);
-  	            		this.map.addMapMarker(this.selectedMapMarker);
+  	            		this.setSelectedMarker(mapMarker);
 	  	        	}
 	  	        }
 	  	    }
@@ -206,6 +201,8 @@ public class MapController extends DefaultMapController {
 	private void clearSelectedMapMarker() {
 		this.setDefaultColor(this.selectedMapMarker);
 		this.mainFrameController.mainframe.reportList.clearSelection();
+		this.dataBase.getCurrentSelected().setCurrentSelected(false);
+		this.dataBase.setCurrentSelected(null);
 		this.selectedMapMarker = null;
 	}
 	
@@ -216,11 +213,17 @@ public class MapController extends DefaultMapController {
 	 * @param mapMarker
 	 */
 	public void setSelectedMarker(GeoPoint mapMarker){
+		if(this.dataBase.getCurrentSelected()!= null){
+			this.dataBase.getCurrentSelected().setCurrentSelected(false);
+		}
+		mapMarker.getRelatedCaseReport().setCurrentSelected(true);
+		this.dataBase.setCurrentSelected(mapMarker.getRelatedCaseReport());
 		this.setDefaultColor(this.selectedMapMarker);
 		this.selectedMapMarker = mapMarker;
 		this.selectedMapMarker.setBackColor(Color.PINK);
   		this.map.removeMapMarker(this.selectedMapMarker);
   		this.map.addMapMarker(this.selectedMapMarker);
+  		this.map.repaint();
 	}
 	
 	/**

@@ -50,6 +50,7 @@ public class CrimeCaseDatabase {
 	private IndexSearcher indexSearcher = null;
 	private StandardAnalyzer standardAnalyzer = null;
 	private ArrayList<String> categories;
+	private CaseReport currentSelected;
 	
 	public CrimeCaseDatabase(String path, boolean reIndex) throws IOException {
 		
@@ -317,5 +318,13 @@ public class CrimeCaseDatabase {
 		this.indexSearcher.search(boolQuery, hitCountCollector);
 		totalHits += hitCountCollector.getTotalHits();
 		return totalHits;
+	}
+
+	public CaseReport getCurrentSelected() {
+		return currentSelected;
+	}
+
+	public void setCurrentSelected(CaseReport currentSelected) {
+		this.currentSelected = currentSelected;
 	}
 }
