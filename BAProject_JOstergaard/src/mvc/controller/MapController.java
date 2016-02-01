@@ -218,9 +218,10 @@ public class MapController extends DefaultMapController {
 		}
 		mapMarker.getRelatedCaseReport().setCurrentSelected(true);
 		this.dataBase.setCurrentSelected(mapMarker.getRelatedCaseReport());
-		this.setDefaultColor(this.selectedMapMarker);
+//		this.setDefaultColor(this.selectedMapMarker);
 		this.selectedMapMarker = mapMarker;
-		this.selectedMapMarker.setBackColor(Color.PINK);
+		this.setDefaultColor(mapMarker);
+//		this.selectedMapMarker.setBackColor(Color.PINK);
   		this.map.removeMapMarker(this.selectedMapMarker);
   		this.map.addMapMarker(this.selectedMapMarker);
   		this.map.repaint();

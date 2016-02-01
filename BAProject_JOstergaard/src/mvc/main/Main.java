@@ -27,14 +27,14 @@ public class Main {
 		wednesdayColor = new Color(160,15,200), //MAGENTA
 		thursdayColor = new Color(220,90,0), //ORANGE
 		fridayColor = new Color(200,0,0), //RED
-		saturdayColor = new Color(0,200,100), //GREEN
+		saturdayColor = new Color(0,255,50), //GREEN
 		sundayColor = new Color(0,0,200), // BLUE
 		mondayColorWithAlpha = new Color(213,207,11,colorAlpha), //YELLOW
 		tuesdayColorWithAlpha = new Color(0,200,240,colorAlpha), //CYAN
 		wednesdayColorWithAlpha = new Color(160,15,200,colorAlpha), //MAGENTA
 		thursdayColorWithAlpha = new Color(220,90,0,colorAlpha), //ORANGE
 		fridayColorWithAlpha = new Color(200,0,0,colorAlpha), //RED
-		saturdayColorWithAlpha = new Color(0,200,100,colorAlpha), //GREEN
+		saturdayColorWithAlpha = new Color(0,255,50,colorAlpha), //GREEN
 		sundayColorWithAlpha = new Color(0,0,200,colorAlpha); //BLUE
 	
 	public static void main(String[] args) throws Exception {
