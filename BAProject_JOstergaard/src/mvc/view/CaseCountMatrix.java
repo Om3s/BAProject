@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JPanel;
@@ -14,39 +16,104 @@ import mvc.main.Main;
 @SuppressWarnings("serial")
 public class CaseCountMatrix extends JPanel {
 	//Offset space on each side
-	private double leftStringWidth,xOuterOffsetLeft,xOuterOffsetRight,yOuterOffsetTop,yOuterOffsetBot,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange;
-	private int dataMaxValue, dataMinValue;
-	private int transformationMode = 0;
+	private double leftStringWidth,xOuterOffsetLeft,xOuterOffsetRight,yOuterOffsetTop,yOuterOffsetBot,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange,textHeightTop;
+	private int dataMaxValue, dataMinValue, weekdayMinValue, weekdayMaxValue;
+	private int transformationMode = 1;
+	private int[] weekDayCounts;
 	private int[][] dataMatrix;
-		
+	private Color[] colorMaps = {
+			new Color(128,255,0),	//LIGHTGREEN
+			new Color(0,255,0),		//GREEN
+			new Color(0,255,128),	//GREENBLUE
+			new Color(0,255,255),	//CYAN
+			new Color(0,128,255),	//LIGHTBLUE
+			new Color(0,0,255),		//BLUE
+			new Color(128,0,255),	//PURPLE
+			new Color(255,0,255),	//PINK
+			new Color(255,0,128),	//DARKPINK
+			new Color(255,0,0)		//RED
+			};
+
+//	new Color Values to Map 1 low, 12 high
+//	1.		#FF0080
+//	2.		#FF00FF
+//	3.		#8000FF
+//	4.		#0000FF
+//	5.		#0080FF
+//	6.		#00FFFF
+//	7.		#00FF80
+//	8.		#00FF00
+//	9.		#80FF00
+//	10. 	#FFFF00
+//	11. 	#FF8000
+//	12.		#FF0000
 	public CaseCountMatrix(int[][] matrix){
 		super();
 		this.dataMatrix = matrix;
 		Dimension size = new Dimension(500, 200);
+		this.setupMouseListener();
 		this.setMinimumSize(size);
 		this.setPreferredSize(size);
 		this.setMaximumSize(size);
 		this.repaint();
 	}
 	
+	private void setupMouseListener(){
+		this.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO
+				System.out.println("RELEASED");
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO
+				System.out.println("PRESSED");
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO
+				System.out.println("EXITED");
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO
+				System.out.println("ENTER");
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO
+				System.out.println("CLICK");
+			}
+		});
+	}
+	
 	private void refreshLayoutSettings() {
 		this.xOuterOffsetLeft = this.leftStringWidth*1.2;
 		this.xOuterOffsetRight = this.getWidth()*0.05;
 		this.yOuterOffsetTop = this.getHeight()*0.15;
+		this.textHeightTop = this.getHeight() / 11;
 		this.yOuterOffsetBot = this.getHeight()*0.15;
 		this.xInnerOffset = 0; //this.getWidth()*0.02;
 		this.yInnerOffset = 0; //this.getHeight()*0.02;
 		this.xDrawRange = this.getWidth()*(1.0-(this.xOuterOffsetLeft+this.xOuterOffsetRight)/this.getWidth());
-		this.yDrawRange = this.getHeight()*(1.0-(this.yOuterOffsetTop+this.yOuterOffsetBot)/this.getHeight());
+		this.yDrawRange = this.getHeight()*(1.0-(this.yOuterOffsetTop+this.yOuterOffsetBot+this.textHeightTop)/this.getHeight());
 	}
 	
 	public void setData(int[][] data){
 		this.dataMatrix = data;
+		this.weekDayCounts = new int[this.dataMatrix.length];
 		this.computeDataValues();
 		this.repaint();
 	}
 
 	private void computeDataValues() {
+		//compute Data Matrix Values:
 		this.dataMinValue = Integer.MAX_VALUE;
 		this.dataMaxValue = 0;
 		for(int x = 0; x<this.dataMatrix.length; x++){
@@ -61,6 +128,32 @@ public class CaseCountMatrix extends JPanel {
 				}
 			}
 		}
+		//compute Weekday Data Values
+		System.out.println("Compute Weekdayvalues:");
+		this.weekdayMinValue = Integer.MAX_VALUE;
+		this.weekdayMaxValue = 0;
+		for(int weekDay = 0; weekDay<this.dataMatrix.length; weekDay++){
+			this.weekDayCounts[weekDay] = 0;
+			for(int dayTime = 0; dayTime<this.dataMatrix[0].length; dayTime++){
+				if(this.dataMatrix[weekDay][dayTime] == -1){
+					this.weekDayCounts[weekDay] = -1;
+					break;
+				} else{
+					this.weekDayCounts[weekDay] += this.dataMatrix[weekDay][dayTime];
+				}
+			}
+			if(this.weekDayCounts[weekDay] == -1){
+				
+			} else if(this.weekdayMinValue > this.weekDayCounts[weekDay]){
+				this.weekdayMinValue = this.weekDayCounts[weekDay];
+			}
+			if(this.weekdayMaxValue < this.weekDayCounts[weekDay]){
+				this.weekdayMaxValue = this.weekDayCounts[weekDay];
+			}
+			System.out.println("Weekday: "+weekDay+", Counts: "+this.weekDayCounts[weekDay]);
+		}
+		System.out.println("Min: "+this.weekdayMinValue);
+		System.out.println("Max: "+this.weekdayMaxValue);
 	}
 
 	public void paint(Graphics g){
@@ -72,35 +165,45 @@ public class CaseCountMatrix extends JPanel {
 		this.computeDataValues();
 		double dataRectWidth = this.determineRecWidth(this.dataMatrix.length);
 		double dataRectHeight = this.determineRecHeight(this.dataMatrix[0].length);
-		double posX,posY;
+		double posX,posY,relativeFieldValue;
+		int colorCase;
+		String cellContent = "";
 		Color backgroundColor = Color.WHITE;
 		//DRAW BACKGROUND:
 		g2d.setColor(backgroundColor);
 		g2d.fill(new Rectangle2D.Double(0,0,this.getWidth(),this.getHeight()));
-		for(int i = 0; i<this.dataMatrix.length; i++){
-			g2d.setColor(Main.weekDayColors[(i)%7]);
-			posX = this.xOuterOffsetLeft+i*(dataRectWidth+this.xInnerOffset);
-			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yOuterOffsetTop-this.yOuterOffsetTop/3*2, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffsetTop/3*2));
-//			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yDrawRange+this.yOuterOffsetTop, dataRectWidth+this.xInnerOffset/3*2, this.yOuterOffsetBot/3));
+		g2d.setColor(Color.BLACK);
+		g2d.fill(new Rectangle2D.Double(xOuterOffsetLeft-5,yOuterOffsetTop-10,this.getWidth()-xOuterOffsetLeft-xOuterOffsetRight+10,this.getHeight()-yOuterOffsetBot-yOuterOffsetTop+15));
+		//DRAW WEEKDAYS
+		for(int weekDay = 0; weekDay<this.dataMatrix.length; weekDay++){
+//			g2d.setColor(Main.weekDayColors[(weekDay)%7]);
+			if(this.weekDayCounts[weekDay] == -1){
+				g2d.setColor(Color.GRAY);
+			} else {
+				relativeFieldValue = this.transformFieldValue(this.weekDayCounts[weekDay], this.transformationMode, this.weekdayMinValue, this.weekdayMaxValue);
+				colorCase = (int)(relativeFieldValue * 9.9999);
+				System.out.println(relativeFieldValue);
+				g2d.setColor(this.colorMaps[colorCase]);
+			}
+			posX = this.xOuterOffsetLeft+weekDay*(dataRectWidth+this.xInnerOffset);
+			g2d.fill(new Rectangle2D.Double(posX-this.xInnerOffset/3, this.yOuterOffsetTop-5, dataRectWidth+this.xInnerOffset/3*2, this.textHeightTop));
 		}
 		//DRAW RECTANGLES:
-		double relativeFieldValue;
 		for(int x=0; x<this.dataMatrix.length; x++){
 //			System.out.print("Day "+x+":\t | \t");
 			posX = this.xOuterOffsetLeft+x*(dataRectWidth+this.xInnerOffset);
 			for(int y=0; y<this.dataMatrix[0].length; y++){
-				posY = this.yOuterOffsetTop+y*(dataRectHeight+yInnerOffset);
+				posY = this.yOuterOffsetTop+this.textHeightTop+y*(dataRectHeight+yInnerOffset);
 				g2d.setColor(backgroundColor);
 				g2d.fill(new Rectangle2D.Double(posX, posY, dataRectWidth, dataRectHeight));
-				String cellContent = "";
+				cellContent = "";
 				if(this.dataMatrix[x][y] == -1){
 					g2d.setColor(Color.GRAY);
 //					System.out.print("n/A | \t");
 				} else {
-					relativeFieldValue = (this.transformFieldValue(this.dataMatrix[x][y],this.transformationMode)*0.33f);
-					g2d.setColor(Color.getHSBColor((float)(0.33f-relativeFieldValue), 1, 1));
-//					g2d.setColor(new Color(relativeFieldValue,255-relativeFieldValue,80));
-//					System.out.print(this.dataMatrix[x][y] +":"+relativeFieldValue+" | \t");
+					relativeFieldValue = this.transformFieldValue(this.dataMatrix[x][y],this.transformationMode, this.dataMinValue, this.dataMaxValue);
+					colorCase = (int)(relativeFieldValue * 9.9999);
+					g2d.setColor(this.colorMaps[colorCase]);
 					cellContent += this.dataMatrix[x][y];
 				}
 				g2d.fill(new Rectangle2D.Double(posX, posY, dataRectWidth, dataRectHeight)); //+3 posX and posY, -6 from Width and Height removed
@@ -113,41 +216,52 @@ public class CaseCountMatrix extends JPanel {
 //		System.out.println("MIN: "+this.dataMinValue);
 		//DRAW TEXT LEFT:
 		g2d.setColor(Color.BLACK);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+0*(dataRectHeight+yInnerOffset);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+0*(dataRectHeight+yInnerOffset);
 		g2d.drawString("00:00 - 06:00", (float)(this.leftStringWidth*0.15), (float)posY);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+1*(dataRectHeight+yInnerOffset);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+1*(dataRectHeight+yInnerOffset);
 		g2d.drawString("06:00 - 12:00", (float)(this.leftStringWidth*0.15), (float)posY);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+2*(dataRectHeight+yInnerOffset);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+2*(dataRectHeight+yInnerOffset);
 		g2d.drawString("12:00 - 18:00", (float)(this.leftStringWidth*0.15), (float)posY);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+3*(dataRectHeight+yInnerOffset);
+		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+3*(dataRectHeight+yInnerOffset);
 		g2d.drawString("18:00 - 00:00", (float)(this.leftStringWidth*0.15), (float)posY);
 		//DRAW TEXT TOP:
+		g2d.setColor(Color.BLACK);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop/1.3;
+		for(int weekDay=0; weekDay<this.weekDayCounts.length; weekDay++){
+			cellContent = "";
+			if(!(this.weekDayCounts[weekDay] == -1)){
+				posX = this.xOuterOffsetLeft+weekDay*(dataRectWidth+this.xInnerOffset);
+				cellContent += this.weekDayCounts[weekDay];
+				g2d.drawString(cellContent, (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth(cellContent)*0.5), (float)posY);
+			}
+		}
 		g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		g2d.setColor(Color.BLACK);
+		posY = this.yOuterOffsetTop-this.textHeightTop;
 		posX = this.xOuterOffsetLeft+0*(dataRectWidth+this.xInnerOffset);
-//		g2d.setColor(Main.sundayColor);
-		g2d.drawString("Sun", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sun")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.setColor(Main.sundayColor);
+		g2d.drawString("Sun", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sun")*0.5), (float)posY);
 		posX = this.xOuterOffsetLeft+1*(dataRectWidth+this.xInnerOffset);
-//		g2d.setColor(Main.mondayColor);
-		g2d.drawString("Mon", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Mon")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.setColor(Main.mondayColor);
+		g2d.drawString("Mon", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Mon")*0.5), (float)posY);
 		posX = this.xOuterOffsetLeft+2*(dataRectWidth+this.xInnerOffset);
-//		g2d.setColor(Main.tuesdayColor);
-		g2d.drawString("Tue", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Tue")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.setColor(Main.tuesdayColor);
+		g2d.drawString("Tue", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Tue")*0.5), (float)posY);
 		posX = this.xOuterOffsetLeft+3*(dataRectWidth+this.xInnerOffset);
-//		g2d.setColor(Main.wednesdayColor);
-		g2d.drawString("Wed", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Wed")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.setColor(Main.wednesdayColor);
+		g2d.drawString("Wed", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Wed")*0.5), (float)posY);
 		posX = this.xOuterOffsetLeft+4*(dataRectWidth+this.xInnerOffset);
-//		g2d.setColor(Main.thursdayColor);
-		g2d.drawString("Thu", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Thu")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.setColor(Main.thursdayColor);
+		g2d.drawString("Thu", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Thu")*0.5), (float)posY);
 		posX = this.xOuterOffsetLeft+5*(dataRectWidth+this.xInnerOffset);
-//		g2d.setColor(Main.fridayColor);
-		g2d.drawString("Fri", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Fri")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.setColor(Main.fridayColor);
+		g2d.drawString("Fri", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Fri")*0.5), (float)posY);
 		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
-//		g2d.setColor(Main.saturdayColor);
-		g2d.drawString("Sat", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sat")*0.5), (float)(this.yOuterOffsetTop/1.25));
+		g2d.setColor(Main.saturdayColor);
+		g2d.drawString("Sat", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sat")*0.5), (float)posY);
 		g2d.dispose();
 	}
-	
+
 	/**
 	 * transforms the given value into the range from 0 to 1 with the max and min value
 	 * of the current given data. With the transformationMode you can choose between
@@ -157,14 +271,14 @@ public class CaseCountMatrix extends JPanel {
 	 * @param transformationMode 0 for linear, 1 for logarithmic, 2 for square
 	 * @return the transformed value between 0 and 1
 	 */
-	private double transformFieldValue(int value, int transformationMode) {
+	private double transformFieldValue(int value, int transformationMode, int minValue, int maxValue) {
 		double result;
 		if(transformationMode == 0){
-			result = (double)(value-this.dataMinValue)/(this.dataMaxValue-this.dataMinValue);
+			result = (double)(value-minValue)/(maxValue-minValue);
 		} else if (transformationMode == 1){
-			result = (double)(Math.log(value)-Math.log(this.dataMinValue))/(Math.log(this.dataMaxValue)-Math.log(this.dataMinValue));
+			result = (double)(Math.log(value)-Math.log(minValue))/(Math.log(maxValue)-Math.log(minValue));
 		} else if (transformationMode == 2){
-			result = (double)(Math.sqrt(value)-Math.sqrt(this.dataMinValue))/(Math.sqrt(this.dataMaxValue)-Math.sqrt(this.dataMinValue));
+			result = (double)(Math.sqrt(value)-Math.sqrt(minValue))/(Math.sqrt(maxValue)-Math.sqrt(minValue));
 		} else {
 			return -1.0;
 		}
@@ -181,10 +295,6 @@ public class CaseCountMatrix extends JPanel {
 		return recHeight;
 	}
 	
-	public int[][] getDataMatrix(){
-		return this.dataMatrix;
-	}
-	
 	/**
 	 * Sets the fieldValue transformationMode.
 	 * 
@@ -197,5 +307,9 @@ public class CaseCountMatrix extends JPanel {
 		} else {
 			this.transformationMode = transformationMode;
 		}
+	}
+	
+	public int[][] getDataMatrix(){
+		return this.dataMatrix;
 	}
 }
