@@ -63,7 +63,7 @@ import javax.swing.SwingConstants;
  */
 public class Mainframe extends JFrame {
 	public JMapViewer geoMap;
-	private MainframeController controller;
+	public MainframeController controller;
 	private final JFileChooser fileChooser;
 	private final JMenuItem fileMenu_item_load;
 	private final JMenuItem fileMenu_item_exit;
@@ -135,7 +135,7 @@ public class Mainframe extends JFrame {
 		//Combobox Categories:
 		this.filtermenu_comboBox_category = new JComboBox();
 		//ChartPanel
-		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4]);
+		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4], this);
 		
 		this.init();
 	}

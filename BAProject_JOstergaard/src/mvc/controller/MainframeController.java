@@ -657,4 +657,8 @@ public class MainframeController {
 		this.mapController.setShowOpenedClosedCurrentPoints(yes, false);
 		this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), yes);
 	}
+	
+	public void filterForCaseCountMatrixSelection(boolean isSelected,int weekDay,int dayTime){
+		
+	}
 }

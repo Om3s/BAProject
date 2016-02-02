@@ -21,13 +21,14 @@ public class CaseCountMatrix extends JPanel {
 	//Offset space on each side
 	private double leftStringWidth,xOuterOffsetLeft,xOuterOffsetRight,yOuterOffsetTop,yOuterOffsetBot,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange,textHeightTop;
 	private int dataMaxValue, dataMinValue, weekdayMinValue, weekdayMaxValue;
-	private int transformationMode = 1;
+	private int transformationMode = 1, hoverWeekDay, hoverDayTime, selectedWeekDay, selectedDayTime;
 	private Point mousePos;
 	private int[] weekDayCounts;
 	private int[][] dataMatrix;
+	private Mainframe mFrame;
 	private Rectangle2D[][] dataRectangles; 
 	private Rectangle2D[] weekDayRectangles;
-	private Rectangle2D rectangleMouseIsOver;
+	private Rectangle2D rectangleMouseIsOver ,selectedRectangle;
 	private Color[] colorMaps = {
 			new Color(128,255,0),	//LIGHTGREEN
 			new Color(0,255,0),		//GREEN
@@ -41,8 +42,9 @@ public class CaseCountMatrix extends JPanel {
 			new Color(255,0,0)		//RED
 			};
 
-	public CaseCountMatrix(int[][] matrix){
+	public CaseCountMatrix(int[][] matrix, Mainframe mFrame){
 		super();
+		this.mFrame = mFrame;
 		this.dataMatrix = matrix;
 		Dimension size = new Dimension(500, 200);
 		this.setupMouseListener();
@@ -57,9 +59,20 @@ public class CaseCountMatrix extends JPanel {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				// TODO Visually Select/Deselect current hoverRectangle
 				// TODO Set Menu Filters temporarily for this RectangleCaseContent
-				System.out.println("SELECT/DESELECT");
+				if(rectangleMouseIsOver == null){ //ignore
+				} else if(selectedRectangle == null){
+//					mFrame.controller.filterForCaseCountMatrixSelection();
+					selectedWeekDay = hoverWeekDay;
+					selectedDayTime = hoverDayTime;
+					selectedRectangle = rectangleMouseIsOver;
+				} else if(selectedRectangle.equals(rectangleMouseIsOver)){
+					selectedRectangle = null;
+				} else {
+					//TODO
+					selectedRectangle = rectangleMouseIsOver;
+				}
+				repaint();
 			}
 			
 			@Override
@@ -111,16 +124,19 @@ public class CaseCountMatrix extends JPanel {
 	private Rectangle2D getRectangleMouseIsHovering(Point p){
 		if(this.weekDayRectangles != null && p != null){
 			if(this.weekDayRectangles[0].getY()+this.weekDayRectangles[0].getHeight() > p.getY()){
-				for(Rectangle2D rec : this.weekDayRectangles){
-					if(rec.getX() < p.getX() && rec.getY() < p.getY() && rec.getX()+rec.getWidth() > p.getX()){
-						return rec;
+				for(int weekDay = 0; weekDay<this.weekDayRectangles.length; weekDay++){
+					if(this.weekDayRectangles[weekDay].getX() < p.getX() && this.weekDayRectangles[weekDay].getY() < p.getY() && this.weekDayRectangles[weekDay].getX()+this.weekDayRectangles[weekDay].getWidth() > p.getX()){
+						this.hoverWeekDay = weekDay;
+						return this.weekDayRectangles[weekDay];
 					}
 				}
 			} else {
-				for(Rectangle2D[] weekDayRectangles : this.dataRectangles){
-					for(Rectangle2D rec : weekDayRectangles){
-						if(rec.getX() < p.getX() && rec.getY() < p.getY() && rec.getX()+rec.getWidth() > p.getX() && rec.getY()+rec.getHeight() > p.getY()){
-							return rec;
+				for(int weekDay = 0; weekDay<this.dataRectangles.length; weekDay++){
+					for(int dayTime = 0; dayTime<this.dataRectangles[0].length; dayTime++){
+						if(this.dataRectangles[weekDay][dayTime].getX() < p.getX() && this.dataRectangles[weekDay][dayTime].getY() < p.getY() && this.dataRectangles[weekDay][dayTime].getX()+this.dataRectangles[weekDay][dayTime].getWidth() > p.getX() && this.dataRectangles[weekDay][dayTime].getY()+this.dataRectangles[weekDay][dayTime].getHeight() > p.getY()){
+							this.hoverWeekDay = weekDay;
+							this.hoverDayTime = dayTime;
+							return this.dataRectangles[weekDay][dayTime];
 						}
 					}
 				}
@@ -132,9 +148,9 @@ public class CaseCountMatrix extends JPanel {
 	private void refreshLayoutSettings() {
 		this.xOuterOffsetLeft = this.leftStringWidth*1.2;
 		this.xOuterOffsetRight = this.getWidth()*0.05;
-		this.yOuterOffsetTop = this.getHeight()*0.15;
+		this.yOuterOffsetTop = this.getHeight()*0.2;
 		this.textHeightTop = this.getHeight() / 11;
-		this.yOuterOffsetBot = this.getHeight()*0.15;
+		this.yOuterOffsetBot = this.getHeight()*0.1;
 		this.xInnerOffset = 0; //this.getWidth()*0.02;
 		this.yInnerOffset = 0; //this.getHeight()*0.02;
 		this.xDrawRange = this.getWidth()*(1.0-(this.xOuterOffsetLeft+this.xOuterOffsetRight)/this.getWidth());
@@ -200,7 +216,7 @@ public class CaseCountMatrix extends JPanel {
 		double posX,posY,relativeFieldValue;
 		int colorCase;
 		String cellContent = "";
-		Color backgroundColor = Color.WHITE;
+		Color backgroundColor = new Color(238,238,238);
 		this.weekDayRectangles = new Rectangle2D[this.weekDayCounts.length];
 		this.dataRectangles = new Rectangle2D[this.dataMatrix.length][this.dataMatrix[0].length];
 		//DRAW BACKGROUND:
@@ -244,6 +260,8 @@ public class CaseCountMatrix extends JPanel {
 		}
 		//DRAW TEXT LEFT:
 		g2d.setColor(Color.BLACK);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop/1.5;
+		g2d.drawString("Daily Total", (float)(this.leftStringWidth*0.15), (float)posY);
 		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+0*(dataRectHeight+yInnerOffset);
 		g2d.drawString("00:00 - 06:00", (float)(this.leftStringWidth*0.15), (float)posY);
 		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+1*(dataRectHeight+yInnerOffset);
@@ -263,7 +281,7 @@ public class CaseCountMatrix extends JPanel {
 				g2d.drawString(cellContent, (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth(cellContent)*0.5), (float)posY);
 			}
 		}
-		g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
+//		g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		g2d.setColor(Color.BLACK);
 		posY = this.yOuterOffsetTop-this.textHeightTop;
 		posX = this.xOuterOffsetLeft+0*(dataRectWidth+this.xInnerOffset);
@@ -287,9 +305,14 @@ public class CaseCountMatrix extends JPanel {
 		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.saturdayColor);
 		g2d.drawString("Sat", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sat")*0.5), (float)posY);
+		if(this.selectedRectangle != null){
+			g2d.setStroke(new BasicStroke(3));
+			g2d.setColor(Color.LIGHT_GRAY);
+			g2d.draw(new Rectangle2D.Double(this.selectedRectangle.getX(), this.selectedRectangle.getY(), this.selectedRectangle.getWidth(), this.selectedRectangle.getHeight()));
+		}
 		if(this.rectangleMouseIsOver != null){
-			g2d.setColor(Color.WHITE);
 			g2d.setStroke(new BasicStroke(2));
+			g2d.setColor(Color.WHITE);
 			g2d.draw(new Rectangle2D.Double(this.rectangleMouseIsOver.getX(), this.rectangleMouseIsOver.getY(), this.rectangleMouseIsOver.getWidth(), this.rectangleMouseIsOver.getHeight()));
 		}
 		g2d.dispose();
