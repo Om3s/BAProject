@@ -135,15 +135,17 @@ public class MainframeController {
 	 * Refreshes the TimeLine with the actual Filtersettings
 	 */
 	private void refreshTimelineAttributes(){
-		Date fromDate = this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate();
-		Date toDate = this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate();
-		long diffInMillis = toDate.getTime() - fromDate.getTime();
-		int timeUnitDiffs;
-		//WEEK-Interval selected:
-		timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 7);
-		if(timeUnitDiffs == 0){
-			timeUnitDiffs = 1;
-		}
+		//DEPRECATED CONTENT
+//		Date fromDate = this.mainframe.filtermenu_dates_leftCalendarButton.getTargetDate();
+//		Date toDate = this.mainframe.filtermenu_dates_rightCalendarButton.getTargetDate();
+//		long diffInMillis = toDate.getTime() - fromDate.getTime();
+//		int timeUnitDiffs;
+//		//WEEK-Interval selected:
+//		timeUnitDiffs = (int)((TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)) / 7);
+//		if(timeUnitDiffs == 0){
+//			timeUnitDiffs = 1;
+//		}
+		
 		this.timelineDateSteps = 2;
 		this.intervalName = "Weeks";
 		
@@ -548,16 +550,16 @@ public class MainframeController {
 	private void determineSelectedDayTimesList() {
 		this.selectedDayTimesAsList = new ArrayList<Integer>();
 		if (this.mainframe.checkBox_daytime_midnight.isSelected()){
-			selectedDayTimesAsList.add(0);
+			this.selectedDayTimesAsList.add(0);
 		}
 		if (this.mainframe.checkBox_daytime_morning.isSelected()){
-			selectedDayTimesAsList.add(1);
+			this.selectedDayTimesAsList.add(1);
 		}
 		if (this.mainframe.checkBox_daytime_afternoon.isSelected()){
-			selectedDayTimesAsList.add(2);
+			this.selectedDayTimesAsList.add(2);
 		}
 		if (this.mainframe.checkBox_daytime_evening.isSelected()){
-			selectedDayTimesAsList.add(3);
+			this.selectedDayTimesAsList.add(3);
 		}
 	}
 
@@ -658,7 +660,19 @@ public class MainframeController {
 		this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), yes);
 	}
 	
-	public void filterForCaseCountMatrixSelection(boolean isSelected,int weekDay,int dayTime){
-		
+	public void filterForCaseCountMatrixSelection(boolean isSelected,int selectedWeekDay,int selectedDayTime){
+		if(isSelected){
+			this.selectedWeekdays = new int[1];
+			this.selectedWeekdays[0] = selectedWeekDay+1;
+			if(selectedDayTime != -1){
+				this.selectedDayTimesAsList = new ArrayList<Integer>();
+				this.selectedDayTimesAsList.add(selectedDayTime);
+			}
+			this.refreshMapData();
+			this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
+			this.showClosedCases(this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
+		} else {
+			this.applySettings();
+		}
 	}
 }

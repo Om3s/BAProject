@@ -59,19 +59,26 @@ public class CaseCountMatrix extends JPanel {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				// TODO Set Menu Filters temporarily for this RectangleCaseContent
-				if(rectangleMouseIsOver == null){ //ignore
+				if(rectangleMouseIsOver == null){
+					selectedRectangle = null;
 				} else if(selectedRectangle == null){
-//					mFrame.controller.filterForCaseCountMatrixSelection();
 					selectedWeekDay = hoverWeekDay;
 					selectedDayTime = hoverDayTime;
 					selectedRectangle = rectangleMouseIsOver;
 				} else if(selectedRectangle.equals(rectangleMouseIsOver)){
 					selectedRectangle = null;
 				} else {
-					//TODO
+					selectedWeekDay = hoverWeekDay;
+					selectedDayTime = hoverDayTime;
 					selectedRectangle = rectangleMouseIsOver;
 				}
+				boolean isSelected;
+				if(selectedRectangle == null){
+					isSelected = false;
+				} else {
+					isSelected = true;
+				}
+				mFrame.controller.filterForCaseCountMatrixSelection(isSelected, selectedWeekDay, selectedDayTime);
 				repaint();
 			}
 			
@@ -127,6 +134,7 @@ public class CaseCountMatrix extends JPanel {
 				for(int weekDay = 0; weekDay<this.weekDayRectangles.length; weekDay++){
 					if(this.weekDayRectangles[weekDay].getX() < p.getX() && this.weekDayRectangles[weekDay].getY() < p.getY() && this.weekDayRectangles[weekDay].getX()+this.weekDayRectangles[weekDay].getWidth() > p.getX()){
 						this.hoverWeekDay = weekDay;
+						this.hoverDayTime = -1;
 						return this.weekDayRectangles[weekDay];
 					}
 				}
@@ -307,7 +315,7 @@ public class CaseCountMatrix extends JPanel {
 		g2d.drawString("Sat", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sat")*0.5), (float)posY);
 		if(this.selectedRectangle != null){
 			g2d.setStroke(new BasicStroke(3));
-			g2d.setColor(Color.LIGHT_GRAY);
+			g2d.setColor(Color.YELLOW);
 			g2d.draw(new Rectangle2D.Double(this.selectedRectangle.getX(), this.selectedRectangle.getY(), this.selectedRectangle.getWidth(), this.selectedRectangle.getHeight()));
 		}
 		if(this.rectangleMouseIsOver != null){

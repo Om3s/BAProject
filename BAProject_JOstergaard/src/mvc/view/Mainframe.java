@@ -101,6 +101,7 @@ public class Mainframe extends JFrame {
 	public CaseCountMatrix matrix_chart_panel;
 	public JCheckBox reportList_panel_filter_checkBoxOpen;
 	public JCheckBox reportList_panel_filter_checkBoxClosed;
+	public JScrollPane reportList_scrollPane;
 	
 	
 	public Mainframe(JMapViewer map, MapController geoMapController){
@@ -138,6 +139,7 @@ public class Mainframe extends JFrame {
 		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4], this);
 		
 		this.init();
+		this.pack();
 	}
 	
 	/**
@@ -598,8 +600,9 @@ public class Mainframe extends JFrame {
 		gbc_reportList_panel_filter_radioButtonClosed.gridy = 0;
 		this.reportList_panel.add(this.reportList_panel_filter_checkBoxClosed ,gbc_reportList_panel_filter_radioButtonClosed);
 		
-		JScrollPane reportList_scrollPane = new JScrollPane(reportList);
-		reportList_scrollPane.setMinimumSize(new Dimension(210,0));
+		reportList_scrollPane = new JScrollPane(reportList);
+		reportList_scrollPane.setMinimumSize(new Dimension(220,0));
+		reportList_scrollPane.setMaximumSize(new Dimension(220,Main.screenHeight));
 		GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
 		gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
 		gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;
