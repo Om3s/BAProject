@@ -33,6 +33,7 @@ public class MainframeController {
 	private int timelineDateSteps;
 	private int[] selectedWeekdays = {1,2,3,4,5,6,7};
 	private ArrayList<Integer> selectedDayTimesAsList;
+	private final int dayTimesAmount = 6;
 	private String currentCategory;
 	private MapController mapController;
 
@@ -381,7 +382,7 @@ public class MainframeController {
 //		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 		try {
 			ArrayList<Integer> notSelectedDayTimeList = new ArrayList<Integer>();
-			for(int i = 0; i<6; i++){ //TODO Hardcoded DayTimesAmount
+			for(int i = 0; i<this.dayTimesAmount; i++){
 				if(!this.selectedDayTimesAsList.contains(i)){
 					notSelectedDayTimeList.add(i);
 					System.out.println("NOT SELECTED "+i);
@@ -525,7 +526,7 @@ public class MainframeController {
 //	}
 	
 	private void createDataMatrix(){
-		this.currentDataMatrix = new int[7][6]; //TODO Hardcoded
+		this.currentDataMatrix = new int[7][this.dayTimesAmount];
 		this.determineSelectedDayTimesList();
 		for(int x = 0; x<this.currentDataMatrix.length; x++){
 			if(this.selectedWeekdaysAsList.contains(x+1)){
@@ -677,13 +678,9 @@ public class MainframeController {
 				this.selectedDayTimesAsList.add(selectedDayTime);
 			} else {
 				this.selectedDayTimesAsList = new ArrayList<Integer>();
-				//TODO hardcoded dayTimeList length:
-				this.selectedDayTimesAsList.add(0);
-				this.selectedDayTimesAsList.add(1);
-				this.selectedDayTimesAsList.add(2);
-				this.selectedDayTimesAsList.add(3);
-				this.selectedDayTimesAsList.add(4);
-				this.selectedDayTimesAsList.add(5);
+				for(int i=0; i<this.dayTimesAmount; i++){
+					this.selectedDayTimesAsList.add(i);
+				}
 			}
 			this.refreshMapData();
 			this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
