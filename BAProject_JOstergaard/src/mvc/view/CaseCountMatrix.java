@@ -46,20 +46,30 @@ public class CaseCountMatrix extends JPanel {
 		super();
 		this.mFrame = mFrame;
 		this.dataMatrix = matrix;
+		this.init();
+		this.repaint();
+	}
+	
+	private void init() {
 		Dimension size = new Dimension(500, 200);
 		this.setupMouseListener();
 		this.setMinimumSize(size);
 		this.setPreferredSize(size);
 		this.setMaximumSize(size);
-		this.repaint();
+		this.hoverWeekDay = -1;
+		this.hoverDayTime = -1;
+		this.selectedWeekDay = -1;
+		this.selectedDayTime = -1;
 	}
-	
+
 	private void setupMouseListener(){
 		this.addMouseListener(new MouseListener() {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if(rectangleMouseIsOver == null){
+					selectedWeekDay = -1;
+					selectedDayTime = -1;
 					selectedRectangle = null;
 				} else if(selectedRectangle == null){
 					selectedWeekDay = hoverWeekDay;
@@ -67,6 +77,8 @@ public class CaseCountMatrix extends JPanel {
 					selectedRectangle = rectangleMouseIsOver;
 				} else if(selectedRectangle.equals(rectangleMouseIsOver)){
 					selectedRectangle = null;
+					selectedWeekDay = -1;
+					selectedDayTime = -1;
 				} else {
 					selectedWeekDay = hoverWeekDay;
 					selectedDayTime = hoverDayTime;
@@ -165,6 +177,22 @@ public class CaseCountMatrix extends JPanel {
 		this.yDrawRange = this.getHeight()*(1.0-(this.yOuterOffsetTop+this.yOuterOffsetBot+this.textHeightTop)/this.getHeight());
 	}
 	
+	private void renewSelectedRectangle() {
+		if(this.selectedRectangle != null){
+			if(this.selectedDayTime == -1){
+				this.selectedRectangle = this.weekDayRectangles[this.selectedWeekDay];
+			} else {
+				this.selectedRectangle = this.dataRectangles[this.selectedWeekDay][this.selectedDayTime];			}
+		}
+		if(this.rectangleMouseIsOver != null){
+			if(this.hoverDayTime == -1){
+				this.rectangleMouseIsOver = this.weekDayRectangles[this.hoverWeekDay];
+			} else {
+				this.rectangleMouseIsOver = this.dataRectangles[this.hoverWeekDay][this.hoverDayTime];
+			}
+		}
+	}
+
 	public void setData(int[][] data){
 		this.dataMatrix = data;
 		this.weekDayCounts = new int[this.dataMatrix.length];
@@ -313,6 +341,7 @@ public class CaseCountMatrix extends JPanel {
 		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.saturdayColor);
 		g2d.drawString("Sat", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sat")*0.5), (float)posY);
+		this.renewSelectedRectangle();
 		if(this.selectedRectangle != null){
 			g2d.setStroke(new BasicStroke(3));
 			g2d.setColor(Color.YELLOW);

@@ -667,6 +667,13 @@ public class MainframeController {
 			if(selectedDayTime != -1){
 				this.selectedDayTimesAsList = new ArrayList<Integer>();
 				this.selectedDayTimesAsList.add(selectedDayTime);
+			} else {
+				this.selectedDayTimesAsList = new ArrayList<Integer>();
+				//TODO hardcoded dayTimeList length:
+				this.selectedDayTimesAsList.add(0);
+				this.selectedDayTimesAsList.add(1);
+				this.selectedDayTimesAsList.add(2);
+				this.selectedDayTimesAsList.add(3);
 			}
 			this.refreshMapData();
 			this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
