@@ -219,15 +219,21 @@ public class CaseCountMatrix extends JPanel {
 		//compute Weekday Data Values
 		this.weekdayMinValue = Integer.MAX_VALUE;
 		this.weekdayMaxValue = 0;
+		int checkGray;
 		for(int weekDay = 0; weekDay<this.dataMatrix.length; weekDay++){
+			checkGray = 0;
 			this.weekDayCounts[weekDay] = 0;
 			for(int dayTime = 0; dayTime<this.dataMatrix[0].length; dayTime++){
 				if(this.dataMatrix[weekDay][dayTime] == -1){
-					this.weekDayCounts[weekDay] = -1;
-					break;
+//					this.weekDayCounts[weekDay] = -1;
+//					break;
+					checkGray -= 1;
 				} else{
 					this.weekDayCounts[weekDay] += this.dataMatrix[weekDay][dayTime];
 				}
+			}
+			if(checkGray == -6){
+				this.weekDayCounts[weekDay] = -1;
 			}
 			if(this.weekDayCounts[weekDay] == -1){
 				
