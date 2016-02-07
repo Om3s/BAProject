@@ -20,8 +20,8 @@ import mvc.main.Main;
 public class CaseCountMatrix extends JPanel {
 	//Offset space on each side
 	private double leftStringWidth,xOuterOffsetLeft,xOuterOffsetRight,yOuterOffsetTop,yOuterOffsetBot,xInnerOffset,yInnerOffset,xDrawRange,yDrawRange,textHeightTop;
-	private int dataMaxValue, dataMinValue, weekdayMinValue, weekdayMaxValue;
-	private int transformationMode = 1, hoverWeekDay, hoverDayTime, selectedWeekDay, selectedDayTime;
+	private int dataMaxValue, dataMinValue, weekdayMinValue, weekdayMaxValue, hoverWeekDay, hoverDayTime, selectedWeekDay, selectedDayTime;
+	private int transformationMode = 1; // 0=linear, 1=log, 2=sqroot
 	private Point mousePos;
 	private int[] weekDayCounts;
 	private int[][] dataMatrix;
@@ -298,14 +298,18 @@ public class CaseCountMatrix extends JPanel {
 		g2d.setColor(Color.BLACK);
 		posY = this.yOuterOffsetTop-5+this.textHeightTop/1.5;
 		g2d.drawString("Daily Total", (float)(this.leftStringWidth*0.15), (float)posY);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+0*(dataRectHeight+yInnerOffset);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop+this.textHeightTop+0*(dataRectHeight+yInnerOffset);
 		g2d.drawString("00:00 - 06:00", (float)(this.leftStringWidth*0.15), (float)posY);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+1*(dataRectHeight+yInnerOffset);
-		g2d.drawString("06:00 - 12:00", (float)(this.leftStringWidth*0.15), (float)posY);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+2*(dataRectHeight+yInnerOffset);
-		g2d.drawString("12:00 - 18:00", (float)(this.leftStringWidth*0.15), (float)posY);
-		posY = dataRectHeight*0.6 + this.yOuterOffsetTop+this.textHeightTop+3*(dataRectHeight+yInnerOffset);
-		g2d.drawString("18:00 - 00:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop+this.textHeightTop+1*(dataRectHeight+yInnerOffset);
+		g2d.drawString("06:00 - 10:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop+this.textHeightTop+2*(dataRectHeight+yInnerOffset);
+		g2d.drawString("10:00 - 14:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop+this.textHeightTop+3*(dataRectHeight+yInnerOffset);
+		g2d.drawString("14:00 - 18:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop+this.textHeightTop+4*(dataRectHeight+yInnerOffset);
+		g2d.drawString("18:00 - 22:00", (float)(this.leftStringWidth*0.15), (float)posY);
+		posY = this.yOuterOffsetTop-5+this.textHeightTop+this.textHeightTop+5*(dataRectHeight+yInnerOffset);
+		g2d.drawString("22:00 - 00:00", (float)(this.leftStringWidth*0.15), (float)posY);
 		//DRAW TEXT TOP:
 		g2d.setColor(Color.BLACK);
 		posY = this.yOuterOffsetTop-5+this.textHeightTop/1.3;

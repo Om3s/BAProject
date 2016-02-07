@@ -110,8 +110,10 @@ public class MainframeController {
 		this.mainframe.reportList.setLayoutOrientation(this.mainframe.reportList.HORIZONTAL_WRAP);
 		//daytime checkboxes
 		this.mainframe.checkBox_daytime_morning.setSelected(true);
+		this.mainframe.checkBox_daytime_noon.setSelected(true);
 		this.mainframe.checkBox_daytime_afternoon.setSelected(true);
 		this.mainframe.checkBox_daytime_evening.setSelected(true);
+		this.mainframe.checkBox_daytime_evening2.setSelected(true);
 		this.mainframe.checkBox_daytime_midnight.setSelected(true);
 		//Weekdays:
 		this.refreshWeekdays();
@@ -379,7 +381,7 @@ public class MainframeController {
 //		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 		try {
 			ArrayList<Integer> notSelectedDayTimeList = new ArrayList<Integer>();
-			for(int i = 0; i<4; i++){
+			for(int i = 0; i<6; i++){ //TODO Hardcoded DayTimesAmount
 				if(!this.selectedDayTimesAsList.contains(i)){
 					notSelectedDayTimeList.add(i);
 					System.out.println("NOT SELECTED "+i);
@@ -523,7 +525,7 @@ public class MainframeController {
 //	}
 	
 	private void createDataMatrix(){
-		this.currentDataMatrix = new int[7][4];
+		this.currentDataMatrix = new int[7][6]; //TODO Hardcoded
 		this.determineSelectedDayTimesList();
 		for(int x = 0; x<this.currentDataMatrix.length; x++){
 			if(this.selectedWeekdaysAsList.contains(x+1)){
@@ -555,11 +557,17 @@ public class MainframeController {
 		if (this.mainframe.checkBox_daytime_morning.isSelected()){
 			this.selectedDayTimesAsList.add(1);
 		}
-		if (this.mainframe.checkBox_daytime_afternoon.isSelected()){
+		if (this.mainframe.checkBox_daytime_noon.isSelected()){
 			this.selectedDayTimesAsList.add(2);
 		}
-		if (this.mainframe.checkBox_daytime_evening.isSelected()){
+		if (this.mainframe.checkBox_daytime_afternoon.isSelected()){
 			this.selectedDayTimesAsList.add(3);
+		}
+		if (this.mainframe.checkBox_daytime_evening.isSelected()){
+			this.selectedDayTimesAsList.add(4);
+		}
+		if (this.mainframe.checkBox_daytime_evening2.isSelected()){
+			this.selectedDayTimesAsList.add(5);
 		}
 	}
 
@@ -674,6 +682,8 @@ public class MainframeController {
 				this.selectedDayTimesAsList.add(1);
 				this.selectedDayTimesAsList.add(2);
 				this.selectedDayTimesAsList.add(3);
+				this.selectedDayTimesAsList.add(4);
+				this.selectedDayTimesAsList.add(5);
 			}
 			this.refreshMapData();
 			this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());

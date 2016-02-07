@@ -202,12 +202,16 @@ public class CrimeCaseDatabase {
 		int dayTimeValue;
 		if(timeDifference <= 21600000){
 			dayTimeValue = 0; // Midnight (0:00 - 6:00)
-		} else if(timeDifference <= 43200000){
-			dayTimeValue = 1; // Morning (6:00 - 12:00)
+		} else if(timeDifference <= 36000000){
+			dayTimeValue = 1; // Morning (6:00 - 10:00)
+		} else if(timeDifference <= 50400000){
+			dayTimeValue = 2; // Noon (10:00 - 14:00)
 		} else if(timeDifference <= 64800000){
-			dayTimeValue = 2; // Aternoon (12:00 - 18:00)
+			dayTimeValue = 3; // Aternoon (14:00 - 18:00)
+		} else if(timeDifference <= 79200000){
+			dayTimeValue = 4; // Evening (18:00 - 22:00)
 		} else {
-			dayTimeValue = 3; // Evening (18:00 - 0:00)
+			dayTimeValue = 5; // Evening2 (22:00 - 0:00)
 		}
 		return dayTimeValue;
 	}
@@ -229,7 +233,7 @@ public class CrimeCaseDatabase {
 	 * @param weekdays specifies which weekdays we want to look at (Sunday[1],Monday[2],...,Saturday[7])
 	 * @throws IOException 
 	 */
-	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, int[] weekdays, String category, int[] dayTimeValueList) throws IOException {
+	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, int[] weekdays, String category, int[] dayTimeValueIgnoreList) throws IOException {
 		this.clearCurrentData();
 		for(int day : weekdays){
 			BooleanQuery boolQuery = new BooleanQuery();
@@ -241,7 +245,7 @@ public class CrimeCaseDatabase {
 				Query query3 = new TermQuery(new Term("category", category));
 				boolQuery.add(query3, BooleanClause.Occur.MUST);
 			}
-			for(int dayTimeValue : dayTimeValueList){
+			for(int dayTimeValue : dayTimeValueIgnoreList){
 				Query query4 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
 				boolQuery.add(query4, BooleanClause.Occur.MUST_NOT);
 			}

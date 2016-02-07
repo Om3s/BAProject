@@ -41,8 +41,8 @@ public class Main {
 		defineColors();
 		determineScreenSize();
 		CrimeCaseDatabase dataBase;
-		boolean testing = false;
-		boolean reIndex = false;
+		boolean testing = true;
+		boolean reIndex = true;
 		if(testing){
 			dataBase = new CrimeCaseDatabase("dat\\testData.csv", reIndex);	
 		} else {

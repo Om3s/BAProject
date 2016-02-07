@@ -93,8 +93,10 @@ public class Mainframe extends JFrame {
 	private JLabel timeLine_range_label;
 	private JLabel filtermenu_specific_dow_daytime_label;
 	public JCheckBox checkBox_daytime_morning;
+	public JCheckBox checkBox_daytime_noon;
 	public JCheckBox checkBox_daytime_afternoon;
 	public JCheckBox checkBox_daytime_evening;
+	public JCheckBox checkBox_daytime_evening2;
 	public JCheckBox checkBox_daytime_midnight;
 	private JPanel filtermenu_daytime_panel;
 	private JButton reportList_details_button;
@@ -436,28 +438,42 @@ public class Mainframe extends JFrame {
 		gbc_checkBox_daytime_midnight.gridx = 0;
 		gbc_checkBox_daytime_midnight.gridy = 1;
 		filtermenu_daytime_panel.add(this.checkBox_daytime_midnight, gbc_checkBox_daytime_midnight);
-		
-		this.checkBox_daytime_evening = new JCheckBox("18:00 - 00:00");
-		GridBagConstraints gbc_checkBox_daytime_evening = new GridBagConstraints();
-		gbc_checkBox_daytime_evening.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_daytime_evening.gridx = 1;
-		gbc_checkBox_daytime_evening.gridy = 2;
-		filtermenu_daytime_panel.add(this.checkBox_daytime_evening, gbc_checkBox_daytime_evening);
-		
-		this.checkBox_daytime_afternoon = new JCheckBox("12:00 - 18:00");
-		GridBagConstraints gbc_checkBox_daytime_afternoon = new GridBagConstraints();
-		gbc_checkBox_daytime_afternoon.anchor = GridBagConstraints.WEST;
-		gbc_checkBox_daytime_afternoon.gridx = 0;
-		gbc_checkBox_daytime_afternoon.gridy = 2;
-		filtermenu_daytime_panel.add(this.checkBox_daytime_afternoon, gbc_checkBox_daytime_afternoon);
-		
-		this.checkBox_daytime_morning = new JCheckBox("06:00 - 12:00");
+
+		this.checkBox_daytime_morning = new JCheckBox("06:00 - 10:00");
 		GridBagConstraints gbc_checkBox_daytime_morning = new GridBagConstraints();
 		gbc_checkBox_daytime_morning.anchor = GridBagConstraints.WEST;
 		gbc_checkBox_daytime_morning.gridx = 1;
 		gbc_checkBox_daytime_morning.gridy = 1;
 		this.filtermenu_daytime_panel.add(this.checkBox_daytime_morning, gbc_checkBox_daytime_morning);
+
+		this.checkBox_daytime_noon = new JCheckBox("10:00 - 14:00");
+		GridBagConstraints gbc_checkBox_daytime_noon = new GridBagConstraints();
+		gbc_checkBox_daytime_noon.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_noon.gridx = 0;
+		gbc_checkBox_daytime_noon.gridy = 2;
+		this.filtermenu_daytime_panel.add(this.checkBox_daytime_noon, gbc_checkBox_daytime_noon);
+
+		this.checkBox_daytime_afternoon = new JCheckBox("14:00 - 18:00");
+		GridBagConstraints gbc_checkBox_daytime_afternoon = new GridBagConstraints();
+		gbc_checkBox_daytime_afternoon.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_afternoon.gridx = 1;
+		gbc_checkBox_daytime_afternoon.gridy = 2;
+		filtermenu_daytime_panel.add(this.checkBox_daytime_afternoon, gbc_checkBox_daytime_afternoon);
 		
+		this.checkBox_daytime_evening = new JCheckBox("18:00 - 22:00");
+		GridBagConstraints gbc_checkBox_daytime_evening = new GridBagConstraints();
+		gbc_checkBox_daytime_evening.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_evening.gridx = 0;
+		gbc_checkBox_daytime_evening.gridy = 3;
+		filtermenu_daytime_panel.add(this.checkBox_daytime_evening, gbc_checkBox_daytime_evening);
+
+		this.checkBox_daytime_evening2 = new JCheckBox("22:00 - 24:00");
+		GridBagConstraints gbc_checkBox_daytime_evening2 = new GridBagConstraints();
+		gbc_checkBox_daytime_evening2.anchor = GridBagConstraints.WEST;
+		gbc_checkBox_daytime_evening2.gridx = 1;
+		gbc_checkBox_daytime_evening2.gridy = 3;
+		filtermenu_daytime_panel.add(this.checkBox_daytime_evening2, gbc_checkBox_daytime_evening2);
+			
 		this.filtermenu_specific_dow_daytime_label = new JLabel("Daytime:");
 		GridBagConstraints gbc_filtermenu_specific_dow_daytime_label = new GridBagConstraints();
 		gbc_filtermenu_specific_dow_daytime_label.insets = new Insets(0, 0, 5, 0);
