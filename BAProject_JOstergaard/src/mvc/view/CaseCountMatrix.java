@@ -30,16 +30,16 @@ public class CaseCountMatrix extends JPanel {
 	private Rectangle2D[] weekDayRectangles;
 	private Rectangle2D rectangleMouseIsOver ,selectedRectangle;
 	private Color[] colorMaps = {
-			new Color(128,255,0),	//LIGHTGREEN
-			new Color(0,255,0),		//GREEN
-			new Color(0,255,128),	//GREENBLUE
-			new Color(0,255,255),	//CYAN
-			new Color(0,128,255),	//LIGHTBLUE
-			new Color(0,0,255),		//BLUE
-			new Color(128,0,255),	//PURPLE
-			new Color(255,0,255),	//PINK
-			new Color(255,0,128),	//DARKPINK
-			new Color(255,0,0)		//RED
+			new Color(255,255,204),	//LIGHTGREEN
+			new Color(255,247,160),		//GREEN
+			new Color(254,217,118),	//GREENBLUE
+			new Color(254,178,76),	//CYAN
+			new Color(253,151,60),	//LIGHTBLUE
+			new Color(252,78,42),		//BLUE
+			new Color(227,26,28),	//PURPLE
+			new Color(189,0,38),	//PINK
+			new Color(128,0,38),	//DARKPINK
+//			new Color(255,0,0)		//RED
 			};
 
 	public CaseCountMatrix(int[][] matrix, Mainframe mFrame){
@@ -273,7 +273,7 @@ public class CaseCountMatrix extends JPanel {
 				g2d.setColor(Color.GRAY);
 			} else {
 				relativeFieldValue = this.transformFieldValue(this.weekDayCounts[weekDay], this.transformationMode, this.weekdayMinValue, this.weekdayMaxValue);
-				colorCase = (int)(relativeFieldValue * 9.9999);
+				colorCase = (int)(relativeFieldValue * 8.9999);
 				g2d.setColor(this.colorMaps[colorCase]);
 			}
 			posX = this.xOuterOffsetLeft+weekDay*(dataRectWidth+this.xInnerOffset);
@@ -291,7 +291,7 @@ public class CaseCountMatrix extends JPanel {
 					g2d.setColor(Color.GRAY);
 				} else {
 					relativeFieldValue = this.transformFieldValue(this.dataMatrix[weekDay][dayTime],this.transformationMode, this.dataMinValue, this.dataMaxValue);
-					colorCase = (int)(relativeFieldValue * 9.9999);
+					colorCase = (int)(relativeFieldValue * 8.9999);
 					g2d.setColor(this.colorMaps[colorCase]);
 					cellContent += this.dataMatrix[weekDay][dayTime];
 				}
