@@ -30,16 +30,15 @@ public class CaseCountMatrix extends JPanel {
 	private Rectangle2D[] weekDayRectangles;
 	private Rectangle2D rectangleMouseIsOver ,selectedRectangle;
 	private Color[] colorMaps = {
-			new Color(255,255,204),	//LIGHTGREEN
-			new Color(255,247,160),		//GREEN
-			new Color(254,217,118),	//GREENBLUE
-			new Color(254,178,76),	//CYAN
-			new Color(253,151,60),	//LIGHTBLUE
-			new Color(252,78,42),		//BLUE
-			new Color(227,26,28),	//PURPLE
-			new Color(189,0,38),	//PINK
-			new Color(128,0,38),	//DARKPINK
-//			new Color(255,0,0)		//RED
+			new Color(255,255,204),
+			new Color(255,247,160),
+			new Color(254,217,118),
+			new Color(254,178,76),
+			new Color(253,151,60),
+			new Color(252,78,42),
+			new Color(227,26,28),
+			new Color(189,0,38),
+			new Color(128,0,38),
 			};
 
 	public CaseCountMatrix(int[][] matrix, Mainframe mFrame){
@@ -268,7 +267,6 @@ public class CaseCountMatrix extends JPanel {
 		g2d.fill(new Rectangle2D.Double(xOuterOffsetLeft-5,yOuterOffsetTop-10,this.getWidth()-xOuterOffsetLeft-xOuterOffsetRight+10,this.getHeight()-yOuterOffsetBot-yOuterOffsetTop+15));
 		//DRAW WEEKDAYS
 		for(int weekDay = 0; weekDay<this.dataMatrix.length; weekDay++){
-//			g2d.setColor(Main.weekDayColors[(weekDay)%7]);
 			if(this.weekDayCounts[weekDay] == -1){
 				g2d.setColor(Color.GRAY);
 			} else {
@@ -331,26 +329,26 @@ public class CaseCountMatrix extends JPanel {
 		g2d.setColor(Color.BLACK);
 		posY = this.yOuterOffsetTop-this.textHeightTop;
 		posX = this.xOuterOffsetLeft+0*(dataRectWidth+this.xInnerOffset);
-		g2d.setColor(Main.sundayColor);
-		g2d.drawString("Sun", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sun")*0.5), (float)posY);
-		posX = this.xOuterOffsetLeft+1*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.mondayColor);
 		g2d.drawString("Mon", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Mon")*0.5), (float)posY);
-		posX = this.xOuterOffsetLeft+2*(dataRectWidth+this.xInnerOffset);
+		posX = this.xOuterOffsetLeft+1*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.tuesdayColor);
 		g2d.drawString("Tue", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Tue")*0.5), (float)posY);
-		posX = this.xOuterOffsetLeft+3*(dataRectWidth+this.xInnerOffset);
+		posX = this.xOuterOffsetLeft+2*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.wednesdayColor);
 		g2d.drawString("Wed", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Wed")*0.5), (float)posY);
-		posX = this.xOuterOffsetLeft+4*(dataRectWidth+this.xInnerOffset);
+		posX = this.xOuterOffsetLeft+3*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.thursdayColor);
 		g2d.drawString("Thu", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Thu")*0.5), (float)posY);
-		posX = this.xOuterOffsetLeft+5*(dataRectWidth+this.xInnerOffset);
+		posX = this.xOuterOffsetLeft+4*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.fridayColor);
 		g2d.drawString("Fri", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Fri")*0.5), (float)posY);
-		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
+		posX = this.xOuterOffsetLeft+5*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.saturdayColor);
 		g2d.drawString("Sat", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sat")*0.5), (float)posY);
+		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Main.sundayColor);
+		g2d.drawString("Sun", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sun")*0.5), (float)posY);
 		this.renewSelectedRectangle();
 		if(this.selectedRectangle != null){
 			g2d.setStroke(new BasicStroke(3));

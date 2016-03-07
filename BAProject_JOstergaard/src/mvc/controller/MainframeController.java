@@ -528,25 +528,42 @@ public class MainframeController {
 	private void createDataMatrix(){
 		this.currentDataMatrix = new int[7][this.dayTimesAmount];
 		this.determineSelectedDayTimesList();
-		for(int x = 0; x<this.currentDataMatrix.length; x++){
+		for(int x = 1; x<this.currentDataMatrix.length; x++){
 			if(this.selectedWeekdaysAsList.contains(x+1)){
 				for(int y = 0; y<this.currentDataMatrix[0].length; y++){
 					if(this.selectedDayTimesAsList.contains(y)){
 						try {
-							this.currentDataMatrix[x][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
+							this.currentDataMatrix[x-1][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
 					} else {
-						this.currentDataMatrix[x][y] = -1;
+						this.currentDataMatrix[x-1][y] = -1;
 					}
 				}
 			} else {
 				for(int y=0; y<this.currentDataMatrix[0].length; y++){
-					this.currentDataMatrix[x][y] = -1;
+					this.currentDataMatrix[x-1][y] = -1;
 				}
 			}
-			System.out.println("");
+		}
+		//special case, Sunday:
+		if(this.selectedWeekdaysAsList.contains(1)){
+			for(int y = 0; y<this.currentDataMatrix[0].length; y++){
+				if(this.selectedDayTimesAsList.contains(y)){
+					try {
+						this.currentDataMatrix[6][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, 0);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				} else {
+					this.currentDataMatrix[6][y] = -1;
+				}
+			}
+		} else {
+			for(int y=0; y<this.currentDataMatrix[0].length; y++){
+				this.currentDataMatrix[6][y] = -1;
+			}
 		}
 	}
 
@@ -672,7 +689,11 @@ public class MainframeController {
 	public void filterForCaseCountMatrixSelection(boolean isSelected,int selectedWeekDay,int selectedDayTime){
 		if(isSelected){
 			this.selectedWeekdays = new int[1];
-			this.selectedWeekdays[0] = selectedWeekDay+1;
+			if(selectedWeekDay != 6){
+				this.selectedWeekdays[0] = selectedWeekDay+2;
+			} else {
+				this.selectedWeekdays[0] = 1;
+			}
 			if(selectedDayTime != -1){
 				this.selectedDayTimesAsList = new ArrayList<Integer>();
 				this.selectedDayTimesAsList.add(selectedDayTime);
