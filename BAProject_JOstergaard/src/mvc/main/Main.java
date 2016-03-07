@@ -11,6 +11,7 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import mvc.controller.MainframeController;
 import mvc.controller.MapController;
 import mvc.model.CrimeCaseDatabase;
+import mvc.model.GeoMapViewer;
 import mvc.view.Mainframe;
 
 /**
@@ -19,8 +20,8 @@ import mvc.view.Mainframe;
  *
  */
 public class Main {
-	public static Color[] weekDayColors,weekDayColorsWithAlpha;
-	public static int colorAlpha = 255, screenWidth, screenHeight;
+	public static Color[] weekDayColors; //weekDayColorsWithAlpha;
+	public static int screenWidth, screenHeight; //colorAlpha = 255;
 	public static Color
 		mondayColor = new Color(213,207,11), //YELLOW
 		tuesdayColor = new Color(0,200,240), //CYAN
@@ -29,13 +30,14 @@ public class Main {
 		fridayColor = new Color(200,0,0), //RED
 		saturdayColor = new Color(0,255,50), //GREEN
 		sundayColor = new Color(0,0,200), // BLUE
-		mondayColorWithAlpha = new Color(213,207,11,colorAlpha), //YELLOW
-		tuesdayColorWithAlpha = new Color(0,200,240,colorAlpha), //CYAN
-		wednesdayColorWithAlpha = new Color(160,15,200,colorAlpha), //MAGENTA
-		thursdayColorWithAlpha = new Color(220,90,0,colorAlpha), //ORANGE
-		fridayColorWithAlpha = new Color(200,0,0,colorAlpha), //RED
-		saturdayColorWithAlpha = new Color(0,255,50,colorAlpha), //GREEN
-		sundayColorWithAlpha = new Color(0,0,200,colorAlpha); //BLUE
+//		mondayColorWithAlpha = new Color(213,207,11,colorAlpha), //YELLOW
+//		tuesdayColorWithAlpha = new Color(0,200,240,colorAlpha), //CYAN
+//		wednesdayColorWithAlpha = new Color(160,15,200,colorAlpha), //MAGENTA
+//		thursdayColorWithAlpha = new Color(220,90,0,colorAlpha), //ORANGE
+//		fridayColorWithAlpha = new Color(200,0,0,colorAlpha), //RED
+//		saturdayColorWithAlpha = new Color(0,255,50,colorAlpha), //GREEN
+//		sundayColorWithAlpha = new Color(0,0,200,colorAlpha); //BLUE
+		alphaColor; // ALPHACOLOR
 	
 	public static void main(String[] args) throws Exception {
 		defineColors();
@@ -50,16 +52,18 @@ public class Main {
 		}
 		
 		System.out.println("Create Map...");
-		JMapViewer map = new JMapViewer();
+		GeoMapViewer map = new GeoMapViewer();
 		map.setDisplayPosition(new Coordinate(37.73, -122.45), 11);
 		
 		System.out.println("Create Controller...");
 		MapController geoMapController = new MapController(map, dataBase);
 		geoMapController.setMovementMouseButton(MouseEvent.BUTTON2);
 		geoMapController.setDoubleClickZoomEnabled(false);
+		geoMapController.setWheelZoomEnabled(false);
+		map.setMapController(geoMapController);
 		
 		System.out.println("Create UI...");
-		Mainframe mFrame = new Mainframe(map, (MapController)geoMapController);
+		Mainframe mFrame = new Mainframe(map, geoMapController);
 		MainframeController mFrameController = new MainframeController(mFrame, dataBase, geoMapController);
 		mFrame.setController(mFrameController);
 		mFrame.setVisible(true);
@@ -91,14 +95,14 @@ public class Main {
 		Main.weekDayColors[4] = thursdayColor;
 		Main.weekDayColors[5] = fridayColor;
 		Main.weekDayColors[6] = saturdayColor;
-		Main.weekDayColorsWithAlpha = new Color[7];
-		Main.weekDayColorsWithAlpha[0] = sundayColorWithAlpha;
-		Main.weekDayColorsWithAlpha[1] = mondayColorWithAlpha;
-		Main.weekDayColorsWithAlpha[2] = tuesdayColorWithAlpha;
-		Main.weekDayColorsWithAlpha[3] = wednesdayColorWithAlpha;
-		Main.weekDayColorsWithAlpha[4] = thursdayColorWithAlpha;
-		Main.weekDayColorsWithAlpha[5] = fridayColorWithAlpha;
-		Main.weekDayColorsWithAlpha[6] = saturdayColorWithAlpha;
+//		Main.weekDayColorsWithAlpha = new Color[7];
+//		Main.weekDayColorsWithAlpha[0] = sundayColorWithAlpha;
+//		Main.weekDayColorsWithAlpha[1] = mondayColorWithAlpha;
+//		Main.weekDayColorsWithAlpha[2] = tuesdayColorWithAlpha;
+//		Main.weekDayColorsWithAlpha[3] = wednesdayColorWithAlpha;
+//		Main.weekDayColorsWithAlpha[4] = thursdayColorWithAlpha;
+//		Main.weekDayColorsWithAlpha[5] = fridayColorWithAlpha;
+//		Main.weekDayColorsWithAlpha[6] = saturdayColorWithAlpha;
 	}
 
 }

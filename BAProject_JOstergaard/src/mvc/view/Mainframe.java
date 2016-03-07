@@ -26,10 +26,10 @@ import mvc.controller.MainframeController;
 import mvc.controller.MapController;
 import mvc.main.Main;
 import mvc.model.CaseReport;
+import mvc.model.GeoMapViewer;
 import mvc.model.MyJList;
 
 import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import com.visutools.nav.bislider.BiSlider;
 
@@ -62,7 +62,7 @@ import javax.swing.SwingConstants;
  *
  */
 public class Mainframe extends JFrame {
-	public JMapViewer geoMap;
+	public GeoMapViewer geoMap;
 	public MainframeController controller;
 	private final JFileChooser fileChooser;
 	private final JMenuItem fileMenu_item_load;
@@ -106,7 +106,7 @@ public class Mainframe extends JFrame {
 	public JScrollPane reportList_scrollPane;
 	
 	
-	public Mainframe(JMapViewer map, MapController geoMapController){
+	public Mainframe(GeoMapViewer map, MapController geoMapController){
 		super();
 		this.geoMap = map;
 		this.geoMapController = geoMapController;
@@ -617,8 +617,9 @@ public class Mainframe extends JFrame {
 		this.reportList_panel.add(this.reportList_panel_filter_checkBoxClosed ,gbc_reportList_panel_filter_radioButtonClosed);
 		
 		reportList_scrollPane = new JScrollPane(reportList);
-		reportList_scrollPane.setMinimumSize(new Dimension(220,0));
-		reportList_scrollPane.setMaximumSize(new Dimension(220,Main.screenHeight));
+		reportList_scrollPane.setMinimumSize(new Dimension(210,0));
+		reportList_scrollPane.setMaximumSize(new Dimension(210,Main.screenHeight));
+		reportList_scrollPane.setPreferredSize(new Dimension(210,500));
 		GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
 		gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
 		gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;

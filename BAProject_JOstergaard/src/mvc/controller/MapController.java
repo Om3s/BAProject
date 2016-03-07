@@ -74,12 +74,13 @@ public class MapController extends DefaultMapController {
 		for(CaseReport cR : reports){
 			cal.setTime(cR.getDateOpened());
 			dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-			if(Main.colorAlpha == 255){
-				cR.getPoint().setColor(Color.BLACK);
+			if(mainFrameController.selectedWeekdays.length > 3){
+				cR.getPoint().setColor(Main.alphaColor);
+				cR.getPoint().setBackColor(Main.alphaColor);
 			} else {
-				cR.getPoint().setColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
+				cR.getPoint().setColor(Color.BLACK);
+				cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
 			}
-			cR.getPoint().setBackColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
 			this.currentPoints.add(cR.getPoint());
 		}
 		for(GeoPoint p : this.currentPoints){
@@ -88,6 +89,15 @@ public class MapController extends DefaultMapController {
 		}
 		System.out.println("Map loaded "+this.currentPoints.size()+" points.");
 		this.map.updateUI();
+	}
+	
+	public void refreshDots(){
+		for(GeoPoint p : this.currentPoints){
+			if(mainFrameController.selectedWeekdays.length > 3){
+				p.setColor(Main.alphaColor);
+				p.setBackColor(Main.alphaColor);
+			}
+		}
 	}
 	
 	/**
@@ -241,12 +251,13 @@ public class MapController extends DefaultMapController {
 					int dayOfWeek;
 					cal.setTime(cR.getDateOpened());
 					dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-					if(Main.colorAlpha == 255){
-						cR.getPoint().setColor(Color.BLACK);
+					if(mainFrameController.selectedWeekdays.length > 3){
+						cR.getPoint().setColor(Main.alphaColor);
+						cR.getPoint().setBackColor(Main.alphaColor);
 					} else {
-						cR.getPoint().setColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
+						cR.getPoint().setColor(Color.BLACK);
+						cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
 					}
-					cR.getPoint().setBackColor(Main.weekDayColorsWithAlpha[dayOfWeek-1]);
 				}
 			}
 		}

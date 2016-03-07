@@ -31,7 +31,7 @@ public class MainframeController {
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat standardGUIDateTimeOutputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private int timelineDateSteps;
-	private int[] selectedWeekdays = {1,2,3,4,5,6,7};
+	public int[] selectedWeekdays = {1,2,3,4,5,6,7};
 	private ArrayList<Integer> selectedDayTimesAsList;
 	private final int dayTimesAmount = 6;
 	private String currentCategory;
@@ -375,7 +375,7 @@ public class MainframeController {
 //		
 //	}
 	
-	private void refreshMapData(){
+	public void refreshMapData(){
 		//DEPRECATED CONTENT:
 //		this.timelineLowerValue = (int) (minColorValue+0.5);
 //		this.timelineHigherValue = (int) (maxColorValue+0.5);
