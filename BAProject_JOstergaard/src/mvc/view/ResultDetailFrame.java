@@ -93,7 +93,7 @@ public class ResultDetailFrame extends JFrame {
 			//Status
 			this.status_graphic_label.setForeground(Color.ORANGE);
 			this.status_graphic_label.setText("Open");
-			this.dateClosed_textArea.setText("");
+			this.dateClosed_textArea.setText("Not Closed");
 		}
 		this.colorizeBackgroundLines();
 		this.repaint();
