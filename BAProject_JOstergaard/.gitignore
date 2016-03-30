@@ -1,5 +1,8 @@
 /dat/Case_Data_from_San_Francisco_311__SF311_.csv
 /dat/Case_Data_from_San_Francisco_311__SF311_.csv.bak
+/dat/chicago_crimes_-_2001_to_present.csv
 /dat/testData.csv
-/dat/lucene_index/*
+/dat/testData2.csv
+/dat/lucene_index_sanfrancisco/*
+/dat/lucene_index_chicago/*
 /libs/*
