@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import mvc.main.Main;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DoubleField;
@@ -63,11 +65,19 @@ public class CrimeCaseDatabase {
 		}
 		
 		try{
-			this.indexSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("dat/lucene_index").toPath())));
+			if(!Main.isChicago){
+				this.indexSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("dat/lucene_index_sanfrancisco").toPath())));
+			} else {
+				this.indexSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("dat/lucene_index_chicago").toPath())));
+			}
 			System.out.println("Index found and loaded.");
 		} catch(org.apache.lucene.index.IndexNotFoundException e){
 			this.reindexCSV(path);
-			this.indexSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("dat/lucene_index").toPath())));
+			if(!Main.isChicago){
+				this.indexSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("dat/lucene_index_sanfrancisco").toPath())));
+			} else {
+				this.indexSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("dat/lucene_index_chicago").toPath())));
+			}
 		}
 		
 		// Testing:
@@ -110,81 +120,154 @@ public class CrimeCaseDatabase {
 	public void reindexCSV(String path){
 		System.out.println("Begin indexing...");
 		long startTime = System.currentTimeMillis(), tempTime = System.currentTimeMillis();
-		int emptyEntries = 0, i = 1, deletedRows = 0;
+		int emptyEntries = 0, i = 1;
 		try {
-			CsvParserSettings settings = new CsvParserSettings();
-			settings.getFormat().setLineSeparator("\r\n");
-			settings.setLineSeparatorDetectionEnabled(true);
-			settings.setHeaderExtractionEnabled(true);
-			CsvParser parser  = new CsvParser(settings);
-			parser.beginParsing(new FileReader(path));
-			
-			String[] nextLine;
-
-			Directory indexDirectory = FSDirectory.open(new File("dat/lucene_index").toPath());
-			IndexWriterConfig config = new IndexWriterConfig(standardAnalyzer);
-			IndexWriter indexWriter = new IndexWriter(indexDirectory, config);
-			indexWriter.deleteAll();
-			
-			Document doc;
-			long dateOpenedAsLong = -1, dateClosedAsLong = -1;
-			int dayOfWeek = -1;
-			while((nextLine = parser.parseNext()) != null){
-				i++;
-				if(nextLine[13] != null){
-					try{
-						doc = new Document();
-						doc.add(new IntField("id", Integer.valueOf(nextLine[0]), Field.Store.YES));
+			if(!Main.isChicago){
+				System.out.println("Index San Francisco Data...");
+				CsvParserSettings settings = new CsvParserSettings();
+				settings.getFormat().setLineSeparator("\r\n");
+				settings.setLineSeparatorDetectionEnabled(true);
+				settings.setHeaderExtractionEnabled(true);
+				CsvParser parser  = new CsvParser(settings);
+				parser.beginParsing(new FileReader(path));
+				
+				String[] nextLine;
+				
+				Directory indexDirectory;
+				indexDirectory = FSDirectory.open(new File("dat/lucene_index_sanfrancisco").toPath());
+				IndexWriterConfig config = new IndexWriterConfig(standardAnalyzer);
+				IndexWriter indexWriter = new IndexWriter(indexDirectory, config);
+				indexWriter.deleteAll();
+				
+				Document doc;
+				long dateOpenedAsLong = -1, dateClosedAsLong = -1;
+				int dayOfWeek = -1;
+				while((nextLine = parser.parseNext()) != null){
+					i++;
+					if(nextLine[13] != null){
 						try{
-							dateOpenedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[1]).getTime());
-							dateClosedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[2]).getTime());
-						} catch (ParseException e) {
-							
-						} catch (NullPointerException e){
-							dateClosedAsLong = -1;
+							doc = new Document();
+							doc.add(new IntField("id", Integer.valueOf(nextLine[0]), Field.Store.YES));
+							try{
+								dateOpenedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[1]).getTime());
+								dateClosedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[2]).getTime());
+							} catch (ParseException e) {
+								
+							} catch (NullPointerException e){
+								dateClosedAsLong = -1;
+							}
+							if(dateOpenedAsLong != -1){
+								Calendar c = Calendar.getInstance();
+								c.setTimeInMillis(dateOpenedAsLong);
+								dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+							}
+							doc.add(new LongField("dateOpened", dateOpenedAsLong, Field.Store.YES));
+							doc.add(new LongField("dateClosed", dateClosedAsLong, Field.Store.YES));
+							doc.add(new TextField("status", nextLine[4], Field.Store.YES));
+							if(nextLine[5] == null){
+								doc.add(new StringField("statusNotes", "n/A", Field.Store.YES));
+							} else {
+								doc.add(new StringField("statusNotes", nextLine[5], Field.Store.YES));
+							}
+							doc.add(new StringField("category", nextLine[7], Field.Store.YES));
+							if(nextLine[10] == null){
+								doc.add(new TextField("address", "n/A", Field.Store.YES));
+							} else {
+								doc.add(new TextField("address", nextLine[10], Field.Store.YES));
+							}
+							if(nextLine[12] == null){
+								doc.add(new StringField("neighbourhood", "n/A", Field.Store.YES));
+							} else {
+								doc.add(new StringField("neighbourhood", nextLine[12], Field.Store.YES));
+							}
+							String[] coordinateStrings = nextLine[13].substring(1, nextLine[13].length()-1).split(",");
+							doc.add(new DoubleField("lat", Double.valueOf(coordinateStrings[0]), Field.Store.YES));
+							doc.add(new DoubleField("lon", Double.valueOf(coordinateStrings[1]), Field.Store.YES));
+							if(nextLine[15] == null){
+								doc.add(new StringField("mediaUrl", "n/A", Field.Store.YES));
+							} else {
+								doc.add(new StringField("mediaUrl", nextLine[15], Field.Store.YES));
+							}
+							doc.add(new IntField("dayOfWeek", dayOfWeek, Field.Store.YES));
+							doc.add(new IntField("dayTimeValue", this.determineDayTimeInMillis(dateOpenedAsLong), Field.Store.YES));
+							indexWriter.addDocument(doc);
+						} catch (NumberFormatException e){
+							emptyEntries++;
 						}
-						if(dateOpenedAsLong != -1){
-							Calendar c = Calendar.getInstance();
-							c.setTimeInMillis(dateOpenedAsLong);
-							dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-						}
-						doc.add(new LongField("dateOpened", dateOpenedAsLong, Field.Store.YES));
-						doc.add(new LongField("dateClosed", dateClosedAsLong, Field.Store.YES));
-						doc.add(new TextField("status", nextLine[4], Field.Store.YES));
-						if(nextLine[5] == null){
-							doc.add(new StringField("statusNotes", "n/A", Field.Store.YES));
-						} else {
-							doc.add(new StringField("statusNotes", nextLine[5], Field.Store.YES));
-						}
-						doc.add(new StringField("category", nextLine[7], Field.Store.YES));
-						if(nextLine[10] == null){
-							doc.add(new TextField("address", "n/A", Field.Store.YES));
-						} else {
-							doc.add(new TextField("address", nextLine[10], Field.Store.YES));
-						}
-						if(nextLine[12] == null){
-							doc.add(new StringField("neighbourhood", "n/A", Field.Store.YES));
-						} else {
-							doc.add(new StringField("neighbourhood", nextLine[12], Field.Store.YES));
-						}
-						String[] coordinateStrings = nextLine[13].substring(1, nextLine[13].length()-1).split(",");
-						doc.add(new DoubleField("lat", Double.valueOf(coordinateStrings[0]), Field.Store.YES));
-						doc.add(new DoubleField("lon", Double.valueOf(coordinateStrings[1]), Field.Store.YES));
-						if(nextLine[15] == null){
-							doc.add(new StringField("mediaUrl", "n/A", Field.Store.YES));
-						} else {
-							doc.add(new StringField("mediaUrl", nextLine[15], Field.Store.YES));
-						}
-						doc.add(new IntField("dayOfWeek", dayOfWeek, Field.Store.YES));
-						doc.add(new IntField("dayTimeValue", this.determineDayTimeInMillis(dateOpenedAsLong), Field.Store.YES));
-						indexWriter.addDocument(doc);
-					} catch (NumberFormatException e){
-						emptyEntries++;
 					}
 				}
+				indexWriter.close();
+				parser.stopParsing();
+			} else {
+				System.out.println("Index Chicago Data...");
+				CsvParserSettings settings = new CsvParserSettings();
+				settings.getFormat().setLineSeparator("\r\n");
+				settings.setLineSeparatorDetectionEnabled(true);
+				settings.setHeaderExtractionEnabled(true);
+				CsvParser parser  = new CsvParser(settings);
+				parser.beginParsing(new FileReader(path));
+				
+				String[] nextLine;
+				
+				Directory indexDirectory;
+				indexDirectory = FSDirectory.open(new File("dat/lucene_index_chicago").toPath());
+				IndexWriterConfig config = new IndexWriterConfig(standardAnalyzer);
+				IndexWriter indexWriter = new IndexWriter(indexDirectory, config);
+				indexWriter.deleteAll();
+				
+				Document doc;
+				long dateOpenedAsLong = -1, dateClosedAsLong = -1;
+				int dayOfWeek = -1;
+				while((nextLine = parser.parseNext()) != null){
+					i++;
+					if(nextLine[13] != null){
+						try{
+							doc = new Document();
+							doc.add(new IntField("id", Integer.valueOf(nextLine[0]), Field.Store.YES));
+							try{
+								dateOpenedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[1]).getTime());
+								dateClosedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[18]).getTime());
+							} catch (ParseException e) {
+								
+							} catch (NullPointerException e){
+								dateClosedAsLong = -1;
+							}
+							if(dateOpenedAsLong != -1){
+								Calendar c = Calendar.getInstance();
+								c.setTimeInMillis(dateOpenedAsLong);
+								dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+							}
+							doc.add(new LongField("dateOpened", dateOpenedAsLong, Field.Store.YES));
+							doc.add(new LongField("dateClosed", dateClosedAsLong, Field.Store.YES));
+							doc.add(new TextField("status", "n/A", Field.Store.YES));
+							doc.add(new StringField("statusNotes", "n/A", Field.Store.YES));
+							doc.add(new StringField("category", nextLine[5], Field.Store.YES));
+							if(nextLine[3] == null){
+								doc.add(new TextField("address", "n/A", Field.Store.YES));
+							} else {
+								doc.add(new TextField("address", nextLine[3], Field.Store.YES));
+							}
+							if(nextLine[3] == null){
+								doc.add(new StringField("neighbourhood", "n/A", Field.Store.YES));
+							} else {
+								doc.add(new StringField("neighbourhood", nextLine[3], Field.Store.YES));
+							}
+							if(nextLine[19] != null){
+								doc.add(new DoubleField("lat", Double.valueOf(nextLine[19]), Field.Store.YES));
+								doc.add(new DoubleField("lon", Double.valueOf(nextLine[20]), Field.Store.YES));
+							}
+							doc.add(new StringField("mediaUrl", "n/A", Field.Store.YES));
+							doc.add(new IntField("dayOfWeek", dayOfWeek, Field.Store.YES));
+							doc.add(new IntField("dayTimeValue", this.determineDayTimeInMillis(dateOpenedAsLong), Field.Store.YES));
+							indexWriter.addDocument(doc);
+						} catch (NumberFormatException e){
+							emptyEntries++;
+						}
+					}
+				}
+				indexWriter.close();
+				parser.stopParsing();
 			}
-			indexWriter.close();
-			parser.stopParsing();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

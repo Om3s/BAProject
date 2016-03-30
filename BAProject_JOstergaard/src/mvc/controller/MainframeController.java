@@ -72,8 +72,8 @@ public class MainframeController {
 	 */
 	private void init() throws ParseException{
 		//Globaldates
-		this.globalFromDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("10/11/2015 12:00:01 AM");
-		this.globalToDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("08/12/2015 11:59:59 PM");
+		this.globalFromDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("01/01/2016 12:00:01 AM");
+		this.globalToDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("31/01/2016 11:59:59 PM");
 		//Radiobutton
 		this.mainframe.filtermenu_interval_radioButtonWeeks.setSelected(true);
 		this.mainframe.filtermenu_interval_radioButtonDays.setEnabled(false);

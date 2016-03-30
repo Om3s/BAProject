@@ -20,6 +20,7 @@ import mvc.view.Mainframe;
  *
  */
 public class Main {
+	public static boolean isChicago;
 	public static Color[] weekDayColors; //weekDayColorsWithAlpha;
 	public static int screenWidth, screenHeight; //colorAlpha = 255;
 	public static Color
@@ -43,13 +44,29 @@ public class Main {
 		defineColors();
 		determineScreenSize();
 		CrimeCaseDatabase dataBase;
+		Main.isChicago = true;
 		boolean testing = false;
 		boolean reIndex = false;
+		String pathToCsv;
 		if(testing){
-			dataBase = new CrimeCaseDatabase("dat\\testData.csv", reIndex);	
+			if(!Main.isChicago){
+				pathToCsv = "dat/testData.csv";
+			} else {
+				pathToCsv = "dat/testData2.csv";
+			}
 		} else {
-			dataBase = new CrimeCaseDatabase("dat\\Case_Data_from_San_Francisco_311__SF311_.csv", reIndex);
+			if(!Main.isChicago){
+				pathToCsv = "dat/Case_Data_from_San_Francisco_311__SF311_.csv";
+			} else {
+				pathToCsv = "dat/chicago_crimes_-_2001_to_present.csv";
+			}
 		}
+
+		dataBase = new CrimeCaseDatabase(pathToCsv, reIndex);
+		
+//		if(dataBase == null) {
+//			System.out.println("ISNULL");
+//		}
 		
 		System.out.println("Create Map...");
 		GeoMapViewer map = new GeoMapViewer();

@@ -34,7 +34,7 @@ public class GeoMapViewer extends JMapViewer {
     	}
     	System.out.println("Zoomlevel: "+this.zoom);
     	System.out.println("AlphaValue: "+alphaValue);
-    	Main.alphaColor = new Color(48,145,0,alphaValue);
+    	Main.alphaColor = new Color(35,115,0,alphaValue);
     	if(this.controller != null){
     		this.controller.refreshDots();
     	}
