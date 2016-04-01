@@ -70,7 +70,11 @@ public class Main {
 		
 		System.out.println("Create Map...");
 		GeoMapViewer map = new GeoMapViewer();
-		map.setDisplayPosition(new Coordinate(37.73, -122.45), 11);
+		if(Main.isChicago){
+			map.setDisplayPosition(new Coordinate(41.865, -87.676), 9);
+		} else {
+			map.setDisplayPosition(new Coordinate(37.73, -122.45), 11);
+		}
 		
 		System.out.println("Create Controller...");
 		MapController geoMapController = new MapController(map, dataBase);
