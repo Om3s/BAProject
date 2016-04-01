@@ -61,13 +61,8 @@ public class Main {
 				pathToCsv = "dat/chicago_crimes_-_2001_to_present.csv";
 			}
 		}
-
 		dataBase = new CrimeCaseDatabase(pathToCsv, reIndex);
-		
-//		if(dataBase == null) {
-//			System.out.println("ISNULL");
-//		}
-		
+				
 		System.out.println("Create Map...");
 		GeoMapViewer map = new GeoMapViewer();
 		if(Main.isChicago){
@@ -93,7 +88,7 @@ public class Main {
 		map.updateUI();
 		System.out.println("All Done, program is running.");
 		
-		//Testing:
+		//Testing: DEBUG
 	}
 	
 	private static void determineScreenSize() {

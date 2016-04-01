@@ -49,7 +49,9 @@ public class CaseReport {
 		} else if(status.equals("Closed")) {
 			this.isClosed = true;
 		}
-		this.point.setRelatedCaseReport(this);
+		if(this.point != null){
+			this.point.setRelatedCaseReport(this);
+		}
 	}
 	
 	/**
@@ -60,8 +62,14 @@ public class CaseReport {
 	 */
 	private GeoPoint fromStringToGeoPoint(String pointString){
 		String[] coordinatesAsString = pointString.substring(1, pointString.length()-1).split(",");
-		Coordinate coord = new Coordinate(Double.valueOf(coordinatesAsString[0]), Double.valueOf(coordinatesAsString[1]));
-		return new GeoPoint(coord);
+		GeoPoint result = null;
+		try{
+			Coordinate coord = new Coordinate(Double.valueOf(coordinatesAsString[0]), Double.valueOf(coordinatesAsString[1]));
+			result = new GeoPoint(coord);
+		} catch (NumberFormatException e){
+			result = null;
+		}
+		return result;
 	}
 	
 	/**

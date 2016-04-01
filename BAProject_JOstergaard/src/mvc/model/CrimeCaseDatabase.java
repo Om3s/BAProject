@@ -225,7 +225,7 @@ public class CrimeCaseDatabase {
 							doc = new Document();
 							doc.add(new IntField("id", Integer.valueOf(nextLine[0]), Field.Store.YES));
 							try{
-								dateOpenedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[1]).getTime());
+								dateOpenedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[2]).getTime());
 								dateClosedAsLong = (long)(new SimpleDateFormat("MM/dd/yyyy KK:mm:ss a").parse(nextLine[18]).getTime());
 							} catch (ParseException e) {
 								
@@ -338,7 +338,9 @@ public class CrimeCaseDatabase {
 			Document doc;
 			for(ScoreDoc sDoc : docs.scoreDocs){
 				 doc = indexSearcher.doc(sDoc.doc);
-				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("dayTimeValue"), doc.get("dayOfWeek"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl")));
+				 if(doc.get("lat") != null){ //TODO Decide to count coordination missing cases:
+					 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("dayTimeValue"), doc.get("dayOfWeek"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl"))); 
+				 }
 			}
 		}
 		this.currentData.sort(new Comparator<CaseReport>() {
@@ -404,6 +406,12 @@ public class CrimeCaseDatabase {
 		boolQuery.add(query4, BooleanClause.Occur.MUST);
 		this.indexSearcher.search(boolQuery, hitCountCollector);
 		totalHits += hitCountCollector.getTotalHits();
+		//############ DEBUG ############
+		TotalHitCountCollector testHitCountCollector = new TotalHitCountCollector();
+		Query testQuery = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
+		this.indexSearcher.search(testQuery, testHitCountCollector);
+		System.out.println("Weekday: "+actualWeekday+", Hits: "+testHitCountCollector.getTotalHits());
+		//###############################
 		return totalHits;
 	}
 

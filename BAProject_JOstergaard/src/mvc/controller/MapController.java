@@ -72,16 +72,18 @@ public class MapController extends DefaultMapController {
 		Calendar cal = Calendar.getInstance();
 		int dayOfWeek;
 		for(CaseReport cR : reports){
-			cal.setTime(cR.getDateOpened());
-			dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-			if(mainFrameController.selectedWeekdays.length > 3){
-				cR.getPoint().setColor(Main.alphaColor);
-				cR.getPoint().setBackColor(Main.alphaColor);
-			} else {
-				cR.getPoint().setColor(Color.BLACK);
-				cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
+			if(cR.getPoint() != null){
+				cal.setTime(cR.getDateOpened());
+				dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+				if(mainFrameController.selectedWeekdays.length > 3){
+					cR.getPoint().setColor(Main.alphaColor);
+					cR.getPoint().setBackColor(Main.alphaColor);
+				} else {
+					cR.getPoint().setColor(Color.BLACK);
+					cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
+				}
+				this.currentPoints.add(cR.getPoint());
 			}
-			this.currentPoints.add(cR.getPoint());
 		}
 		for(GeoPoint p : this.currentPoints){
 			p.setVisible(false);
@@ -247,16 +249,18 @@ public class MapController extends DefaultMapController {
 		if(m != null){
 			Calendar cal = Calendar.getInstance();
 			for(CaseReport cR : this.dataBase.getCurrentData()){
-				if(cR.getPoint().getLat() == m.getLat() && cR.getPoint().getLon() == m.getLon()){
-					int dayOfWeek;
-					cal.setTime(cR.getDateOpened());
-					dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-					if(mainFrameController.selectedWeekdays.length > 3){
-						cR.getPoint().setColor(Main.alphaColor);
-						cR.getPoint().setBackColor(Main.alphaColor);
-					} else {
-						cR.getPoint().setColor(Color.BLACK);
-						cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
+				if(cR.getPoint() != null){
+					if(cR.getPoint().getLat() == m.getLat() && cR.getPoint().getLon() == m.getLon()){
+						int dayOfWeek;
+						cal.setTime(cR.getDateOpened());
+						dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+						if(mainFrameController.selectedWeekdays.length > 3){
+							cR.getPoint().setColor(Main.alphaColor);
+							cR.getPoint().setBackColor(Main.alphaColor);
+						} else {
+							cR.getPoint().setColor(Color.BLACK);
+							cR.getPoint().setBackColor(Main.weekDayColors[dayOfWeek-1]);
+						}
 					}
 				}
 			}
