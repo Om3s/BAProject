@@ -1,5 +1,6 @@
 package mvc.model;
 
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -427,6 +428,37 @@ public class CrimeCaseDatabase {
 		this.indexSearcher.search(boolQuery, hitCountCollector);
 		totalHits += hitCountCollector.getTotalHits();
 		return totalHits;
+	}
+
+	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, int dayTimeValue, int actualWeekday, Rectangle2D[][] gridRectangleMatrix) throws IOException{
+		int[][] resultMatrix = null;
+		TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
+		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
+		Query query2 = null;
+		if(!category.equals("All categories")){
+			query2 = new TermQuery(new Term("category", category));
+		}
+		Query query3 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
+		Query query4 = NumericRangeQuery.newIntRange("dayOfWeek", actualWeekday+1, actualWeekday+1, true, true);
+		BooleanQuery.Builder boolQueryBuilder = new BooleanQuery.Builder();
+		boolQueryBuilder.add(query1, BooleanClause.Occur.MUST);
+		if(query2 != null){
+			boolQueryBuilder.add(query2, BooleanClause.Occur.MUST);
+		}
+		boolQueryBuilder.add(query3, BooleanClause.Occur.MUST);
+		boolQueryBuilder.add(query4, BooleanClause.Occur.MUST);
+		BooleanQuery actualQuery = null;
+		for(int x=0; x<gridRectangleMatrix.length; x++){
+			for(int y=0; y<gridRectangleMatrix[0].length; y++){
+				actualQuery = boolQueryBuilder.build();
+				//TODO implement spatial Queries:
+//				Query query5 = NumericRangeQuery.newDoubleRange
+//				actualQuery.add(query5, BooleanClause.Occur.MUST);
+				this.indexSearcher.search(actualQuery, hitCountCollector);
+				resultMatrix[x][y] = hitCountCollector.getTotalHits();
+			}
+		}
+		return resultMatrix;
 	}
 
 	public CaseReport getCurrentSelected() {

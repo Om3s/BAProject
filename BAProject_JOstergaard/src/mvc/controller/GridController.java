@@ -8,4 +8,10 @@ public class GridController {
 	public GridController(){
 		
 	}
+	
+	public int[][] countGridOccurenciesFromTo(){
+		int[][] result = null;
+		
+		return result;
+	}
 }

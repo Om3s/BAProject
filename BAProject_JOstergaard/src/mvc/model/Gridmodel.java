@@ -8,7 +8,7 @@ public class Gridmodel {
 	private int xResolution,yResolution;
 	private double xRange, yRange, gridWidth, gridHeight;
 	public Point topLeftCornerDot,botRightCornerDot;
-	private ArrayList<double[][]> pastGridDataList;
+	private ArrayList<int[][]> pastGridDataList;
 	private double[][] presentGridData;
 	private Rectangle2D[][] gridRectangleMatrix;
 	
@@ -22,7 +22,7 @@ public class Gridmodel {
 	
 	private void init(){
 		this.recalculateValues();
-		this.pastGridDataList = new ArrayList<double[][]>();
+		this.pastGridDataList = new ArrayList<int[][]>();
 		this.createGridRectangles();
 	}
 	
@@ -46,15 +46,15 @@ public class Gridmodel {
 		return this.gridRectangleMatrix;
 	}
 
-	public ArrayList<double[][]> getPastGridDataList() {
+	public ArrayList<int[][]> getPastGridDataList() {
 		return pastGridDataList;
 	}
 
-	public void setPastGridDataList(ArrayList<double[][]> pastGridDataList) {
+	public void setPastGridDataList(ArrayList<int[][]> pastGridDataList) {
 		this.pastGridDataList = pastGridDataList;
 	}
 	
-	public void addGridData(double[][] gridData){
+	public void addGridData(int[][] gridData){
 		this.pastGridDataList.add(gridData);
 	}
 
