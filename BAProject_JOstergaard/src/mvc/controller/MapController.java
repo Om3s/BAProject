@@ -1,30 +1,21 @@
 package mvc.controller;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 
 import mvc.main.Main;
 import mvc.model.CaseReport;
-import mvc.model.CrimeCaseDatabase;
 import mvc.model.GeoPoint;
 import mvc.model.GrayOSMTileSource;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.TileController;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
-import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.BingAerialTileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.MapQuestOpenAerialTileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.MapQuestOsmTileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
 /**
  * 
@@ -34,14 +25,12 @@ import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
  *
  */
 public class MapController extends DefaultMapController {
-	private CrimeCaseDatabase dataBase;
 	private ArrayList<GeoPoint> currentPoints;
 	private GeoPoint selectedMapMarker;
 	private MainframeController mainFrameController;
 	
-	public MapController(JMapViewer map, CrimeCaseDatabase db) {
+	public MapController(JMapViewer map) {
 		super(map);
-		this.dataBase = db;
 		this.currentPoints = new ArrayList<GeoPoint>();
 		this.selectedMapMarker = null;
 		this.init();
@@ -52,7 +41,7 @@ public class MapController extends DefaultMapController {
 	 */
 	public void init(){
 		this.map.setTileSource(new GrayOSMTileSource.BWMapnik());
-		for(CaseReport cR : dataBase.getCurrentData()){
+		for(CaseReport cR : Main.dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
 		}
 		this.map.updateUI();
@@ -213,8 +202,8 @@ public class MapController extends DefaultMapController {
 	private void clearSelectedMapMarker() {
 		this.setDefaultColor(this.selectedMapMarker);
 		this.mainFrameController.mainframe.reportList.clearSelection();
-		this.dataBase.getCurrentSelected().setCurrentSelected(false);
-		this.dataBase.setCurrentSelected(null);
+		Main.dataBase.getCurrentSelected().setCurrentSelected(false);
+		Main.dataBase.setCurrentSelected(null);
 		this.selectedMapMarker = null;
 	}
 	
@@ -225,11 +214,11 @@ public class MapController extends DefaultMapController {
 	 * @param mapMarker
 	 */
 	public void setSelectedMarker(GeoPoint mapMarker){
-		if(this.dataBase.getCurrentSelected()!= null){
-			this.dataBase.getCurrentSelected().setCurrentSelected(false);
+		if(Main.dataBase.getCurrentSelected()!= null){
+			Main.dataBase.getCurrentSelected().setCurrentSelected(false);
 		}
 		mapMarker.getRelatedCaseReport().setCurrentSelected(true);
-		this.dataBase.setCurrentSelected(mapMarker.getRelatedCaseReport());
+		Main.dataBase.setCurrentSelected(mapMarker.getRelatedCaseReport());
 //		this.setDefaultColor(this.selectedMapMarker);
 		this.selectedMapMarker = mapMarker;
 		this.setDefaultColor(mapMarker);
@@ -248,7 +237,7 @@ public class MapController extends DefaultMapController {
 	private void setDefaultColor(MapMarker m) {
 		if(m != null){
 			Calendar cal = Calendar.getInstance();
-			for(CaseReport cR : this.dataBase.getCurrentData()){
+			for(CaseReport cR : Main.dataBase.getCurrentData()){
 				if(cR.getPoint() != null){
 					if(cR.getPoint().getLat() == m.getLat() && cR.getPoint().getLon() == m.getLon()){
 						int dayOfWeek;

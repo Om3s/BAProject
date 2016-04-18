@@ -26,7 +26,6 @@ import mvc.view.ResultDetailFrame;
  */
 public class MainframeController {
 	public Mainframe mainframe;
-	private CrimeCaseDatabase cCaseDatabase;
 	private Date globalFromDate, globalToDate;
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat standardGUIDateTimeOutputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -56,9 +55,8 @@ public class MainframeController {
 	 * @param mC is the reference to the MapController of the GeoMap
 	 * @throws ParseException
 	 */
-	public MainframeController(Mainframe frame, CrimeCaseDatabase dataBase, MapController mC) throws ParseException{
+	public MainframeController(Mainframe frame, MapController mC) throws ParseException{
 		this.mainframe = frame;
-		this.cCaseDatabase = dataBase;
 		this.mapController = mC;
 		this.mapController.setMainFrameController(this);
 		this.init();
@@ -278,7 +276,7 @@ public class MainframeController {
 	 * @param path where the new CSV file is.
 	 */
 	public void loadData(String path){
-		this.cCaseDatabase.reindexCSV(path);
+		Main.dataBase.reindexCSV(path);
 	}
 	
 	/**
@@ -364,9 +362,9 @@ public class MainframeController {
 //			this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 //			try {
 //				System.out.println("fromDate: "+this.currentFromDate+" , toDate: "+this.currentToDate);
-//				this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
-//				this.geoMapController.loadPoints(this.cCaseDatabase.getCurrentData());
-//				this.fillReportListWith(this.cCaseDatabase.getCurrentData());
+//				Main.dataBase.selectWeekdaysCasesBetweenDatesToCurrentData(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
+//				this.geoMapController.loadPoints(Main.dataBase.getCurrentData());
+//				this.fillReportListWith(Main.dataBase.getCurrentData());
 //				this.geoMapController.setShowCurrentPoints(true);
 //			} catch (IOException e) {
 //				e.printStackTrace();
@@ -392,9 +390,9 @@ public class MainframeController {
 			for(int i = 0; i<notSelectedDayTimeList.size(); i++){
 				notSelectedDayTimes[i] = notSelectedDayTimeList.get(i);
 			}
-			this.cCaseDatabase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.selectedWeekdays, this.currentCategory, notSelectedDayTimes);
-			System.out.println("currentData#: "+this.cCaseDatabase.getCurrentData().size());
-			this.mapController.loadPoints(this.cCaseDatabase.getCurrentData());
+			Main.dataBase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.selectedWeekdays, this.currentCategory, notSelectedDayTimes);
+			System.out.println("currentData#: "+Main.dataBase.getCurrentData().size());
+			this.mapController.loadPoints(Main.dataBase.getCurrentData());
 			this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
 			this.mapController.setShowCurrentPoints(true);
 		} catch (IOException e) {
@@ -409,7 +407,7 @@ public class MainframeController {
 	 */
 	private void fillReportListWith(boolean openedCases, boolean closedCases) {
 		this.mainframe.reportListModel.clear();
-		for(CaseReport cR : this.cCaseDatabase.getCurrentData()){
+		for(CaseReport cR : Main.dataBase.getCurrentData()){
 			if(cR.isClosed() && closedCases){
 				this.mainframe.reportListModel.addElement(cR);
 			} else if (!cR.isClosed() && openedCases){
@@ -514,7 +512,7 @@ public class MainframeController {
 //		for(int i=1; i <= this.timelineMaxValue; i++){
 //			this.refreshCurrentDates(i-1, i);
 //			try {
-//				count = this.cCaseDatabase.countCaseReportsFromTo(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
+//				count = Main.dataBase.countCaseReportsFromTo(this.currentFromDate, this.currentToDate, this.weekdays, this.currentCategory);
 //			} catch (IOException e) {
 //				e.printStackTrace();
 //			}
@@ -533,7 +531,7 @@ public class MainframeController {
 				for(int y = 0; y<this.currentDataMatrix[0].length; y++){
 					if(this.selectedDayTimesAsList.contains(y)){
 						try {
-							this.currentDataMatrix[x-1][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
+							this.currentDataMatrix[x-1][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -552,7 +550,7 @@ public class MainframeController {
 			for(int y = 0; y<this.currentDataMatrix[0].length; y++){
 				if(this.selectedDayTimesAsList.contains(y)){
 					try {
-						this.currentDataMatrix[6][y] = this.cCaseDatabase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, 0);
+						this.currentDataMatrix[6][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, 0);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

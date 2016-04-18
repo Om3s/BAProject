@@ -82,6 +82,7 @@ public class CrimeCaseDatabase {
 		
 		// Testing:
 //		this.readCategoriesFromIndex();
+//		this.countNonGeoPoints();
 	}
 	
 	@SuppressWarnings("unused")
@@ -109,6 +110,25 @@ public class CrimeCaseDatabase {
 			System.out.println(s);
 		}
 		System.out.println("------\n");
+	}
+	
+	@SuppressWarnings("unused")
+	private void countNonGeoPoints() throws IOException{
+		System.out.println("Count missing GeoPoints: ");
+		double percentageOfNonGeo, allData = 0, nonGeoData = 0;
+		MatchAllDocsQuery query = new MatchAllDocsQuery();
+		TopDocs docs = this.indexSearcher.search(query, 1000000);
+		String tempString;
+		for(ScoreDoc sDoc : docs.scoreDocs){
+			tempString = indexSearcher.doc(sDoc.doc).get("lat");
+			if(tempString == null){
+				nonGeoData++;
+			}
+		}
+		percentageOfNonGeo = nonGeoData / docs.scoreDocs.length;;
+		System.out.println("AllData: "+docs.scoreDocs.length);
+		System.out.println("Non-GeoData: "+nonGeoData);
+		System.out.println("Percent without Geo-Data: "+((double)((int)(percentageOfNonGeo*100*100))/100)+"%");
 	}
 	
 	/**
@@ -406,12 +426,6 @@ public class CrimeCaseDatabase {
 		boolQuery.add(query4, BooleanClause.Occur.MUST);
 		this.indexSearcher.search(boolQuery, hitCountCollector);
 		totalHits += hitCountCollector.getTotalHits();
-		//############ DEBUG ############
-		TotalHitCountCollector testHitCountCollector = new TotalHitCountCollector();
-		Query testQuery = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
-		this.indexSearcher.search(testQuery, testHitCountCollector);
-		System.out.println("Weekday: "+actualWeekday+", Hits: "+testHitCountCollector.getTotalHits());
-		//###############################
 		return totalHits;
 	}
 

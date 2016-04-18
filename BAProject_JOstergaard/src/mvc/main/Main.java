@@ -23,6 +23,7 @@ public class Main {
 	public static boolean isChicago;
 	public static Color[] weekDayColors; //weekDayColorsWithAlpha;
 	public static int screenWidth, screenHeight; //colorAlpha = 255;
+	public static CrimeCaseDatabase dataBase;
 	public static Color
 		mondayColor = new Color(213,207,11), //YELLOW
 		tuesdayColor = new Color(0,200,240), //CYAN
@@ -43,7 +44,6 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		defineColors();
 		determineScreenSize();
-		CrimeCaseDatabase dataBase;
 		Main.isChicago = true;
 		boolean testing = false;
 		boolean reIndex = false;
@@ -61,7 +61,7 @@ public class Main {
 				pathToCsv = "dat/chicago_crimes_-_2001_to_present.csv";
 			}
 		}
-		dataBase = new CrimeCaseDatabase(pathToCsv, reIndex);
+		Main.dataBase = new CrimeCaseDatabase(pathToCsv, reIndex);
 				
 		System.out.println("Create Map...");
 		GeoMapViewer map = new GeoMapViewer();
@@ -72,7 +72,7 @@ public class Main {
 		}
 		
 		System.out.println("Create Controller...");
-		MapController geoMapController = new MapController(map, dataBase);
+		MapController geoMapController = new MapController(map);
 		geoMapController.setMovementMouseButton(MouseEvent.BUTTON2);
 		geoMapController.setDoubleClickZoomEnabled(false);
 		geoMapController.setWheelZoomEnabled(false);
@@ -80,7 +80,7 @@ public class Main {
 		
 		System.out.println("Create UI...");
 		Mainframe mFrame = new Mainframe(map, geoMapController);
-		MainframeController mFrameController = new MainframeController(mFrame, dataBase, geoMapController);
+		MainframeController mFrameController = new MainframeController(mFrame, geoMapController);
 		mFrame.setController(mFrameController);
 		mFrame.setVisible(true);
 		
