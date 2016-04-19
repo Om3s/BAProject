@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
+import mvc.controller.GridController;
 import mvc.controller.MainframeController;
 import mvc.controller.MapController;
 import mvc.model.CrimeCaseDatabase;
@@ -89,6 +90,8 @@ public class Main {
 		System.out.println("All Done, program is running.");
 		
 		//Testing: DEBUG
+		GridController gridController = new GridController();
+		gridController.countGridOccurenciesFromTo();
 	}
 	
 	private static void determineScreenSize() {

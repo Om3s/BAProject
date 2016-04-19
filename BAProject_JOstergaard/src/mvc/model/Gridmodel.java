@@ -7,12 +7,12 @@ import java.util.ArrayList;
 public class Gridmodel {
 	private int xResolution,yResolution;
 	private double xRange, yRange, gridWidth, gridHeight;
-	public Point topLeftCornerDot,botRightCornerDot;
+	public double[] topLeftCornerDot,botRightCornerDot;
 	private ArrayList<int[][]> pastGridDataList;
 	private double[][] presentGridData;
 	private Rectangle2D[][] gridRectangleMatrix;
 	
-	public Gridmodel(int xResolution, int yResolution, Point topLeftCornerDot, Point botRightCornerDot){
+	public Gridmodel(int xResolution, int yResolution, double[] topLeftCornerDot, double[] botRightCornerDot){
 		this.xResolution = xResolution;
 		this.yResolution = yResolution;
 		this.topLeftCornerDot = topLeftCornerDot;
@@ -27,8 +27,10 @@ public class Gridmodel {
 	}
 	
 	private void recalculateValues() {
-		this.xRange = this.topLeftCornerDot.x - this.botRightCornerDot.x;
-		this.yRange = this.topLeftCornerDot.y - this.botRightCornerDot.y;
+		this.xRange = this.topLeftCornerDot[0] - this.botRightCornerDot[0];
+		this.yRange = this.topLeftCornerDot[1] - this.botRightCornerDot[1];
+		System.out.println("xRange: "+this.xRange);
+		System.out.println("yRange: "+this.yRange);
 		this.gridWidth = xRange / xResolution;
 		this.gridHeight = yRange / yResolution;
 	}
@@ -37,7 +39,7 @@ public class Gridmodel {
 		this.gridRectangleMatrix = new Rectangle2D[xResolution][yResolution];
 		for(int x=0; x<xResolution; x++){ //rows
 			for(int y=0; y<yResolution; y++){ //columns
-				this.gridRectangleMatrix[x][y] = new Rectangle2D.Double(this.topLeftCornerDot.x + this.gridWidth*x, this.topLeftCornerDot.y + this.gridHeight*y, this.topLeftCornerDot.x + this.gridWidth, this.topLeftCornerDot.y + this.gridHeight);
+				this.gridRectangleMatrix[x][y] = new Rectangle2D.Double(this.topLeftCornerDot[0] + this.gridWidth*x, this.topLeftCornerDot[1] + this.gridHeight*y, this.gridWidth, this.gridHeight);
 			}
 		}
 	}

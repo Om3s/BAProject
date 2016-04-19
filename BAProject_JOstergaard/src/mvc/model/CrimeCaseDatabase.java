@@ -430,30 +430,28 @@ public class CrimeCaseDatabase {
 		return totalHits;
 	}
 
-	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, int dayTimeValue, int actualWeekday, Rectangle2D[][] gridRectangleMatrix) throws IOException{
-		int[][] resultMatrix = null;
+	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, Rectangle2D[][] gridRectangleMatrix) throws IOException{
+		int[][] resultMatrix = new int[gridRectangleMatrix.length][gridRectangleMatrix[0].length];
 		TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
 		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
 		Query query2 = null;
 		if(!category.equals("All categories")){
 			query2 = new TermQuery(new Term("category", category));
 		}
-		Query query3 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
-		Query query4 = NumericRangeQuery.newIntRange("dayOfWeek", actualWeekday+1, actualWeekday+1, true, true);
-		BooleanQuery.Builder boolQueryBuilder = new BooleanQuery.Builder();
+		BooleanQuery boolQueryBuilder = new BooleanQuery();
 		boolQueryBuilder.add(query1, BooleanClause.Occur.MUST);
 		if(query2 != null){
 			boolQueryBuilder.add(query2, BooleanClause.Occur.MUST);
 		}
-		boolQueryBuilder.add(query3, BooleanClause.Occur.MUST);
-		boolQueryBuilder.add(query4, BooleanClause.Occur.MUST);
 		BooleanQuery actualQuery = null;
 		for(int x=0; x<gridRectangleMatrix.length; x++){
 			for(int y=0; y<gridRectangleMatrix[0].length; y++){
-				actualQuery = boolQueryBuilder.build();
+				actualQuery = boolQueryBuilder.clone();
 				//TODO implement spatial Queries:
-//				Query query5 = NumericRangeQuery.newDoubleRange
-//				actualQuery.add(query5, BooleanClause.Occur.MUST);
+				Query query5 = NumericRangeQuery.newDoubleRange("lat", gridRectangleMatrix[x][y].getX(), gridRectangleMatrix[x][y].getX()+gridRectangleMatrix[x][y].getWidth(), true, true);
+				actualQuery.add(query5, BooleanClause.Occur.MUST);
+				Query query6 = NumericRangeQuery.newDoubleRange("lon", gridRectangleMatrix[x][y].getY(), gridRectangleMatrix[x][y].getY()+gridRectangleMatrix[x][y].getHeight(), true, true);
+				actualQuery.add(query6, BooleanClause.Occur.MUST);
 				this.indexSearcher.search(actualQuery, hitCountCollector);
 				resultMatrix[x][y] = hitCountCollector.getTotalHits();
 			}
