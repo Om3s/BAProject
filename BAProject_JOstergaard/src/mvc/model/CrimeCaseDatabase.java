@@ -432,7 +432,7 @@ public class CrimeCaseDatabase {
 
 	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, Rectangle2D[][] gridRectangleMatrix) throws IOException{
 		int[][] resultMatrix = new int[gridRectangleMatrix.length][gridRectangleMatrix[0].length];
-		TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
+		TotalHitCountCollector hitCountCollector;
 		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
 		Query query2 = null;
 		if(!category.equals("All categories")){
@@ -444,13 +444,29 @@ public class CrimeCaseDatabase {
 			boolQueryBuilder.add(query2, BooleanClause.Occur.MUST);
 		}
 		BooleanQuery actualQuery = null;
+		double[] leftUpperPoint = new double[2],rightLowerPoint = new double[2];
 		for(int x=0; x<gridRectangleMatrix.length; x++){
 			for(int y=0; y<gridRectangleMatrix[0].length; y++){
+				hitCountCollector = new TotalHitCountCollector();
 				actualQuery = boolQueryBuilder.clone();
 				//TODO implement spatial Queries:
-				Query query5 = NumericRangeQuery.newDoubleRange("lat", gridRectangleMatrix[x][y].getX(), gridRectangleMatrix[x][y].getX()+gridRectangleMatrix[x][y].getWidth(), true, true);
+				leftUpperPoint[0] = gridRectangleMatrix[x][y].getX();
+				leftUpperPoint[1] = gridRectangleMatrix[x][y].getY();
+				rightLowerPoint[0] = leftUpperPoint[0] + gridRectangleMatrix[x][y].getWidth();
+				rightLowerPoint[1] = leftUpperPoint[1] + gridRectangleMatrix[x][y].getHeight();
+				Query query5;
+				if(leftUpperPoint[0] <= rightLowerPoint[0]){
+					query5 = NumericRangeQuery.newDoubleRange("lat", leftUpperPoint[0], rightLowerPoint[0], true, true);
+				} else {
+					query5 = NumericRangeQuery.newDoubleRange("lat", rightLowerPoint[0], leftUpperPoint[0], true, true);
+				}
 				actualQuery.add(query5, BooleanClause.Occur.MUST);
-				Query query6 = NumericRangeQuery.newDoubleRange("lon", gridRectangleMatrix[x][y].getY(), gridRectangleMatrix[x][y].getY()+gridRectangleMatrix[x][y].getHeight(), true, true);
+				Query query6;
+				if(leftUpperPoint[1] <= rightLowerPoint[1]){
+					query6 = NumericRangeQuery.newDoubleRange("lon", leftUpperPoint[1], rightLowerPoint[1], true, true);
+				} else {
+					query6 = NumericRangeQuery.newDoubleRange("lon", rightLowerPoint[1],leftUpperPoint[1], true, true);
+				}
 				actualQuery.add(query6, BooleanClause.Occur.MUST);
 				this.indexSearcher.search(actualQuery, hitCountCollector);
 				resultMatrix[x][y] = hitCountCollector.getTotalHits();

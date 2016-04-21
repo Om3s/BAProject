@@ -1,9 +1,11 @@
 package mvc.controller;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 import mvc.main.Main;
 import mvc.model.Gridmodel;
@@ -15,18 +17,20 @@ public class GridController {
 		
 	}
 	
-	public int[][] countGridOccurenciesFromTo() throws ParseException, IOException{
+	public int[][] countGridOccurenciesFromTo(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight) {
 		int[][] result = null;
-		double[] topLeft = {42.218347726793304,-88.25042724609375};
-		double[] botRight = {41.50240661583931,-87.04742431640625};
-		this.gridModel = new Gridmodel(1, 1, topLeft, botRight);
-		Date fromDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("01/01/2016 12:00:01 AM");
-		Date toDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("30/01/2016 12:00:01 AM");
-		result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", this.gridModel.getGridRectangleMatrix());
+		this.gridModel = new Gridmodel(xResolution, yResolution, topLeft, botRight);
+		try {
+			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", this.gridModel.getGridRectangleMatrix());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		NumberFormat n = NumberFormat.getInstance();
+		n.setMaximumFractionDigits(4);
 		System.out.println("Test Rectangles:");
 		for(int x=0; x<this.gridModel.getGridRectangleMatrix().length; x++){
 			for(int y=0; y<this.gridModel.getGridRectangleMatrix()[0].length;y++){
-				System.out.print(" [[X:"+this.gridModel.getGridRectangleMatrix()[x][y].getX()+", Y:"+this.gridModel.getGridRectangleMatrix()[x][y].getY()+", W:"+this.gridModel.getGridRectangleMatrix()[x][y].getWidth()+", H:"+this.gridModel.getGridRectangleMatrix()[x][y].getHeight()+"]] ");
+				System.out.print(" [[P1:X:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getX())+",Y:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getY())+",P2:X:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getX()+this.gridModel.getGridRectangleMatrix()[x][y].getWidth())+",Y:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getY()+this.gridModel.getGridRectangleMatrix()[x][y].getHeight())+"]] ");
 			}
 			System.out.println("");
 		}

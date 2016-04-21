@@ -3,8 +3,12 @@ package mvc.controller;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 
 import mvc.main.Main;
@@ -267,5 +271,13 @@ public class MapController extends DefaultMapController {
 
 	public void setMapLocation(double lat, double lon, int zoom) {
 		this.map.setDisplayPosition(new Coordinate(lat, lon), zoom);
+	}
+	
+	public void createCellMatrix(Date fromDate, Date toDate) {
+		GridController gridController = new GridController();
+		Coordinate coords1 = (Coordinate)this.map.getPosition(0,0);
+		Coordinate coords2 = (Coordinate)map.getPosition(map.getWidth(),map.getHeight());
+		System.out.println("Check Points:\nP1:("+coords1.getLat()+"x,"+coords1.getLon()+"y)\nP2:("+coords2.getLat()+"x,"+coords2.getLon()+"y)");
+		gridController.countGridOccurenciesFromTo(4, 4, fromDate, toDate, coords1, coords2);
 	}
 }

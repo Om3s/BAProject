@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
@@ -90,8 +92,6 @@ public class Main {
 		System.out.println("All Done, program is running.");
 		
 		//Testing: DEBUG
-		GridController gridController = new GridController();
-		gridController.countGridOccurenciesFromTo();
 	}
 	
 	private static void determineScreenSize() {

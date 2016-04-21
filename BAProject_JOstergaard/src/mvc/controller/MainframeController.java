@@ -12,6 +12,8 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
+import org.openstreetmap.gui.jmapviewer.Coordinate;
+
 import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.CrimeCaseDatabase;
@@ -212,6 +214,7 @@ public class MainframeController {
 		this.refreshMapData();
 		this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
 		this.showClosedCases(this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
+		this.mapController.createCellMatrix(this.globalFromDate, this.globalToDate);
 		
 		//DEPRECATED CONTENT:
 //		this.timelineLowerValue = -1; //definetly change HACK
