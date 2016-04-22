@@ -448,6 +448,7 @@ public class CrimeCaseDatabase {
 		BooleanQuery actualQuery = null;
 		Query query5;
 		Query query6;
+		//TODO threadpools and executers, fork, join
 		for(int x=0; x<gridRectangleMatrix.length; x++){
 			for(int y=0; y<gridRectangleMatrix[0].length; y++){
 				hitCountCollector = new TotalHitCountCollector();

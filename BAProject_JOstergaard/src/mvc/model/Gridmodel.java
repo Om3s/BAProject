@@ -50,8 +50,8 @@ public class Gridmodel {
 
 	public void createGridRectangles(){
 		this.gridRectangleMatrix = new Rectangle2D[xResolution][yResolution];
-		for(int y=0; y<xResolution; y++){ //rows
-			for(int x=0; x<yResolution; x++){ //columns
+		for(int y=0; y<this.yResolution; y++){ //rows
+			for(int x=0; x<this.xResolution; x++){ //columns
 				this.gridRectangleMatrix[x][y] = new Rectangle2D.Double(this.topLeftCornerDot.getLon() + this.gridWidth*x, this.topLeftCornerDot.getLat() + this.gridHeight*y, this.gridWidth, this.gridHeight);
 			}
 		}
