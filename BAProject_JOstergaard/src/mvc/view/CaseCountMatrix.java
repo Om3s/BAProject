@@ -100,7 +100,6 @@ public class CaseCountMatrix extends JPanel {
 			public void mouseExited(MouseEvent e) {
 				rectangleMouseIsOver = null;
 				repaint();
-				System.out.println("EXITED");
 			}
 			
 			@Override

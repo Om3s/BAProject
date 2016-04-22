@@ -214,8 +214,7 @@ public class MainframeController {
 		this.refreshMapData();
 		this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
 		this.showClosedCases(this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
-		//TODO Resolution is still hardcoded
-		this.mapController.createCellMatrix(30, 30, this.globalFromDate, this.globalToDate);
+		this.mapController.createCellMatrix(20, 20, this.globalFromDate, this.globalToDate); //TODO Resolution is still hardcoded
 		
 		//DEPRECATED CONTENT:
 //		this.timelineLowerValue = -1; //definetly change HACK

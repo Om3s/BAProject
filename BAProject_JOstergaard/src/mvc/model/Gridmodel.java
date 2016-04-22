@@ -7,21 +7,30 @@ import java.util.ArrayList;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 public class Gridmodel {
+	private static Gridmodel instance;
 	public Coordinate topLeftCornerDot,botRightCornerDot;
 	private int xResolution,yResolution;
-	private double xRange, yRange, gridWidth, gridHeight, weight;
-	private int[][] data;
+	private double xRange, yRange, gridWidth, gridHeight;
+	private GridModelData data;
 	private Rectangle2D[][] gridRectangleMatrix;
 	
-	public Gridmodel(int xResolution, int yResolution, Coordinate topLeftCornerDot, Coordinate botRightCornerDot){
+	public static Gridmodel getInstance(){
+		if(Gridmodel.instance == null){
+			Gridmodel.instance = new Gridmodel();
+		}
+		return Gridmodel.instance;
+	}
+	
+	private Gridmodel(){
+		
+	}
+	
+	public void init(int xResolution, int yResolution, Coordinate topLeftCornerDot, Coordinate botRightCornerDot){
 		this.xResolution = xResolution;
 		this.yResolution = yResolution;
 		this.topLeftCornerDot = topLeftCornerDot;
 		this.botRightCornerDot = botRightCornerDot;
-		this.init();
-	}
-	
-	private void init(){
+		this.data = new GridModelData(1.0);
 		this.recalculateValues();
 		this.createGridRectangles();
 	}
@@ -52,19 +61,19 @@ public class Gridmodel {
 		return this.gridRectangleMatrix;
 	}
 
-	public double getWeight() {
-		return weight;
-	}
-
-	public void setWeight(double weight) {
-		this.weight = weight;
-	}
-
-	public int[][] getData() {
+	public GridModelData getData() {
 		return data;
 	}
 
-	public void setData(int[][] data) {
+	public void setData(GridModelData data) {
 		this.data = data;
+	}
+	
+	public int getXResolution(){
+		return this.xResolution;
+	}
+	
+	public int getYResolution(){
+		return this.yResolution;
 	}
 }

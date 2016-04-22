@@ -9,55 +9,54 @@ import java.util.Date;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 import mvc.main.Main;
+import mvc.model.GridModelData;
 import mvc.model.Gridmodel;
 
 public class GridController {
-	private Gridmodel presentGridModel;
-	private ArrayList<Gridmodel> pastGridModels;
+	private ArrayList<GridModelData> pastGridModelData;
 	
 	public GridController(){
-		this.pastGridModels = new ArrayList<Gridmodel>();
+		this.pastGridModelData = new ArrayList<GridModelData>();
 	}
 	
 	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight){
-		this.presentGridModel =  new Gridmodel(xResolution, yResolution, topLeft, botRight);
+		Gridmodel.getInstance().init(xResolution, yResolution, topLeft, botRight);
 		
 		Date fDate = fromDate;
 		Date tDate = toDate;
-		this.countGridOccurenciesFromTo(this.presentGridModel, fDate, tDate);
-	}
-	
-	private int[][] countGridOccurenciesFromTo(Gridmodel model, Date fromDate, Date toDate) {
-		int[][] result = null;
-		try {
-			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", model.getGridRectangleMatrix());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-//		NumberFormat n = NumberFormat.getInstance();
-//		n.setMaximumFractionDigits(4);
-//		System.out.println("Test Rectangles:");
-//		for(int y=0; y<this.gridModel.getGridRectangleMatrix().length; y++){
-//			for(int x=0; x<this.gridModel.getGridRectangleMatrix()[0].length;x++){
-//				System.out.print(" [[P1:X:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getX())+",Y:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getY())+",P2:X:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getMaxX())+",Y:"+n.format(this.gridModel.getGridRectangleMatrix()[x][y].getMaxY())+"]] ");
-//			}
-//			System.out.println("");
-//		}
+		Gridmodel.getInstance().getData().setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
+		//Write currentMatrix to console:
 		System.out.println("OCCURENCIES:");
-		for(int y=0; y<result.length; y++){
-			for(int x=0; x<result[0].length;x++){
-				System.out.print(" "+result[x][y]+" ");
+		for(int y=0; y<Gridmodel.getInstance().getData().getDataMatrix().length; y++){
+			for(int x=0; x<Gridmodel.getInstance().getData().getDataMatrix()[0].length;x++){
+				System.out.print(" "+Gridmodel.getInstance().getData().getDataMatrix()[x][y]+" ");
 			}
 			System.out.println("");
+		}
+		
+		
+		
+//		double weight = 1.0; //TODO determine weight properly and implement analysis of past data:
+//		GridModelData newData = new GridModelData(weight);
+//		newData.setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
+//		this.pastGridModelData.add(new GridModelData(weight));
+	}
+	
+	private int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate) {
+		int[][] result = null;
+		try {
+			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", Gridmodel.getInstance().getGridRectangleMatrix());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return result;
 	}
 
-	public ArrayList<Gridmodel> getPastGridModels() {
-		return pastGridModels;
+	public ArrayList<GridModelData> getPastGridModelData() {
+		return pastGridModelData;
 	}
 
-	public void setPastGridModels(ArrayList<Gridmodel> pastGridModels) {
-		this.pastGridModels = pastGridModels;
+	public void setPastGridModelData(ArrayList<GridModelData> pastGridModelData) {
+		this.pastGridModelData = pastGridModelData;
 	}
 }
