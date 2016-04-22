@@ -145,7 +145,7 @@ public class MapController extends DefaultMapController {
 			double X = p.x;
 			double Y = p.y;
 	  		System.out.println("Left-Click at X="+X+", Y="+Y);
-	  		System.out.println("Left-Click at X="+geoClickPos.getLat()+", Y="+geoClickPos.getLon());
+	  		System.out.println("Left-Click at X="+geoClickPos.getLon()+", Y="+geoClickPos.getLat());
 	  	    Iterator<GeoPoint> i = this.currentPoints.iterator();
 	  	    double centerX, centerY,shortestDistance=Double.MAX_VALUE;
 	  	    Point markerPosition = null;
@@ -273,11 +273,12 @@ public class MapController extends DefaultMapController {
 		this.map.setDisplayPosition(new Coordinate(lat, lon), zoom);
 	}
 	
-	public void createCellMatrix(Date fromDate, Date toDate) {
+	public void createCellMatrix(int xResolution, int yResolution, Date fromDate, Date toDate) {
 		GridController gridController = new GridController();
+		//Viewport:
 		Coordinate coords1 = (Coordinate)this.map.getPosition(0,0);
 		Coordinate coords2 = (Coordinate)map.getPosition(map.getWidth(),map.getHeight());
-		System.out.println("Check Points:\nP1:("+coords1.getLat()+"x,"+coords1.getLon()+"y)\nP2:("+coords2.getLat()+"x,"+coords2.getLon()+"y)");
-		gridController.countGridOccurenciesFromTo(4, 4, fromDate, toDate, coords1, coords2);
+		System.out.println("Grid Boundary Points:\nP1:("+coords1.getLon()+"x,"+coords1.getLat()+"y)\nP2:("+coords2.getLon()+"x,"+coords2.getLat()+"y)");
+		gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2);
 	}
 }

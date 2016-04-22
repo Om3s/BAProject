@@ -431,6 +431,8 @@ public class CrimeCaseDatabase {
 	}
 
 	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, Rectangle2D[][] gridRectangleMatrix) throws IOException{
+		long startTime = System.currentTimeMillis(), currentTime;
+		System.out.println("Begin gridCountQuery...");
 		int[][] resultMatrix = new int[gridRectangleMatrix.length][gridRectangleMatrix[0].length];
 		TotalHitCountCollector hitCountCollector;
 		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
@@ -444,34 +446,30 @@ public class CrimeCaseDatabase {
 			boolQueryBuilder.add(query2, BooleanClause.Occur.MUST);
 		}
 		BooleanQuery actualQuery = null;
-		double[] leftUpperPoint = new double[2],rightLowerPoint = new double[2];
+		Query query5;
+		Query query6;
 		for(int x=0; x<gridRectangleMatrix.length; x++){
 			for(int y=0; y<gridRectangleMatrix[0].length; y++){
 				hitCountCollector = new TotalHitCountCollector();
 				actualQuery = boolQueryBuilder.clone();
-				//TODO implement spatial Queries:
-				leftUpperPoint[0] = gridRectangleMatrix[x][y].getX();
-				leftUpperPoint[1] = gridRectangleMatrix[x][y].getY();
-				rightLowerPoint[0] = leftUpperPoint[0] + gridRectangleMatrix[x][y].getWidth();
-				rightLowerPoint[1] = leftUpperPoint[1] + gridRectangleMatrix[x][y].getHeight();
-				Query query5;
-				if(leftUpperPoint[0] <= rightLowerPoint[0]){
-					query5 = NumericRangeQuery.newDoubleRange("lat", leftUpperPoint[0], rightLowerPoint[0], true, true);
+				if(gridRectangleMatrix[x][y].getX() <= gridRectangleMatrix[x][y].getMaxX()){
+					query5 = NumericRangeQuery.newDoubleRange("lon", gridRectangleMatrix[x][y].getX(), gridRectangleMatrix[x][y].getMaxX(), true, true);
 				} else {
-					query5 = NumericRangeQuery.newDoubleRange("lat", rightLowerPoint[0], leftUpperPoint[0], true, true);
+					query5 = NumericRangeQuery.newDoubleRange("lon", gridRectangleMatrix[x][y].getMaxX(), gridRectangleMatrix[x][y].getX(), true, true);
 				}
 				actualQuery.add(query5, BooleanClause.Occur.MUST);
-				Query query6;
-				if(leftUpperPoint[1] <= rightLowerPoint[1]){
-					query6 = NumericRangeQuery.newDoubleRange("lon", leftUpperPoint[1], rightLowerPoint[1], true, true);
+				if(gridRectangleMatrix[x][y].getY() <= gridRectangleMatrix[x][y].getMaxY()){
+					query6 = NumericRangeQuery.newDoubleRange("lat", gridRectangleMatrix[x][y].getY(), gridRectangleMatrix[x][y].getMaxY(), true, true);
 				} else {
-					query6 = NumericRangeQuery.newDoubleRange("lon", rightLowerPoint[1],leftUpperPoint[1], true, true);
+					query6 = NumericRangeQuery.newDoubleRange("lat", gridRectangleMatrix[x][y].getMaxY(),gridRectangleMatrix[x][y].getY(), true, true);
 				}
 				actualQuery.add(query6, BooleanClause.Occur.MUST);
 				this.indexSearcher.search(actualQuery, hitCountCollector);
 				resultMatrix[x][y] = hitCountCollector.getTotalHits();
 			}
 		}
+		currentTime = System.currentTimeMillis();
+		System.out.println("Query finished in "+(((double)currentTime-(double)startTime)/1000)+"sec");
 		return resultMatrix;
 	}
 
