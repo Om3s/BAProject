@@ -20,9 +20,10 @@ public class ImageController {
 	/**
 	 * 
 	 * @param matrix with values between -1.0(BLUE) and 1.0(RED)
-	 * @return
 	 */
 	public void drawHeatmap(double[][] matrix){
+		long startTime = System.currentTimeMillis(), currentTime;
+		System.out.println("Begin Heatmap creation...");
 		this.currentImage = new BufferedImage(matrix.length, matrix[0].length, BufferedImage.TYPE_INT_ARGB);
 		int rgb,white = new Color(0,0,0,0).getRGB();
 		for(int y=0; y<matrix.length; y++){
@@ -37,6 +38,9 @@ public class ImageController {
 				this.currentImage.setRGB(x, y, rgb);
 			}
 		}
+		
+		currentTime = System.currentTimeMillis();
+		System.out.println("Heatmap created in "+(((double)currentTime-(double)startTime)/1000)+"sec");
 	}
 	
 	public ImageController(File inputImage) throws IOException{
