@@ -334,35 +334,35 @@ public class CrimeCaseDatabase {
 	 * 
 	 * @param fromDate the beginning date
 	 * @param toDate the ending date
-	 * @param weekdays specifies which weekdays we want to look at (Sunday[1],Monday[2],...,Saturday[7])
+	 * @param ignoredWeekdaysAsList specifies which weekdays we want to look at (Sunday[1],Monday[2],...,Saturday[7])
 	 * @throws IOException 
 	 */
-	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, int[] weekdays, String category, int[] dayTimeValueIgnoreList) throws IOException {
+	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, ArrayList<Integer> ignoredWeekdaysAsList, String category, int[] dayTimeValueIgnoreList) throws IOException {
 		this.clearCurrentData();
-		for(int day : weekdays){
-			BooleanQuery boolQuery = new BooleanQuery();
-			Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
-			Query query2 = NumericRangeQuery.newIntRange("dayOfWeek", day, day, true, true);
-			boolQuery.add(query1, BooleanClause.Occur.MUST);
+		ArrayList<Query> dayQueries = new ArrayList<Query>();
+		BooleanQuery boolQuery = new BooleanQuery();
+		for(int day : ignoredWeekdaysAsList){
+			boolQuery.add(NumericRangeQuery.newIntRange("dayOfWeek", day, day, true, true), BooleanClause.Occur.MUST_NOT);
+		}
+		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
+		boolQuery.add(query1, BooleanClause.Occur.MUST);
+		if(!category.equals("All categories")){
+			Query query2 = new TermQuery(new Term("category", category));
 			boolQuery.add(query2, BooleanClause.Occur.MUST);
-			if(!category.equals("All categories")){
-				Query query3 = new TermQuery(new Term("category", category));
-				boolQuery.add(query3, BooleanClause.Occur.MUST);
-			}
-			for(int dayTimeValue : dayTimeValueIgnoreList){
-				Query query4 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
-				boolQuery.add(query4, BooleanClause.Occur.MUST_NOT);
-			}
-			TopDocs docs = this.indexSearcher.search(boolQuery, 10000);
-			System.out.println(boolQuery);
-			System.out.println("Total hits: " + docs.totalHits);
-			Document doc;
-			for(ScoreDoc sDoc : docs.scoreDocs){
-				 doc = indexSearcher.doc(sDoc.doc);
-				 if(doc.get("lat") != null){
-					 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("dayTimeValue"), doc.get("dayOfWeek"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl"))); 
-				 }
-			}
+		}
+		for(int dayTimeValue : dayTimeValueIgnoreList){
+			Query query3 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
+			boolQuery.add(query3, BooleanClause.Occur.MUST_NOT);
+		}
+		TopDocs docs = this.indexSearcher.search(boolQuery, 10000);
+		System.out.println(boolQuery);
+		System.out.println("Total hits: " + docs.totalHits);
+		Document doc;
+		for(ScoreDoc sDoc : docs.scoreDocs){
+			 doc = indexSearcher.doc(sDoc.doc);
+			 if(doc.get("lat") != null){
+				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("dayTimeValue"), doc.get("dayOfWeek"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl"))); 
+			 }
 		}
 		this.currentData.sort(new Comparator<CaseReport>() {
 
@@ -430,7 +430,7 @@ public class CrimeCaseDatabase {
 		return totalHits;
 	}
 
-	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, Rectangle2D[][] gridRectangleMatrix) throws IOException{
+	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, Rectangle2D[][] gridRectangleMatrix, ArrayList<Integer> ignoreDayTimesList, ArrayList<Integer> ignoreWeekdaysList) throws IOException{
 		long startTime = System.currentTimeMillis(), currentTime;
 		System.out.println("Begin gridCountQuery...");
 		int[][] resultMatrix = new int[gridRectangleMatrix.length][gridRectangleMatrix[0].length];
@@ -444,6 +444,12 @@ public class CrimeCaseDatabase {
 		boolQueryBuilder.add(query1, BooleanClause.Occur.MUST);
 		if(query2 != null){
 			boolQueryBuilder.add(query2, BooleanClause.Occur.MUST);
+		}
+		for(int day : ignoreWeekdaysList){
+			boolQueryBuilder.add(NumericRangeQuery.newIntRange("dayOfWeek", day, day, true, true), BooleanClause.Occur.MUST_NOT);
+		}
+		for(int dayTimeValue : ignoreDayTimesList){
+			boolQueryBuilder.add(NumericRangeQuery.newIntRange("dayOfWeek", dayTimeValue, dayTimeValue, true, true), BooleanClause.Occur.MUST_NOT);
 		}
 		BooleanQuery actualQuery = null;
 		Query query5;

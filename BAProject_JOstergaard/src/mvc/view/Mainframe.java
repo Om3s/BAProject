@@ -67,7 +67,6 @@ public class Mainframe extends JFrame {
 	private final JFileChooser fileChooser;
 	private final JMenuItem fileMenu_item_load;
 	private final JMenuItem fileMenu_item_exit;
-	private MapController geoMapController;
 	public final ButtonGroup filtermenu_interval_RadioButtongroupInterval;
 	public final JRadioButton filtermenu_interval_radioButtonMonths;
 	public final JRadioButton filtermenu_interval_radioButtonWeeks;
@@ -106,10 +105,9 @@ public class Mainframe extends JFrame {
 	public JScrollPane reportList_scrollPane;
 	
 	
-	public Mainframe(GeoMapViewer map, MapController geoMapController){
+	public Mainframe(GeoMapViewer map){
 		super();
 		this.geoMap = map;
-		this.geoMapController = geoMapController;
 		//radiobuttons:
 		this.filtermenu_interval_RadioButtongroupInterval = new ButtonGroup();
 		this.filtermenu_interval_radioButtonMonths = new JRadioButton("Months");
@@ -818,13 +816,5 @@ public class Mainframe extends JFrame {
 				}
 			}
 		});;
-	}
-	
-	/**
-	 * 
-	 * @return the mapController of the GeoMap
-	 */
-	public MapController getGeoMapController() {
-		return geoMapController;
 	}
 }

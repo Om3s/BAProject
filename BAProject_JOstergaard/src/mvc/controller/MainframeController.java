@@ -32,16 +32,13 @@ public class MainframeController {
 	private SimpleDateFormat standardGUIDateOutputFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat standardGUIDateTimeOutputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private int timelineDateSteps;
-	public int[] selectedWeekdays = {1,2,3,4,5,6,7};
-	private ArrayList<Integer> selectedDayTimesAsList;
+	private ArrayList<Integer> selectedDayTimesAsList, selectedWeekdaysAsList, ignoredDayTimesAsList, ignoredWeekdaysAsList;
 	private final int dayTimesAmount = 6;
 	private String currentCategory;
-	private MapController mapController;
 
 	//Chart:
 	private String intervalName = null;
 	private int[][] currentDataMatrix;
-	private ArrayList<Integer> selectedWeekdaysAsList;
 
 	//DEPRECATED CONTENT:
 //	//Timeline:
@@ -57,10 +54,8 @@ public class MainframeController {
 	 * @param mC is the reference to the MapController of the GeoMap
 	 * @throws ParseException
 	 */
-	public MainframeController(Mainframe frame, MapController mC) throws ParseException{
+	public MainframeController(Mainframe frame) throws ParseException{
 		this.mainframe = frame;
-		this.mapController = mC;
-		this.mapController.setMainFrameController(this);
 		this.init();
 	}
 	
@@ -117,12 +112,11 @@ public class MainframeController {
 		this.mainframe.checkBox_daytime_evening2.setSelected(true);
 		this.mainframe.checkBox_daytime_midnight.setSelected(true);
 		//Weekdays:
-		this.refreshWeekdays();
 		//Chart:
-		this.refreshChart();
 		this.mainframe.matrix_chart_panel.setTransformationMode(2);
 		//Map:
-		this.refreshMapData();
+		
+//		this.applySettings();
 		
 		//DEPRECATED CONTENT:
 //		//TimeLine:
@@ -206,21 +200,42 @@ public class MainframeController {
 	 * of the analysis part.
 	 */
 	public void applySettings(){
+		boolean isHeatMapOn = true; //TODO als GUI attribut ersetzen
+		this.clearCurrentData();
 		this.refreshGlobalDates();
 		this.refreshTimelineAttributes();
-		this.refreshWeekdays();
+		this.refreshSelectedDayTimesList();
+		this.refreshSelectedWeekdays();
 		this.refreshCurrentCategory();
 		this.refreshChart();
-		this.refreshMapData();
-		this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
-		this.showClosedCases(this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
-		this.mapController.createCellMatrix(10, 10, this.globalFromDate, this.globalToDate); //TODO Resolution is still hardcoded
+		if(isHeatMapOn){
+//			Main.mapController.setZoom(false);
+			this.refreshHeatMap();
+		} else {
+//			Main.mapController.setZoom(true);
+			Main.mapController.setShowCurrentPoints(true);
+			this.refreshMapData();
+			this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
+			this.showClosedCases(this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
+		}
+//		this.mainframe.repaint();
 		
 		//DEPRECATED CONTENT:
 //		this.timelineLowerValue = -1; //definetly change HACK
 //		this.timeLineChanged(0, 1);
 	}
 	
+	public void refreshHeatMap() {
+		Main.mapController.setShowCurrentPoints(false);
+		Main.mapController.createCellMatrix(25,20,this.globalFromDate, this.globalToDate); //TODO Resolution is still hardcoded
+		Main.mapController.loadHeatMapImage(0); //TODO 0 is hardcoded, it stands for the heatmap delta
+		Main.mapController.setShowHeatMap(true);
+	}
+
+	private void clearCurrentData() {
+		
+	}
+
 	/**
 	 * writes the date values of the filter buttons into global variables
 	 */
@@ -232,7 +247,7 @@ public class MainframeController {
 	/**
 	 * reads the checkboxes of the filtermenu and creates the new weekday array
 	 */
-	private void refreshWeekdays() {
+	private void refreshSelectedWeekdays() {
 		this.selectedWeekdaysAsList = new ArrayList<Integer>();
 		if(this.mainframe.checkBox_Sun.isSelected()){
 			selectedWeekdaysAsList.add(1);
@@ -255,10 +270,13 @@ public class MainframeController {
 		if(this.mainframe.checkBox_Sat.isSelected()){
 			selectedWeekdaysAsList.add(7);
 		}
-		Integer[] tempArray = ((Integer[]) selectedWeekdaysAsList.toArray(new Integer[0]));
-		this.selectedWeekdays = new int[tempArray.length];
-		for(int i = 0; i<tempArray.length; i++){
-			this.selectedWeekdays[i] = tempArray[i];
+		//Refresh IgnorList:
+		int[] possibleWeekdays = {1,2,3,4,5,6,7};
+		this.ignoredWeekdaysAsList = new ArrayList<Integer>();
+		for(int day : possibleWeekdays){
+			if(!this.selectedWeekdaysAsList.contains(day)){
+				this.ignoredWeekdaysAsList.add(day);
+			}
 		}
 	}
 	
@@ -393,11 +411,11 @@ public class MainframeController {
 			for(int i = 0; i<notSelectedDayTimeList.size(); i++){
 				notSelectedDayTimes[i] = notSelectedDayTimeList.get(i);
 			}
-			Main.dataBase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.selectedWeekdays, this.currentCategory, notSelectedDayTimes);
+			Main.dataBase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.ignoredWeekdaysAsList, this.currentCategory, notSelectedDayTimes);
 			System.out.println("currentData#: "+Main.dataBase.getCurrentData().size());
-			this.mapController.loadPoints(Main.dataBase.getCurrentData());
+			Main.mapController.loadPoints(Main.dataBase.getCurrentData());
 			this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
-			this.mapController.setShowCurrentPoints(true);
+			Main.mapController.setShowCurrentPoints(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -528,7 +546,6 @@ public class MainframeController {
 	
 	private void createDataMatrix(){
 		this.currentDataMatrix = new int[7][this.dayTimesAmount];
-		this.determineSelectedDayTimesList();
 		for(int x = 1; x<this.currentDataMatrix.length; x++){
 			if(this.selectedWeekdaysAsList.contains(x+1)){
 				for(int y = 0; y<this.currentDataMatrix[0].length; y++){
@@ -568,7 +585,7 @@ public class MainframeController {
 		}
 	}
 
-	private void determineSelectedDayTimesList() {
+	private void refreshSelectedDayTimesList() {
 		this.selectedDayTimesAsList = new ArrayList<Integer>();
 		if (this.mainframe.checkBox_daytime_midnight.isSelected()){
 			this.selectedDayTimesAsList.add(0);
@@ -588,6 +605,17 @@ public class MainframeController {
 		if (this.mainframe.checkBox_daytime_evening2.isSelected()){
 			this.selectedDayTimesAsList.add(5);
 		}
+		//Refresh IgnoreList:
+		int[] possibleDayTimes = new int[this.dayTimesAmount];
+		for(int i=0;i<this.dayTimesAmount;i++){
+			possibleDayTimes[i] = i;
+		}
+		this.ignoredDayTimesAsList = new ArrayList<Integer>();
+		for(int dayTimeValue : possibleDayTimes){
+			if(!this.selectedDayTimesAsList.contains(dayTimeValue)){
+				this.ignoredDayTimesAsList.add(dayTimeValue);
+			}
+		}
 	}
 
 	/**
@@ -598,7 +626,7 @@ public class MainframeController {
 		String result;
 		if(cR == null){
 		} else {
-			this.mapController.setSelectedMarker(cR.getPoint());
+			Main.mapController.setSelectedMarker(cR.getPoint());
 		}
 		this.mainframe.repaint();
 	}
@@ -634,7 +662,7 @@ public class MainframeController {
 		
 		if(cR == null){
 		} else {
-			this.mapController.setSelectedMarker(cR.getPoint());
+			Main.mapController.setSelectedMarker(cR.getPoint());
 			this.createDetailFrame(cR);
 		}
 		this.mainframe.repaint();
@@ -674,26 +702,26 @@ public class MainframeController {
 	 * @param point
 	 */
 	public void center_to_point(CaseReport cR) {
-		this.mapController.setMapLocation(cR.getPoint().getLat(), cR.getPoint().getLon(), 17);
+		Main.mapController.setMapLocation(cR.getPoint().getLat(), cR.getPoint().getLon(), 17);
 	}
 
 	public void showOpenedCases(boolean yes) {
-		this.mapController.setShowOpenedClosedCurrentPoints(yes, true);
+		Main.mapController.setShowOpenedClosedCurrentPoints(yes, true);
 		this.fillReportListWith(yes, this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
 	}
 
 	public void showClosedCases(boolean yes) {
-		this.mapController.setShowOpenedClosedCurrentPoints(yes, false);
+		Main.mapController.setShowOpenedClosedCurrentPoints(yes, false);
 		this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), yes);
 	}
 	
 	public void filterForCaseCountMatrixSelection(boolean isSelected,int selectedWeekDay,int selectedDayTime){
 		if(isSelected){
-			this.selectedWeekdays = new int[1];
+			this.selectedWeekdaysAsList = new ArrayList<Integer>(1);
 			if(selectedWeekDay != 6){
-				this.selectedWeekdays[0] = selectedWeekDay+2;
+				this.selectedWeekdaysAsList.add(selectedWeekDay+2);
 			} else {
-				this.selectedWeekdays[0] = 1;
+				this.selectedWeekdaysAsList.add(1);
 			}
 			if(selectedDayTime != -1){
 				this.selectedDayTimesAsList = new ArrayList<Integer>();
@@ -710,5 +738,38 @@ public class MainframeController {
 		} else {
 			this.applySettings();
 		}
+	}
+	// selectedDayTimesAsList, selectedWeekdaysAsList, ignoredDayTimesAsList, ignoredWeekdaysAsList;
+	
+	public void setSelectedDayTimesAsList(ArrayList<Integer> list){
+		this.selectedDayTimesAsList = list;
+	}
+	
+	public ArrayList<Integer> getSelectedDayTimesAsList(){
+		return this.selectedDayTimesAsList;
+	}
+	
+	public void setSelectedWeekdaysAsList(ArrayList<Integer> list){
+		this.selectedWeekdaysAsList = list;
+	}
+	
+	public ArrayList<Integer> getSelectedWeekdaysAsList(){
+		return this.selectedWeekdaysAsList;
+	}
+	
+	public void setIgnoredDayTimesAsList(ArrayList<Integer> list){
+		this.ignoredDayTimesAsList = list;
+	}
+	
+	public ArrayList<Integer> getIgnoredDayTimesAsList(){
+		return this.ignoredDayTimesAsList;
+	}
+	
+	public void setIgnoredWeekdaysAsList(ArrayList<Integer> list){
+		this.ignoredWeekdaysAsList = list;
+	}
+	
+	public ArrayList<Integer> getIgnoredWeekdaysAsList(){
+		return this.ignoredWeekdaysAsList;
 	}
 }

@@ -27,6 +27,8 @@ public class Main {
 	public static Color[] weekDayColors; //weekDayColorsWithAlpha;
 	public static int screenWidth, screenHeight; //colorAlpha = 255;
 	public static CrimeCaseDatabase dataBase;
+	public static MapController mapController;
+	public static MainframeController mainframeController;
 	public static Color
 		mondayColor = new Color(213,207,11), //YELLOW
 		tuesdayColor = new Color(0,200,240), //CYAN
@@ -75,16 +77,17 @@ public class Main {
 		}
 		
 		System.out.println("Create Controller...");
-		MapController geoMapController = new MapController(map);
-		geoMapController.setMovementMouseButton(MouseEvent.BUTTON2);
-		geoMapController.setDoubleClickZoomEnabled(false);
-		geoMapController.setWheelZoomEnabled(false);
-		map.setMapController(geoMapController);
+		Main.mapController = new MapController(map);
+		Main.mapController.setMovementMouseButton(MouseEvent.BUTTON2);
+		Main.mapController.setDoubleClickZoomEnabled(false);
+		Main.mapController.setWheelZoomEnabled(false);
+		map.setMapController(Main.mapController);
 		
 		System.out.println("Create UI...");
-		Mainframe mFrame = new Mainframe(map, geoMapController);
-		MainframeController mFrameController = new MainframeController(mFrame, geoMapController);
-		mFrame.setController(mFrameController);
+		Mainframe mFrame = new Mainframe(map);
+		Main.mainframeController = new MainframeController(mFrame);
+		Main.mainframeController.applySettings(); // DEBUG
+		mFrame.setController(Main.mainframeController);
 		mFrame.setVisible(true);
 		
 		mFrame.repaint();

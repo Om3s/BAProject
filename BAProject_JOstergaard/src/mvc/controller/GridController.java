@@ -16,6 +16,7 @@ import mvc.model.Gridmodel;
 
 public class GridController {
 	private ArrayList<GridModelData> pastGridModelData;
+	private ImageController imageController = new ImageController();
 	
 	public GridController(){
 		this.pastGridModelData = new ArrayList<GridModelData>();
@@ -24,7 +25,7 @@ public class GridController {
 	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight){
 		Gridmodel.getInstance().init(xResolution, yResolution, topLeft, botRight);
 		long dateInterval = toDate.getTime() - fromDate.getTime(); //interval is current date selection
-		int intervalAmount = 2; //TODO intervalAmount hardcoded
+		int intervalAmount = 1; //TODO intervalAmount hardcoded
 		Date fDate = fromDate;
 		Date tDate = toDate;
 		Gridmodel.getInstance().getData().setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
@@ -35,7 +36,7 @@ public class GridController {
 		double weight = 1.0; //TODO determine weight properly and implement analysis of past data:
 		GridModelData newData;
 		for(int i=0; i<intervalAmount; i++){
-			fDate = new Date(fromDate.getTime() - dateInterval*i);
+			fDate = new Date(fromDate.getTime() - dateInterval*(i+1));
 			tDate = new Date(fDate.getTime() + dateInterval);
 			newData = new GridModelData(1.0 - ((1.0 / intervalAmount) * i)); //TODO Weight calculation is linear at the moment
 			newData.setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
@@ -46,14 +47,14 @@ public class GridController {
 	}
 	
 	private void matrixCalculations() {
-		boolean minMaxByFilters = false;
+		boolean minMaxByFilters = true;
 		double	minNegValue,maxNegValue,minPosValue,maxPosValue;
 		if(minMaxByFilters){
 			// min max determined by filters: TODO filternumbers are hardcoded atm
-			minNegValue = 0.0;
-			maxNegValue = -0.2;
-			minPosValue = 0.0;
-			maxPosValue = 0.2;
+			minNegValue = -0.001;
+			maxNegValue = -0.1;
+			minPosValue = 0.001;
+			maxPosValue = 0.1;
 		} else {
 			// min max of data:
 			minNegValue = Double.MIN_VALUE;
@@ -91,7 +92,6 @@ public class GridController {
 					}
 				}
 			}
-			System.out.println("");
 		}
 		double[][] normalizedRelativeMatrix = new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
 		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){ //fill the normalized RelativeMatrix
@@ -109,57 +109,58 @@ public class GridController {
 				}
 			}
 		}
+		
+		this.createHeatMap(normalizedRelativeMatrix, 0);
+		this.imageController.loadAllHeatMaps();
+		boolean debug = false;
+		if(debug){
+			//DEBUG MATRICES OUTPUT:
+			DecimalFormat dFormat = new DecimalFormat("0.00");
+			System.out.println("Present Occurencies:");
+			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
+				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
+					System.out.print(" "+Gridmodel.getInstance().getData().getDataMatrix()[x][y]+" ");
+				}
+				System.out.println("");
+			}
+			System.out.println("Average Past Occurences:");
+			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
+				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
+					System.out.print(" "+pastDataAverage[x][y]+" ");
+				}
+				System.out.println("");
+			}
+			System.out.println("Absolute Difference Occurences:");
+			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
+				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
+					System.out.print(" "+absoluteDataDifference[x][y]+" ");
+				}
+				System.out.println("");
+			}
+			System.out.println("Relative Difference Occurences:");
+			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
+				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
+					System.out.print(" "+Math.round(relativeDataDifference[x][y]*100)+"% ");
+				}
+				System.out.println("");
+			}
+			System.out.println("Normalized Relative Differences:");
+			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
+				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
+					System.out.print(" "+normalizedRelativeMatrix[x][y]+" ");
+				}
+				System.out.println("");
+			}
+			System.out.println("maxNeg="+maxNegValue+", minNeg="+minNegValue+", maxPos="+maxPosValue+", minPos="+minPosValue);
+		}
+	}
 
-		//Create raw Image:
-		ImageController imageController = new ImageController();
+	private void createHeatMap(double[][] normalizedRelativeMatrix, int index) {
 		try {
-			File imageFile = new File("dat/img/rawMap.png");
-			imageFile.createNewFile();
-			imageController.drawHeatmap(normalizedRelativeMatrix);
-			imageController.saveImage(imageFile);
+			this.imageController.drawHeatmap(normalizedRelativeMatrix, index);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//DEBUG MATRICES OUTPUT:
-		DecimalFormat dFormat = new DecimalFormat("0.00");
-		System.out.println("Present Occurencies:");
-		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-			for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-				System.out.print(" "+Gridmodel.getInstance().getData().getDataMatrix()[x][y]+" ");
-			}
-			System.out.println("");
-		}
-		System.out.println("Average Past Occurences:");
-		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-			for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-				System.out.print(" "+pastDataAverage[x][y]+" ");
-			}
-			System.out.println("");
-		}
-		System.out.println("Absolute Difference Occurences:");
-		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-			for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-				System.out.print(" "+absoluteDataDifference[x][y]+" ");
-			}
-			System.out.println("");
-		}
-		System.out.println("Relative Difference Occurences:");
-		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-			for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-				System.out.print(" "+Math.round(relativeDataDifference[x][y]*100)+"% ");
-			}
-			System.out.println("");
-		}
-		System.out.println("Normalized Relative Differences:");
-		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-			for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-				System.out.print(" "+normalizedRelativeMatrix[x][y]+" ");
-			}
-			System.out.println("");
-		}
-		System.out.println("maxNeg="+maxNegValue+", minNeg="+minNegValue+", maxPos="+maxPosValue+", minPos="+minPosValue);
 	}
 
 	private int[][] calculateWeightedAverage(GridModelData[] matrices){ //TODO weight is not considered yet
@@ -190,7 +191,14 @@ public class GridController {
 	private int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate) {
 		int[][] result = null;
 		try {
-			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", Gridmodel.getInstance().getGridRectangleMatrix());
+			if(Main.mainframeController == null){
+				System.out.println("HAHAHAHHAHAHAHAAAHAHAHAH");
+			} else if(Main.mainframeController.getIgnoredDayTimesAsList() == null){
+				System.out.println("DEBUG IgnDAYTIMES is NULL");
+			} else if(Main.mainframeController.getIgnoredWeekdaysAsList() == null){
+				System.out.println("DEBUG IgnWEEKDAYS is NULL");
+			}
+			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", Gridmodel.getInstance().getGridRectangleMatrix(), Main.mainframeController.getIgnoredDayTimesAsList(), Main.mainframeController.getIgnoredWeekdaysAsList());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

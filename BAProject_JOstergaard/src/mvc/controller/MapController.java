@@ -1,8 +1,11 @@
 package mvc.controller;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,8 +16,10 @@ import java.util.Iterator;
 
 import mvc.main.Main;
 import mvc.model.CaseReport;
+import mvc.model.GeoMapViewer;
 import mvc.model.GeoPoint;
 import mvc.model.GrayOSMTileSource;
+import mvc.model.ImageMapMarker;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
@@ -31,7 +36,8 @@ import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 public class MapController extends DefaultMapController {
 	private ArrayList<GeoPoint> currentPoints;
 	private GeoPoint selectedMapMarker;
-	private MainframeController mainFrameController;
+	private ArrayList<BufferedImage> heatMapImages = new ArrayList<BufferedImage>();
+	private ImageMapMarker currentHeatMapImageMarker;
 	
 	public MapController(JMapViewer map) {
 		super(map);
@@ -68,7 +74,7 @@ public class MapController extends DefaultMapController {
 			if(cR.getPoint() != null){
 				cal.setTime(cR.getDateOpened());
 				dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-				if(mainFrameController.selectedWeekdays.length > 3){
+				if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 3){
 					cR.getPoint().setColor(Main.alphaColor);
 					cR.getPoint().setBackColor(Main.alphaColor);
 				} else {
@@ -88,7 +94,7 @@ public class MapController extends DefaultMapController {
 	
 	public void refreshDots(){
 		for(GeoPoint p : this.currentPoints){
-			if(mainFrameController.selectedWeekdays.length > 3){
+			if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 3){
 				p.setColor(Main.alphaColor);
 				p.setBackColor(Main.alphaColor);
 			}
@@ -172,7 +178,7 @@ public class MapController extends DefaultMapController {
 	  	    if (radCircle > 8){
 	  	    	this.clearSelectedMapMarker();
 	  	    } else {
-	  	    	this.mainFrameController.mainframe.reportList.setSelectedValue(this.selectedMapMarker.getRelatedCaseReport(), true);
+	  	    	Main.mainframeController.mainframe.reportList.setSelectedValue(this.selectedMapMarker.getRelatedCaseReport(), true);
 	  	    }
 		} else if(e.getButton() == MouseEvent.BUTTON2){
 			Point p = e.getPoint();
@@ -205,7 +211,7 @@ public class MapController extends DefaultMapController {
 	 */
 	private void clearSelectedMapMarker() {
 		this.setDefaultColor(this.selectedMapMarker);
-		this.mainFrameController.mainframe.reportList.clearSelection();
+		Main.mainframeController.mainframe.reportList.clearSelection();
 		Main.dataBase.getCurrentSelected().setCurrentSelected(false);
 		Main.dataBase.setCurrentSelected(null);
 		this.selectedMapMarker = null;
@@ -247,7 +253,7 @@ public class MapController extends DefaultMapController {
 						int dayOfWeek;
 						cal.setTime(cR.getDateOpened());
 						dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-						if(mainFrameController.selectedWeekdays.length > 3){
+						if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 3){
 							cR.getPoint().setColor(Main.alphaColor);
 							cR.getPoint().setBackColor(Main.alphaColor);
 						} else {
@@ -259,18 +265,13 @@ public class MapController extends DefaultMapController {
 			}
 		}
 	}
-	
-	/**
-	 * Sets the reference to the MainFrameController
-	 * 
-	 * @param mFC
-	 */
-	public void setMainFrameController(MainframeController mFC){
-		this.mainFrameController = mFC;
-	}
 
 	public void setMapLocation(double lat, double lon, int zoom) {
 		this.map.setDisplayPosition(new Coordinate(lat, lon), zoom);
+	}
+	
+	public void setZoom(boolean isActivated){
+		((GeoMapViewer)this.map).setZoomActivated(isActivated);
 	}
 	
 	public void createCellMatrix(int xResolution, int yResolution, Date fromDate, Date toDate) {
@@ -280,5 +281,27 @@ public class MapController extends DefaultMapController {
 		Coordinate coords2 = (Coordinate)map.getPosition(map.getWidth(),map.getHeight());
 		System.out.println("Grid Boundary Points:\nP1:("+coords1.getLon()+"x,"+coords1.getLat()+"y)\nP2:("+coords2.getLon()+"x,"+coords2.getLat()+"y)");
 		gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2);
+	}
+	
+	public int getMapWidth(){
+		return this.map.getWidth();
+	}
+	
+	public int getMapHeight(){
+		return this.map.getHeight();
+	}
+		
+	public void setheatMapImages(ArrayList<BufferedImage> imageList){
+		this.heatMapImages = imageList;
+	}
+
+	public void loadHeatMapImage(int index) {
+		this.map.removeMapMarker(this.currentHeatMapImageMarker);
+		this.currentHeatMapImageMarker = new ImageMapMarker((Coordinate)this.map.getPosition(0, 0), this.heatMapImages.get(index));
+		this.map.addMapMarker(this.currentHeatMapImageMarker);
+	}
+
+	public void setShowHeatMap(boolean isVisible) {
+		this.currentHeatMapImageMarker.setVisible(isVisible);
 	}
 }
