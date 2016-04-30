@@ -111,6 +111,18 @@ public class MainframeController {
 		this.mainframe.checkBox_daytime_evening.setSelected(true);
 		this.mainframe.checkBox_daytime_evening2.setSelected(true);
 		this.mainframe.checkBox_daytime_midnight.setSelected(true);
+		//Analysis panel:
+		this.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setSelected(false);
+		this.mainframe.filtermenu_analysis_panel_analyze_button.setEnabled(false);
+		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setEnabled(false);
+		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
+		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
+		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(false);
+		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setText("1");
+		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText("0.0%");
+		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText("50.0%");
+		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setText("20");
 		//Weekdays:
 		//Chart:
 		this.mainframe.matrix_chart_panel.setTransformationMode(2);
@@ -200,7 +212,6 @@ public class MainframeController {
 	 * of the analysis part.
 	 */
 	public void applySettings(){
-		boolean isHeatMapOn = true; //TODO als GUI attribut ersetzen
 		this.clearCurrentData();
 		this.refreshGlobalDates();
 		this.refreshTimelineAttributes();
@@ -208,9 +219,10 @@ public class MainframeController {
 		this.refreshSelectedWeekdays();
 		this.refreshCurrentCategory();
 		this.refreshChart();
-		if(isHeatMapOn){
+		if(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected()){
 //			Main.mapController.setZoom(false);
 			this.refreshHeatMap();
+			Main.mapController.setShowCurrentPoints(false);
 		} else {
 //			Main.mapController.setZoom(true);
 			Main.mapController.setShowCurrentPoints(true);
@@ -226,10 +238,8 @@ public class MainframeController {
 	}
 	
 	public void refreshHeatMap() {
-		Main.mapController.setShowCurrentPoints(false);
-		Main.mapController.createCellMatrix(25,20,this.globalFromDate, this.globalToDate); //TODO Resolution is still hardcoded
 		Main.mapController.loadHeatMapImage(0); //TODO 0 is hardcoded, it stands for the heatmap delta
-		Main.mapController.setShowHeatMap(true);
+		Main.mapController.setShowHeatMap(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected());
 	}
 
 	private void clearCurrentData() {
@@ -771,5 +781,39 @@ public class MainframeController {
 	
 	public ArrayList<Integer> getIgnoredWeekdaysAsList(){
 		return this.ignoredWeekdaysAsList;
+	}
+
+	public void analyzeButtonIsPressed() {
+		// TODO
+		int resolution = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_resolution_textfield.getText());
+		Main.mapController.createCellMatrix(resolution,resolution,this.globalFromDate, this.globalToDate); //TODO Resolution is still hardcoded
+		this.refreshHeatMap();
+	}
+
+	public void checkBoxHeatmapChanged() {
+		if(this.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected()){
+			this.mainframe.filtermenu_analysis_panel_analyze_button.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(true);
+			Main.mapController.setShowCurrentPoints(false);
+			Main.mapController.setShowHeatMap(true);
+			this.refreshHeatMap();
+		} else {
+			this.mainframe.filtermenu_analysis_panel_analyze_button.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(false);
+			Main.mapController.setShowCurrentPoints(true);
+			Main.mapController.setShowHeatMap(false);
+		}
+	}
+
+	public void analyzeHeatMapSliderChanged() {
+		// TODO
 	}
 }

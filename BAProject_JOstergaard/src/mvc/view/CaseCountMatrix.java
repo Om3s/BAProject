@@ -89,7 +89,7 @@ public class CaseCountMatrix extends JPanel {
 				} else {
 					isSelected = true;
 				}
-				mFrame.controller.filterForCaseCountMatrixSelection(isSelected, selectedWeekDay, selectedDayTime);
+				Main.mainframeController.filterForCaseCountMatrixSelection(isSelected, selectedWeekDay, selectedDayTime);
 				repaint();
 			}
 			

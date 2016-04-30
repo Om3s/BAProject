@@ -297,11 +297,17 @@ public class MapController extends DefaultMapController {
 
 	public void loadHeatMapImage(int index) {
 		this.map.removeMapMarker(this.currentHeatMapImageMarker);
-		this.currentHeatMapImageMarker = new ImageMapMarker((Coordinate)this.map.getPosition(0, 0), this.heatMapImages.get(index));
-		this.map.addMapMarker(this.currentHeatMapImageMarker);
+		if(this.heatMapImages != null && this.heatMapImages.size() > 0){
+			if(this.heatMapImages.get(index) != null){
+				this.currentHeatMapImageMarker = new ImageMapMarker((Coordinate)this.map.getPosition(0, 0), this.heatMapImages.get(index));
+				this.map.addMapMarker(this.currentHeatMapImageMarker);
+			}
+		}
 	}
 
 	public void setShowHeatMap(boolean isVisible) {
-		this.currentHeatMapImageMarker.setVisible(isVisible);
+		if(this.currentHeatMapImageMarker != null){
+			this.currentHeatMapImageMarker.setVisible(isVisible);
+		}
 	}
 }

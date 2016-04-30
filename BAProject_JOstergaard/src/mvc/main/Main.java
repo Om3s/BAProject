@@ -87,7 +87,6 @@ public class Main {
 		Mainframe mFrame = new Mainframe(map);
 		Main.mainframeController = new MainframeController(mFrame);
 		Main.mainframeController.applySettings(); // DEBUG
-		mFrame.setController(Main.mainframeController);
 		mFrame.setVisible(true);
 		
 		mFrame.repaint();

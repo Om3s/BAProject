@@ -52,9 +52,13 @@ import java.util.Date;
 
 import javax.swing.JScrollPane;
 import javax.swing.JList;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.SwingConstants;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
 
 /**
  * 
@@ -63,7 +67,6 @@ import javax.swing.SwingConstants;
  */
 public class Mainframe extends JFrame {
 	public GeoMapViewer geoMap;
-	public MainframeController controller;
 	private final JFileChooser fileChooser;
 	private final JMenuItem fileMenu_item_load;
 	private final JMenuItem fileMenu_item_exit;
@@ -103,6 +106,18 @@ public class Mainframe extends JFrame {
 	public JCheckBox reportList_panel_filter_checkBoxOpen;
 	public JCheckBox reportList_panel_filter_checkBoxClosed;
 	public JScrollPane reportList_scrollPane;
+	private JLabel filtermenu_analysis_panel_label;
+	private JLabel filtermenu_analysis_panel_slider_label;
+	public JCheckBox filtermenu_analysis_panel_chckbxHeatmap;
+	public JSlider filtermenu_analysis_panel_upperThreshold_slider;
+	public JButton filtermenu_analysis_panel_analyze_button;
+	public JTextField filtermenu_analysis_panel_lowPosThreshold_textfield;
+	public JTextField filtermenu_analysis_panel_upperPosThreshold_textfield;
+	public JTextField filtermenu_analysis_panel_intervallAmount_textfield;
+	private JLabel filtermenu_analysis_panel_interactive_label;
+	private JLabel filtermenu_analysis_panel_intervalAmount_label;
+	private JLabel filtermenu_analysis_panel_resolution_label;
+	public JTextField filtermenu_analysis_panel_resolution_textfield;
 	
 	
 	public Mainframe(GeoMapViewer map){
@@ -137,17 +152,18 @@ public class Mainframe extends JFrame {
 		this.filtermenu_comboBox_category = new JComboBox();
 		//ChartPanel
 		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4], this);
+		//filtermenu_analysis:
+		this.filtermenu_analysis_panel_chckbxHeatmap = new JCheckBox("Heatmap");
+		this.filtermenu_analysis_panel_upperThreshold_slider = new JSlider();
+		this.filtermenu_analysis_panel_intervallAmount_textfield = new JTextField();
+		this.filtermenu_analysis_panel_lowPosThreshold_textfield = new JTextField();
+		this.filtermenu_analysis_panel_slider_label = new JLabel("Threshold:");
+		this.filtermenu_analysis_panel_upperPosThreshold_textfield = new JTextField();
+		this.filtermenu_analysis_panel_analyze_button = new JButton("Analyze");
+		this.filtermenu_analysis_panel_resolution_textfield = new JTextField();
 		
 		this.init();
 		this.pack();
-	}
-	
-	/**
-	 * 
-	 * @param mfC the MainframeController which controls the functions of this frame
-	 */
-	public void setController(MainframeController mfC){
-		this.controller = mfC;
 	}
 	
 	/**
@@ -288,7 +304,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_interval_panel.gridwidth = 2;
 		gbc_filtermenu_interval_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_interval_panel.gridx = 0;
-		gbc_filtermenu_interval_panel.gridy = 2;
+		gbc_filtermenu_interval_panel.gridy = 4;
 		filtermenu_panel.add(filtermenu_interval_panel, gbc_filtermenu_interval_panel);
 		GridBagLayout gbl_filtermenu_interval_panel = new GridBagLayout();
 		gbl_filtermenu_interval_panel.columnWidths = new int[] {0, 0};
@@ -346,7 +362,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_specific_dow_panel.gridwidth = 2;
 		gbc_filtermenu_specific_dow_panel.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_specific_dow_panel.gridx = 0;
-		gbc_filtermenu_specific_dow_panel.gridy = 3;
+		gbc_filtermenu_specific_dow_panel.gridy = 2;
 		filtermenu_panel.add(filtermenu_specific_dow_panel, gbc_filtermenu_specific_dow_panel);
 		GridBagLayout gbl_filtermenu_specific_dow_panel = new GridBagLayout();
 		gbl_filtermenu_specific_dow_panel.columnWidths = new int[] {0, 0, 0};
@@ -420,7 +436,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_daytime_panel.insets = new Insets(0, 0, 0, 0);
 		gbc_filtermenu_daytime_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_daytime_panel.gridx = 0;
-		gbc_filtermenu_daytime_panel.gridy = 4;
+		gbc_filtermenu_daytime_panel.gridy = 3;
 		
 		filtermenu_panel.add(this.filtermenu_daytime_panel, gbc_filtermenu_daytime_panel);
 		GridBagLayout gbl_filtermenu_daytime_panel = new GridBagLayout();
@@ -480,6 +496,116 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_specific_dow_daytime_label.gridy = 0;
 		this.filtermenu_daytime_panel.add(this.filtermenu_specific_dow_daytime_label, gbc_filtermenu_specific_dow_daytime_label);
 		
+		JPanel filtermenu_analyzis_panel = new JPanel();
+		GridBagConstraints gbc_filtermenu_analyzis_panel = new GridBagConstraints();
+		gbc_filtermenu_analyzis_panel.weighty = 1.0;
+		gbc_filtermenu_analyzis_panel.anchor = GridBagConstraints.SOUTH;
+		gbc_filtermenu_analyzis_panel.gridwidth = 2;
+		gbc_filtermenu_analyzis_panel.insets = new Insets(0, 3, 5, 3);
+		gbc_filtermenu_analyzis_panel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_filtermenu_analyzis_panel.gridx = 0;
+		gbc_filtermenu_analyzis_panel.gridy = 5;
+		filtermenu_panel.add(filtermenu_analyzis_panel, gbc_filtermenu_analyzis_panel);
+		GridBagLayout gbl_filtermenu_analyzis_panel = new GridBagLayout();
+		gbl_filtermenu_analyzis_panel.columnWidths = new int[] {0, 0, 0, 0, 0};
+		gbl_filtermenu_analyzis_panel.rowHeights = new int[] {0, 0, 0, 0, 0, 0};
+		gbl_filtermenu_analyzis_panel.columnWeights = new double[]{1.0, 0.0, 0.0, 1.0, 0.0};
+		gbl_filtermenu_analyzis_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		filtermenu_analyzis_panel.setLayout(gbl_filtermenu_analyzis_panel);
+		
+		filtermenu_analysis_panel_label = new JLabel("Analysis attributes:");
+		GridBagConstraints gbc_filtermenu_analysis_panel_label = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_label.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_analysis_panel_label.gridwidth = 4;
+		gbc_filtermenu_analysis_panel_label.gridx = 1;
+		gbc_filtermenu_analysis_panel_label.gridy = 0;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_label, gbc_filtermenu_analysis_panel_label);
+		
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_chckbxHeatmap = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_chckbxHeatmap.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_analysis_panel_chckbxHeatmap.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_analysis_panel_chckbxHeatmap.gridx = 0;
+		gbc_filtermenu_analysis_panel_chckbxHeatmap.gridy = 0;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_chckbxHeatmap, gbc_filtermenu_analysis_panel_chckbxHeatmap);
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_analyze_button = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_analyze_button.anchor = GridBagConstraints.NORTH;
+		gbc_filtermenu_analysis_panel_analyze_button.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_analysis_panel_analyze_button.gridx = 4;
+		gbc_filtermenu_analysis_panel_analyze_button.gridy = 1;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_analyze_button, gbc_filtermenu_analysis_panel_analyze_button);
+		
+		filtermenu_analysis_panel_interactive_label = new JLabel("Realtime:");
+		GridBagConstraints gbc_filtermenu_analysis_panel_interactive_label = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_interactive_label.gridwidth = 5;
+		gbc_filtermenu_analysis_panel_interactive_label.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_analysis_panel_interactive_label.gridx = 0;
+		gbc_filtermenu_analysis_panel_interactive_label.gridy = 2;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_interactive_label, gbc_filtermenu_analysis_panel_interactive_label);
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_upperPosThreshold_textfield = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.fill = GridBagConstraints.HORIZONTAL;
+		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.gridx = 4;
+		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.gridy = 3;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_upperPosThreshold_textfield, gbc_filtermenu_analysis_panel_upperPosThreshold_textfield);
+		filtermenu_analysis_panel_upperPosThreshold_textfield.setColumns(10);
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_slider_label = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_slider_label.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_analysis_panel_slider_label.gridx = 0;
+		gbc_filtermenu_analysis_panel_slider_label.gridy = 3;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_slider_label, gbc_filtermenu_analysis_panel_slider_label);
+		
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_upperThreshold_slider = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_upperThreshold_slider.gridwidth = 2;
+		gbc_filtermenu_analysis_panel_upperThreshold_slider.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_analysis_panel_upperThreshold_slider.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_analysis_panel_upperThreshold_slider.gridx = 2;
+		gbc_filtermenu_analysis_panel_upperThreshold_slider.gridy = 3;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_upperThreshold_slider, gbc_filtermenu_analysis_panel_upperThreshold_slider);
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_lowPosThreshold_textfield = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.fill = GridBagConstraints.HORIZONTAL;
+		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.gridx = 1;
+		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.gridy = 3;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_lowPosThreshold_textfield, gbc_filtermenu_analysis_panel_lowPosThreshold_textfield);
+		filtermenu_analysis_panel_lowPosThreshold_textfield.setColumns(10);
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_intervallAmount_textfield = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_intervallAmount_textfield.anchor = GridBagConstraints.WEST;
+		gbc_filtermenu_analysis_panel_intervallAmount_textfield.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_analysis_panel_intervallAmount_textfield.gridx = 3;
+		gbc_filtermenu_analysis_panel_intervallAmount_textfield.gridy = 1;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_intervallAmount_textfield, gbc_filtermenu_analysis_panel_intervallAmount_textfield);
+		filtermenu_analysis_panel_intervallAmount_textfield.setColumns(10);
+		
+		filtermenu_analysis_panel_intervalAmount_label = new JLabel("# intervals:");
+		GridBagConstraints gbc_filtermenu_analysis_panel_intervalAmount_label = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_intervalAmount_label.anchor = GridBagConstraints.EAST;
+		gbc_filtermenu_analysis_panel_intervalAmount_label.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_analysis_panel_intervalAmount_label.gridx = 2;
+		gbc_filtermenu_analysis_panel_intervalAmount_label.gridy = 1;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_intervalAmount_label, gbc_filtermenu_analysis_panel_intervalAmount_label);
+		
+		filtermenu_analysis_panel_resolution_label = new JLabel("Resolution: (n\u00B2)");
+		GridBagConstraints gbc_filtermenu_analysis_panel_resolution_label = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_resolution_label.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_analysis_panel_resolution_label.gridx = 0;
+		gbc_filtermenu_analysis_panel_resolution_label.gridy = 1;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_resolution_label, gbc_filtermenu_analysis_panel_resolution_label);
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_resolution_textfield = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_resolution_textfield.insets = new Insets(0, 0, 0, 5);
+		gbc_filtermenu_analysis_panel_resolution_textfield.fill = GridBagConstraints.HORIZONTAL;
+		gbc_filtermenu_analysis_panel_resolution_textfield.gridx = 1;
+		gbc_filtermenu_analysis_panel_resolution_textfield.gridy = 1;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_resolution_textfield, gbc_filtermenu_analysis_panel_resolution_textfield);
+		filtermenu_analysis_panel_resolution_textfield.setColumns(10);
+		
 		JPanel filtermenu_buttons_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_buttons_panel = new GridBagConstraints();
 		gbc_filtermenu_buttons_panel.weighty = 1.0;
@@ -488,7 +614,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_buttons_panel.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_buttons_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_buttons_panel.gridx = 0;
-		gbc_filtermenu_buttons_panel.gridy = 5;
+		gbc_filtermenu_buttons_panel.gridy = 6;
 		filtermenu_panel.add(filtermenu_buttons_panel, gbc_filtermenu_buttons_panel);
 		filtermenu_buttons_panel.setLayout(new GridLayout(1, 2, 0, 0));
 		
@@ -676,11 +802,10 @@ public class Mainframe extends JFrame {
 		
 		// =================== EVENTHANDLER: =================== 
 		this.reportList.addListSelectionListener(new ListSelectionListener() {
-			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if(!e.getValueIsAdjusting()){
-					Mainframe.this.controller.onNewCaseSelection();
+					Main.mainframeController.onNewCaseSelection();
 				}
 			}
 		});
@@ -688,7 +813,7 @@ public class Mainframe extends JFrame {
 		this.reportList.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e){
 				if(e.getClickCount() == 2){
-					Mainframe.this.controller.detailsButtonClicked();
+					Main.mainframeController.detailsButtonClicked();
 				}
 			}
 		});
@@ -696,7 +821,7 @@ public class Mainframe extends JFrame {
 		this.reportList_details_button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Mainframe.this.controller.detailsButtonClicked();
+				Main.mainframeController.detailsButtonClicked();
 			}
 		});
 		
@@ -757,26 +882,24 @@ public class Mainframe extends JFrame {
 //						log.append("Open command cancelled by user." + newline);
 					}
 			    }
-				Mainframe.this.controller.loadData(Mainframe.this.fileChooser.getSelectedFile().getPath());
+				Main.mainframeController.loadData(Mainframe.this.fileChooser.getSelectedFile().getPath());
 			}
 		});
 				
 		this.filtermenu_dates_leftCalendarButton.addPropertyChangeListener(new PropertyChangeListener() {
-			
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (evt.getNewValue() instanceof Date) {
-					Mainframe.this.controller.fromDateAction((Date)evt.getNewValue());
+					Main.mainframeController.fromDateAction((Date)evt.getNewValue());
 				} 
 			}
 		});
 		
 		this.filtermenu_dates_rightCalendarButton.addPropertyChangeListener(new PropertyChangeListener() {
-			
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (evt.getNewValue() instanceof Date) {
-					Mainframe.this.controller.toDateAction((Date)evt.getNewValue());
+					Main.mainframeController.toDateAction((Date)evt.getNewValue());
 				}
 			}
 		});
@@ -785,7 +908,7 @@ public class Mainframe extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Apply button.");
-				Mainframe.this.controller.applySettings();
+				Main.mainframeController.applySettings();
 			}
 		});
 		
@@ -793,28 +916,47 @@ public class Mainframe extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Default button.");
-				Mainframe.this.controller.defaultSettings();
+				Main.mainframeController.defaultSettings();
 			}
 		});
 		
 		this.reportList_panel_filter_checkBoxOpen.addItemListener(new ItemListener() {
-			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(Mainframe.this.controller != null){
-					Mainframe.this.controller.showOpenedCases(Mainframe.this.reportList_panel_filter_checkBoxOpen.isSelected());
+				if(Main.mainframeController != null){
+					Main.mainframeController.showOpenedCases(Mainframe.this.reportList_panel_filter_checkBoxOpen.isSelected());
 				}
 			}
 		});;
 		
 		this.reportList_panel_filter_checkBoxClosed.addItemListener(new ItemListener() {
-			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(Mainframe.this.controller != null){
-					Mainframe.this.controller.showClosedCases(Mainframe.this.reportList_panel_filter_checkBoxClosed.isSelected());
+				if(Main.mainframeController != null){
+					Main.mainframeController.showClosedCases(Mainframe.this.reportList_panel_filter_checkBoxClosed.isSelected());
 				}
 			}
 		});;
+		
+		this.filtermenu_analysis_panel_analyze_button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.mainframeController.analyzeButtonIsPressed();
+			}
+		});
+		
+		this.filtermenu_analysis_panel_chckbxHeatmap.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				Main.mainframeController.checkBoxHeatmapChanged();
+			}
+		});
+		
+		this.filtermenu_analysis_panel_upperThreshold_slider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				Main.mainframeController.analyzeHeatMapSliderChanged();
+			}
+		});
 	}
 }
