@@ -74,7 +74,7 @@ public class MapController extends DefaultMapController {
 			if(cR.getPoint() != null){
 				cal.setTime(cR.getDateOpened());
 				dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-				if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 3){
+				if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 7){
 					cR.getPoint().setColor(Main.alphaColor);
 					cR.getPoint().setBackColor(Main.alphaColor);
 				} else {
@@ -94,7 +94,7 @@ public class MapController extends DefaultMapController {
 	
 	public void refreshDots(){
 		for(GeoPoint p : this.currentPoints){
-			if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 3){
+			if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 7){
 				p.setColor(Main.alphaColor);
 				p.setBackColor(Main.alphaColor);
 			}
@@ -253,7 +253,7 @@ public class MapController extends DefaultMapController {
 						int dayOfWeek;
 						cal.setTime(cR.getDateOpened());
 						dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-						if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 3){
+						if(Main.mainframeController.getSelectedWeekdaysAsList().size() > 7){
 							cR.getPoint().setColor(Main.alphaColor);
 							cR.getPoint().setBackColor(Main.alphaColor);
 						} else {
@@ -274,13 +274,13 @@ public class MapController extends DefaultMapController {
 		((GeoMapViewer)this.map).setZoomActivated(isActivated);
 	}
 	
-	public void createCellMatrix(int xResolution, int yResolution, Date fromDate, Date toDate) {
+	public void createCellMatrix(int xResolution, int yResolution, Date fromDate, Date toDate, int intervalAmount) {
 		GridController gridController = new GridController();
 		//Viewport:
 		Coordinate coords1 = (Coordinate)this.map.getPosition(0,0);
 		Coordinate coords2 = (Coordinate)map.getPosition(map.getWidth(),map.getHeight());
 		System.out.println("Grid Boundary Points:\nP1:("+coords1.getLon()+"x,"+coords1.getLat()+"y)\nP2:("+coords2.getLon()+"x,"+coords2.getLat()+"y)");
-		gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2);
+		gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2, intervalAmount);
 	}
 	
 	public int getMapWidth(){

@@ -22,10 +22,9 @@ public class GridController {
 		this.pastGridModelData = new ArrayList<GridModelData>();
 	}
 	
-	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight){
+	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight, int intervalAmount){
 		Gridmodel.getInstance().init(xResolution, yResolution, topLeft, botRight);
 		long dateInterval = toDate.getTime() - fromDate.getTime(); //interval is current date selection
-		int intervalAmount = 1; //TODO intervalAmount hardcoded
 		Date fDate = fromDate;
 		Date tDate = toDate;
 		Gridmodel.getInstance().getData().setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));

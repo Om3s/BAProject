@@ -118,11 +118,18 @@ public class MainframeController {
 		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setText("1");
-		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText("0.0%");
-		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText("50.0%");
+		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText("0");
+		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText("100");
 		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setText("20");
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMinorTickSpacing(2);
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMajorTickSpacing(10);
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setPaintTicks(true);
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setPaintLabels(true);
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMaximum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()));
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setValue(50);
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(false);
 		//Weekdays:
 		//Chart:
 		this.mainframe.matrix_chart_panel.setTransformationMode(2);
@@ -786,7 +793,8 @@ public class MainframeController {
 	public void analyzeButtonIsPressed() {
 		// TODO
 		int resolution = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_resolution_textfield.getText());
-		Main.mapController.createCellMatrix(resolution,resolution,this.globalFromDate, this.globalToDate); //TODO Resolution is still hardcoded
+		int intervalAmount = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText());
+		Main.mapController.createCellMatrix(resolution,resolution,this.globalFromDate, this.globalToDate, intervalAmount);
 		this.refreshHeatMap();
 	}
 
@@ -815,5 +823,18 @@ public class MainframeController {
 
 	public void analyzeHeatMapSliderChanged() {
 		// TODO
+	}
+	
+	public void refreshHeatMapSlider(){
+		int currentValue = this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.getValue();
+		int newMaxPosValue = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText());
+		int newMinPosValue = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText());
+		if(currentValue > newMaxPosValue || currentValue < newMinPosValue){
+			if(currentValue > newMaxPosValue) currentValue = newMaxPosValue;
+			else currentValue = newMinPosValue;
+			this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setValue(currentValue);
+		}
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMaximum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
+		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()));
 	}
 }

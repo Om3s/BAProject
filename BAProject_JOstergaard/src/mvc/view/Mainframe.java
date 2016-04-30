@@ -54,6 +54,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JList;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.SwingConstants;
@@ -154,7 +156,7 @@ public class Mainframe extends JFrame {
 		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4], this);
 		//filtermenu_analysis:
 		this.filtermenu_analysis_panel_chckbxHeatmap = new JCheckBox("Heatmap");
-		this.filtermenu_analysis_panel_upperThreshold_slider = new JSlider();
+		this.filtermenu_analysis_panel_upperThreshold_slider = new JSlider(JSlider.HORIZONTAL);
 		this.filtermenu_analysis_panel_intervallAmount_textfield = new JTextField();
 		this.filtermenu_analysis_panel_lowPosThreshold_textfield = new JTextField();
 		this.filtermenu_analysis_panel_slider_label = new JLabel("Threshold:");
@@ -956,6 +958,27 @@ public class Mainframe extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				Main.mainframeController.analyzeHeatMapSliderChanged();
+			}
+		});
+		
+		this.filtermenu_analysis_panel_upperPosThreshold_textfield.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}
