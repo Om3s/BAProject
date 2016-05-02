@@ -34,11 +34,23 @@ public class ImageController {
 	 * @param matrix with values between -1.0(BLUE) and 1.0(RED)
 	 * @throws IOException 
 	 */
-	public void drawHeatmap(double[][] matrix, int index) throws IOException{
+	public void drawHeatmap(double[][] matrix,int index) throws IOException{
 		long startTime = System.currentTimeMillis(), currentTime;
 		System.out.println("Begin Heatmap creation...");
 		this.rawImage = new BufferedImage(matrix.length, matrix[0].length, BufferedImage.TYPE_INT_ARGB);
 		int rgb,white = new Color(0,0,0,0).getRGB();
+		float cellValue;
+//		for(int y=0; y<matrix[0].length; y++){
+//			for(int x=0; x<matrix.length; x++){
+//				cellValue = (float)((matrix[x][y]+1)/2);
+//				if(cellValue != 0.5){
+//					rgb = Color.HSBtoRGB(cellValue*0.33f, 1.0f, 1.0f);
+//				} else {
+//					rgb = white;
+//				}
+//				this.rawImage.setRGB(x, y, rgb);
+//			}
+//		}
 		for(int y=0; y<matrix[0].length; y++){
 			for(int x=0; x<matrix.length; x++){
 				if(matrix[x][y] > 0){
@@ -46,7 +58,7 @@ public class ImageController {
 				} else if(matrix[x][y] == 0){
 					rgb = white;
 				} else {
-					rgb = new Color(0,0,255,(int)((Math.abs(matrix[x][y]))*255)).getRGB();
+					rgb = new Color(0,255,0,(int)((Math.abs(matrix[x][y]))*255)).getRGB();
 				}
 				this.rawImage.setRGB(x, y, rgb);
 			}
@@ -57,7 +69,7 @@ public class ImageController {
 		//Blurr image
 		this.finalHeatmap = this.blurImage(this.rawImage, 2);
 		this.finalHeatmap = this.resizeImage(this.finalHeatmap, Main.mapController.getMapWidth(),Main.mapController.getMapHeight());
-		this.finalHeatmap = this.blurImage(this.finalHeatmap, 25);
+		this.finalHeatmap = this.blurImage(this.finalHeatmap, 20);
 		this.saveImages(index);
 		currentTime = System.currentTimeMillis();
 		System.out.println("Heatmap created in "+(((double)currentTime-(double)startTime)/1000)+"sec");
@@ -117,7 +129,7 @@ public class ImageController {
 		this.rawImage = currentImage;
 	}
 	
-	public void loadAllHeatMaps(){
+	public void loadAllHeatMaps(){ //TODO
 		File folder = new File(this.imgDir);
 		FilenameFilter filter = new FilenameFilter() {
 			@Override
@@ -126,7 +138,6 @@ public class ImageController {
 		    }
 		};
 		File[] fileList = folder.listFiles(filter);
-		System.out.println("DEBUG FILELISTLENGTH: "+fileList.length);
 		for(File f : fileList){
 			System.out.println(f.getName());
 		}

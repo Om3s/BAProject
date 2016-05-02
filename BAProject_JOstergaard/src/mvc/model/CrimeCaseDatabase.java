@@ -337,22 +337,21 @@ public class CrimeCaseDatabase {
 	 * @param ignoredWeekdaysAsList specifies which weekdays we want to look at (Sunday[1],Monday[2],...,Saturday[7])
 	 * @throws IOException 
 	 */
-	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, ArrayList<Integer> ignoredWeekdaysAsList, String category, int[] dayTimeValueIgnoreList) throws IOException {
+	public void selectWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, ArrayList<Integer> ignoredWeekdaysAsList, String category, ArrayList<Integer> ignoredDayTimesAsList) throws IOException {
 		this.clearCurrentData();
 		ArrayList<Query> dayQueries = new ArrayList<Query>();
 		BooleanQuery boolQuery = new BooleanQuery();
 		for(int day : ignoredWeekdaysAsList){
 			boolQuery.add(NumericRangeQuery.newIntRange("dayOfWeek", day, day, true, true), BooleanClause.Occur.MUST_NOT);
 		}
+		for(int dayTimeValue : ignoredDayTimesAsList){
+			boolQuery.add(NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true), BooleanClause.Occur.MUST_NOT);
+		}
 		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
 		boolQuery.add(query1, BooleanClause.Occur.MUST);
 		if(!category.equals("All categories")){
 			Query query2 = new TermQuery(new Term("category", category));
 			boolQuery.add(query2, BooleanClause.Occur.MUST);
-		}
-		for(int dayTimeValue : dayTimeValueIgnoreList){
-			Query query3 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
-			boolQuery.add(query3, BooleanClause.Occur.MUST_NOT);
 		}
 		TopDocs docs = this.indexSearcher.search(boolQuery, 10000);
 		System.out.println(boolQuery);

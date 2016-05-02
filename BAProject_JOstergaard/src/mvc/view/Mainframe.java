@@ -41,10 +41,16 @@ import javax.swing.JCheckBox;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -111,7 +117,7 @@ public class Mainframe extends JFrame {
 	private JLabel filtermenu_analysis_panel_label;
 	private JLabel filtermenu_analysis_panel_slider_label;
 	public JCheckBox filtermenu_analysis_panel_chckbxHeatmap;
-	public JSlider filtermenu_analysis_panel_upperThreshold_slider;
+	public JSlider filtermenu_analysis_panel_posThreshold_slider;
 	public JButton filtermenu_analysis_panel_analyze_button;
 	public JTextField filtermenu_analysis_panel_lowPosThreshold_textfield;
 	public JTextField filtermenu_analysis_panel_upperPosThreshold_textfield;
@@ -156,7 +162,7 @@ public class Mainframe extends JFrame {
 		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4], this);
 		//filtermenu_analysis:
 		this.filtermenu_analysis_panel_chckbxHeatmap = new JCheckBox("Heatmap");
-		this.filtermenu_analysis_panel_upperThreshold_slider = new JSlider(JSlider.HORIZONTAL);
+		this.filtermenu_analysis_panel_posThreshold_slider = new JSlider(JSlider.HORIZONTAL);
 		this.filtermenu_analysis_panel_intervallAmount_textfield = new JTextField();
 		this.filtermenu_analysis_panel_lowPosThreshold_textfield = new JTextField();
 		this.filtermenu_analysis_panel_slider_label = new JLabel("Threshold:");
@@ -567,7 +573,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analysis_panel_upperThreshold_slider.fill = GridBagConstraints.BOTH;
 		gbc_filtermenu_analysis_panel_upperThreshold_slider.gridx = 2;
 		gbc_filtermenu_analysis_panel_upperThreshold_slider.gridy = 3;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_upperThreshold_slider, gbc_filtermenu_analysis_panel_upperThreshold_slider);
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_posThreshold_slider, gbc_filtermenu_analysis_panel_upperThreshold_slider);
 		
 		GridBagConstraints gbc_filtermenu_analysis_panel_lowPosThreshold_textfield = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.insets = new Insets(0, 0, 5, 5);
@@ -954,31 +960,73 @@ public class Mainframe extends JFrame {
 			}
 		});
 		
-		this.filtermenu_analysis_panel_upperThreshold_slider.addChangeListener(new ChangeListener() {
+		this.filtermenu_analysis_panel_posThreshold_slider.addMouseListener(new MouseListener() {
+			
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				Main.mainframeController.analyzeHeatMapSliderChanged();
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 		
-		this.filtermenu_analysis_panel_upperPosThreshold_textfield.getDocument().addDocumentListener(new DocumentListener() {
+		this.filtermenu_analysis_panel_upperPosThreshold_textfield.addActionListener(new ActionListener() {
 			
 			@Override
-			public void removeUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void actionPerformed(ActionEvent arg0) {
+				Mainframe.this.filtermenu_analysis_panel_posThreshold_slider.requestFocus();
+			}
+		});
+		
+		this.filtermenu_analysis_panel_upperPosThreshold_textfield.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO
+				Main.mainframeController.analyzeUpperHeatMapValueChanged(Integer.valueOf(Mainframe.this.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
 			}
 			
 			@Override
-			public void insertUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void focusGained(FocusEvent e) {
+			}
+		});
+		
+		this.filtermenu_analysis_panel_lowPosThreshold_textfield.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Mainframe.this.filtermenu_analysis_panel_posThreshold_slider.requestFocus();
+			}
+		});
+		
+		this.filtermenu_analysis_panel_lowPosThreshold_textfield.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO
+				Main.mainframeController.analyzeLowerHeatMapValueChanged(Integer.valueOf(Mainframe.this.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
 			}
 			
 			@Override
-			public void changedUpdate(DocumentEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void focusGained(FocusEvent e) {
 			}
 		});
 	}

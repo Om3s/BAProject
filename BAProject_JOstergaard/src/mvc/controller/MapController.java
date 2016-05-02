@@ -38,6 +38,7 @@ public class MapController extends DefaultMapController {
 	private GeoPoint selectedMapMarker;
 	private ArrayList<BufferedImage> heatMapImages = new ArrayList<BufferedImage>();
 	private ImageMapMarker currentHeatMapImageMarker;
+	private GridController gridController;
 	
 	public MapController(JMapViewer map) {
 		super(map);
@@ -275,12 +276,14 @@ public class MapController extends DefaultMapController {
 	}
 	
 	public void createCellMatrix(int xResolution, int yResolution, Date fromDate, Date toDate, int intervalAmount) {
-		GridController gridController = new GridController();
+		this.gridController = new GridController();
 		//Viewport:
 		Coordinate coords1 = (Coordinate)this.map.getPosition(0,0);
 		Coordinate coords2 = (Coordinate)map.getPosition(map.getWidth(),map.getHeight());
 		System.out.println("Grid Boundary Points:\nP1:("+coords1.getLon()+"x,"+coords1.getLat()+"y)\nP2:("+coords2.getLon()+"x,"+coords2.getLat()+"y)");
-		gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2, intervalAmount);
+		this.gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2, intervalAmount);
+		this.loadHeatMapImage(0);
+		this.gridController.recommendedSliderValues();
 	}
 	
 	public int getMapWidth(){
@@ -297,6 +300,12 @@ public class MapController extends DefaultMapController {
 
 	public void loadHeatMapImage(int index) {
 		this.map.removeMapMarker(this.currentHeatMapImageMarker);
+		if(this.gridController != null){
+			if(index == 0){
+				this.gridController.matrixCalculations();
+			}
+			this.gridController.createHeatMap(index);
+		}
 		if(this.heatMapImages != null && this.heatMapImages.size() > 0){
 			if(this.heatMapImages.get(index) != null){
 				this.currentHeatMapImageMarker = new ImageMapMarker((Coordinate)this.map.getPosition(0, 0), this.heatMapImages.get(index));

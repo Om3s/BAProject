@@ -1,10 +1,6 @@
 package mvc.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -17,6 +13,8 @@ import mvc.model.Gridmodel;
 public class GridController {
 	private ArrayList<GridModelData> pastGridModelData;
 	private ImageController imageController = new ImageController();
+	private ArrayList<double[][]> normalizedRelativeMatrix,relativeDataDifference;
+	private double minValue, maxValue;
 	
 	public GridController(){
 		this.pastGridModelData = new ArrayList<GridModelData>();
@@ -41,128 +39,84 @@ public class GridController {
 			newData.setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
 			this.pastGridModelData.add(newData);
 		}
-		
-		this.matrixCalculations();
 	}
 	
-	private void matrixCalculations() {
-		boolean minMaxByFilters = true;
+	public void matrixCalculations() {
 		double	minNegValue,maxNegValue,minPosValue,maxPosValue;
-		if(minMaxByFilters){
-			// min max determined by filters: TODO filternumbers are hardcoded atm
-			minNegValue = -0.001;
-			maxNegValue = -0.1;
-			minPosValue = 0.001;
-			maxPosValue = 0.1;
-		} else {
-			// min max of data:
-			minNegValue = Double.MIN_VALUE;
-			maxNegValue = Double.MAX_VALUE;
-			minPosValue = Double.MAX_VALUE;
-			maxPosValue = Double.MIN_VALUE;
-		}
+		// min max determined by filters: TODO filternumbers are hardcoded atm
+		minNegValue = -1.0 * Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()) / 100.0;
+		maxNegValue = -1.0 * Main.mainframeController.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue() / 100.0;
+		minPosValue = Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()) / 100.0;
+		maxPosValue = Main.mainframeController.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue() / 100.0;
+		this.minValue = Double.MAX_VALUE;
+		this.maxValue = Double.MIN_VALUE;
+		
 		int[][] pastDataAverage = this.calculateWeightedAverage(this.pastGridModelData.toArray(new GridModelData[0]));
 		int[][] absoluteDataDifference = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
-		double[][] relativeDataDifference = new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
-		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){ //Fill absolute- and relativeDifferenceMatrices:
-			for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-				absoluteDataDifference[x][y] = Gridmodel.getInstance().getData().getDataMatrix()[x][y] - pastDataAverage[x][y];
-				if(absoluteDataDifference[x][y] == 0){
-					relativeDataDifference[x][y] = 0.0;		
-				} else {
-					relativeDataDifference[x][y] = (double)absoluteDataDifference[x][y] / (double)Gridmodel.getInstance().getData().getDataMatrix()[x][y];
-				}
-				if(!minMaxByFilters){
-					//save the positive/negative min and max values from the relative matrix
-					if(relativeDataDifference[x][y] >= 0){ //Positive:
-						if(relativeDataDifference[x][y] > maxPosValue){
-							maxPosValue = relativeDataDifference[x][y];
-						}
-						if(relativeDataDifference[x][y] < minPosValue){
-							minPosValue = relativeDataDifference[x][y];
-						}
-					} else { //Negative:
-						if(relativeDataDifference[x][y] > minNegValue){
-							minNegValue = relativeDataDifference[x][y];
-						}
-						if(relativeDataDifference[x][y] < maxNegValue){
-							maxNegValue = relativeDataDifference[x][y];
-						}
-					}
-				}
-			}
-		}
-		double[][] normalizedRelativeMatrix = new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
-		for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){ //fill the normalized RelativeMatrix
-			for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-				if(relativeDataDifference[x][y] > maxPosValue){
-					relativeDataDifference[x][y] = maxPosValue;
-				} else if (relativeDataDifference[x][y] < maxNegValue) {
-					relativeDataDifference[x][y] = maxNegValue;
-				} else {
-					if(relativeDataDifference[x][y] >= 0){
-						normalizedRelativeMatrix[x][y] = (double)((double)relativeDataDifference[x][y] - minPosValue)/(maxPosValue - minPosValue);	
+
+		this.normalizedRelativeMatrix = new ArrayList<double[][]>();
+		this.relativeDataDifference = new ArrayList<double[][]>();
+				
+		for(int index=0;index<this.pastGridModelData.size();index++){
+			this.relativeDataDifference.add(new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()]);
+			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){ //Fill absolute- and relativeDifferenceMatrices:
+				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
+					absoluteDataDifference[x][y] = Gridmodel.getInstance().getData().getDataMatrix()[x][y] - pastDataAverage[x][y];
+					if(absoluteDataDifference[x][y] != 0 && Gridmodel.getInstance().getData().getDataMatrix()[x][y] != 0){
+						this.relativeDataDifference.get(index)[x][y] = (double)absoluteDataDifference[x][y] / (double)Gridmodel.getInstance().getData().getDataMatrix()[x][y];
 					} else {
-						normalizedRelativeMatrix[x][y] = (double)((double)relativeDataDifference[x][y] - minNegValue)/(maxNegValue - minNegValue) * (-1.0);
+						this.relativeDataDifference.get(index)[x][y] = 0.0;	
+					}
+					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) > this.maxValue){
+						this.maxValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
+					}
+					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) < this.minValue){
+						this.minValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
+					}
+					if(this.maxValue == Double.POSITIVE_INFINITY){
+						System.out.println(" ");
+						System.out.println("pastData: "+pastDataAverage[x][y]);
+						System.out.println("curData: "+Gridmodel.getInstance().getData().getDataMatrix()[x][y]);
+						System.out.println("absoluteDiff: "+absoluteDataDifference[x][y]);
+						System.out.println(" ");
+						this.maxValue = Double.MIN_VALUE;
 					}
 				}
 			}
-		}
-		
-		this.createHeatMap(normalizedRelativeMatrix, 0);
-		this.imageController.loadAllHeatMaps();
-		boolean debug = false;
-		if(debug){
-			//DEBUG MATRICES OUTPUT:
-			DecimalFormat dFormat = new DecimalFormat("0.00");
-			System.out.println("Present Occurencies:");
-			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
+			this.normalizedRelativeMatrix.add(new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()]);
+			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){ //fill the normalized RelativeMatrix
 				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-					System.out.print(" "+Gridmodel.getInstance().getData().getDataMatrix()[x][y]+" ");
+					if(this.relativeDataDifference.get(index)[x][y] > maxPosValue){
+						this.relativeDataDifference.get(index)[x][y] = maxPosValue;
+					} else if (this.relativeDataDifference.get(index)[x][y] < maxNegValue) {
+						this.relativeDataDifference.get(index)[x][y] = maxNegValue;
+					} 
+					if(this.relativeDataDifference.get(index)[x][y] >= 0){
+						this.normalizedRelativeMatrix.get(index)[x][y] = (double)((double)this.relativeDataDifference.get(index)[x][y] - minPosValue)/(maxPosValue - minPosValue);	
+					} else {
+						this.normalizedRelativeMatrix.get(index)[x][y] = (double)((double)this.relativeDataDifference.get(index)[x][y] - minNegValue)/(maxNegValue - minNegValue) * (-1.0);
+					}
 				}
-				System.out.println("");
 			}
-			System.out.println("Average Past Occurences:");
-			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-					System.out.print(" "+pastDataAverage[x][y]+" ");
-				}
-				System.out.println("");
-			}
-			System.out.println("Absolute Difference Occurences:");
-			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-					System.out.print(" "+absoluteDataDifference[x][y]+" ");
-				}
-				System.out.println("");
-			}
-			System.out.println("Relative Difference Occurences:");
-			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-					System.out.print(" "+Math.round(relativeDataDifference[x][y]*100)+"% ");
-				}
-				System.out.println("");
-			}
-			System.out.println("Normalized Relative Differences:");
-			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){
-				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
-					System.out.print(" "+normalizedRelativeMatrix[x][y]+" ");
-				}
-				System.out.println("");
-			}
-			System.out.println("maxNeg="+maxNegValue+", minNeg="+minNegValue+", maxPos="+maxPosValue+", minPos="+minPosValue);
 		}
 	}
+	
+	public void recommendedSliderValues(){
+		Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText(""+(int)(this.minValue*100));
+		Main.mainframeController.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText(""+(int)(this.maxValue*105));
+		Main.mainframeController.refreshHeatMapSlider();
+	}
 
-	private void createHeatMap(double[][] normalizedRelativeMatrix, int index) {
+	public void createHeatMap(int index) {
 		try {
-			this.imageController.drawHeatmap(normalizedRelativeMatrix, index);
+			this.imageController.drawHeatmap(this.normalizedRelativeMatrix.get(index), index);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.imageController.loadAllHeatMaps();
 	}
 
-	private int[][] calculateWeightedAverage(GridModelData[] matrices){ //TODO weight is not considered yet
+	private int[][] calculateWeightedAverage(GridModelData[] matrices){ //TODO weight is linear at the moment
 		double[][] tempResult = new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
 		int[][] result = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
 		double divider = 0.0;

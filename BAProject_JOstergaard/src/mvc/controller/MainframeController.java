@@ -122,14 +122,15 @@ public class MainframeController {
 		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText("0");
 		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText("100");
 		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setText("20");
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMinorTickSpacing(2);
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMajorTickSpacing(10);
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setPaintTicks(true);
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setPaintLabels(true);
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMaximum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()));
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setValue(50);
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(false);
+//		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinorTickSpacing(2);
+//		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMajorTickSpacing(10);
+//		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setPaintTicks(true);
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setPaintLabels(true);
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMaximum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText())+1);
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setValue(50);
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setEnabled(false);
+		
 		//Weekdays:
 		//Chart:
 		this.mainframe.matrix_chart_panel.setTransformationMode(2);
@@ -228,7 +229,7 @@ public class MainframeController {
 		this.refreshChart();
 		if(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected()){
 //			Main.mapController.setZoom(false);
-			this.refreshHeatMap();
+			this.analyzeButtonIsPressed();
 			Main.mapController.setShowCurrentPoints(false);
 		} else {
 //			Main.mapController.setZoom(true);
@@ -247,6 +248,7 @@ public class MainframeController {
 	public void refreshHeatMap() {
 		Main.mapController.loadHeatMapImage(0); //TODO 0 is hardcoded, it stands for the heatmap delta
 		Main.mapController.setShowHeatMap(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected());
+		this.mainframe.repaint();
 	}
 
 	private void clearCurrentData() {
@@ -417,18 +419,7 @@ public class MainframeController {
 //		this.timelineHigherValue = (int) (maxColorValue+0.5);
 //		this.refreshCurrentDates(this.timelineLowerValue, this.timelineHigherValue);
 		try {
-			ArrayList<Integer> notSelectedDayTimeList = new ArrayList<Integer>();
-			for(int i = 0; i<this.dayTimesAmount; i++){
-				if(!this.selectedDayTimesAsList.contains(i)){
-					notSelectedDayTimeList.add(i);
-					System.out.println("NOT SELECTED "+i);
-				}
-			}
-			int[] notSelectedDayTimes = new int[notSelectedDayTimeList.size()];
-			for(int i = 0; i<notSelectedDayTimeList.size(); i++){
-				notSelectedDayTimes[i] = notSelectedDayTimeList.get(i);
-			}
-			Main.dataBase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.ignoredWeekdaysAsList, this.currentCategory, notSelectedDayTimes);
+			Main.dataBase.selectWeekdaysCasesBetweenDatesToCurrentData(this.globalFromDate, this.globalToDate, this.ignoredWeekdaysAsList, this.currentCategory, this.ignoredDayTimesAsList);
 			System.out.println("currentData#: "+Main.dataBase.getCurrentData().size());
 			Main.mapController.loadPoints(Main.dataBase.getCurrentData());
 			this.fillReportListWith(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), this.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
@@ -734,19 +725,32 @@ public class MainframeController {
 	
 	public void filterForCaseCountMatrixSelection(boolean isSelected,int selectedWeekDay,int selectedDayTime){
 		if(isSelected){
+			this.ignoredDayTimesAsList = new ArrayList<Integer>();
+			this.ignoredWeekdaysAsList = new ArrayList<Integer>();
 			this.selectedWeekdaysAsList = new ArrayList<Integer>(1);
+			this.selectedDayTimesAsList = new ArrayList<Integer>(1);
 			if(selectedWeekDay != 6){
 				this.selectedWeekdaysAsList.add(selectedWeekDay+2);
 			} else {
 				this.selectedWeekdaysAsList.add(1);
 			}
 			if(selectedDayTime != -1){
-				this.selectedDayTimesAsList = new ArrayList<Integer>();
 				this.selectedDayTimesAsList.add(selectedDayTime);
 			} else {
 				this.selectedDayTimesAsList = new ArrayList<Integer>();
 				for(int i=0; i<this.dayTimesAmount; i++){
 					this.selectedDayTimesAsList.add(i);
+				}
+			}
+			//RefreshIgnoredLists
+			for(int i=1;i<8;i++){
+				if(!this.selectedWeekdaysAsList.contains(i)){
+					this.ignoredWeekdaysAsList.add(i);
+				}
+			}
+			for(int i=0;i<dayTimesAmount;i++){
+				if(!this.selectedDayTimesAsList.contains(i)){
+					this.ignoredDayTimesAsList.add(i);
 				}
 			}
 			this.refreshMapData();
@@ -795,7 +799,6 @@ public class MainframeController {
 		int resolution = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_resolution_textfield.getText());
 		int intervalAmount = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText());
 		Main.mapController.createCellMatrix(resolution,resolution,this.globalFromDate, this.globalToDate, intervalAmount);
-		this.refreshHeatMap();
 	}
 
 	public void checkBoxHeatmapChanged() {
@@ -805,7 +808,7 @@ public class MainframeController {
 			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(true);
 			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(true);
 			this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(true);
-			this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setEnabled(true);
 			Main.mapController.setShowCurrentPoints(false);
 			Main.mapController.setShowHeatMap(true);
 			this.refreshHeatMap();
@@ -815,26 +818,41 @@ public class MainframeController {
 			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
-			this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setEnabled(false);
 			Main.mapController.setShowCurrentPoints(true);
 			Main.mapController.setShowHeatMap(false);
 		}
 	}
 
+	public void analyzeUpperHeatMapValueChanged(int newValue) {
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMaximum(newValue);
+		this.refreshHeatMapSlider();
+	}
+
+	public void analyzeLowerHeatMapValueChanged(int newValue) {
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinimum(newValue);
+		this.refreshHeatMapSlider();
+	}
+
 	public void analyzeHeatMapSliderChanged() {
 		// TODO
+		System.out.println(this.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue());
+		this.refreshHeatMap();
 	}
 	
 	public void refreshHeatMapSlider(){
-		int currentValue = this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.getValue();
+		int currentValue = this.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue();
 		int newMaxPosValue = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText());
 		int newMinPosValue = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText());
 		if(currentValue > newMaxPosValue || currentValue < newMinPosValue){
-			if(currentValue > newMaxPosValue) currentValue = newMaxPosValue;
-			else currentValue = newMinPosValue;
-			this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setValue(currentValue);
+			if(currentValue > newMaxPosValue){
+				currentValue = newMaxPosValue;
+			} else {
+				currentValue = newMinPosValue;
+			}
 		}
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMaximum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
-		this.mainframe.filtermenu_analysis_panel_upperThreshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()));
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMaximum(newMaxPosValue);
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinimum(newMinPosValue+1);
+		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setValue(currentValue);
 	}
 }
