@@ -45,9 +45,9 @@ public class GridController {
 		double	minNegValue,maxNegValue,minPosValue,maxPosValue;
 		// min max determined by filters: TODO filternumbers are hardcoded atm
 		minNegValue = -1.0 * Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()) / 100.0;
-		maxNegValue = -1.0 * Main.mainframeController.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue() / 100.0;
+		maxNegValue = -1.0 * Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.getValue() / 100.0;
 		minPosValue = Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()) / 100.0;
-		maxPosValue = Main.mainframeController.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue() / 100.0;
+		maxPosValue = Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.getValue() / 100.0;
 		this.minValue = Double.MAX_VALUE;
 		this.maxValue = Double.MIN_VALUE;
 		
@@ -72,14 +72,6 @@ public class GridController {
 					}
 					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) < this.minValue){
 						this.minValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
-					}
-					if(this.maxValue == Double.POSITIVE_INFINITY){
-						System.out.println(" ");
-						System.out.println("pastData: "+pastDataAverage[x][y]);
-						System.out.println("curData: "+Gridmodel.getInstance().getData().getDataMatrix()[x][y]);
-						System.out.println("absoluteDiff: "+absoluteDataDifference[x][y]);
-						System.out.println(" ");
-						this.maxValue = Double.MIN_VALUE;
 					}
 				}
 			}

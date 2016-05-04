@@ -125,11 +125,11 @@ public class MainframeController {
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinorTickSpacing(2);
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMajorTickSpacing(10);
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setPaintTicks(true);
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setPaintLabels(true);
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMaximum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText())+1);
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setValue(50);
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setEnabled(false);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setPaintLabels(true);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMaximum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText()));
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText())+1);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setValue(50);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setEnabled(false);
 		
 		//Weekdays:
 		//Chart:
@@ -808,7 +808,7 @@ public class MainframeController {
 			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(true);
 			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(true);
 			this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(true);
-			this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_threshold_slider.setEnabled(true);
 			Main.mapController.setShowCurrentPoints(false);
 			Main.mapController.setShowHeatMap(true);
 			this.refreshHeatMap();
@@ -818,30 +818,30 @@ public class MainframeController {
 			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
-			this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_threshold_slider.setEnabled(false);
 			Main.mapController.setShowCurrentPoints(true);
 			Main.mapController.setShowHeatMap(false);
 		}
 	}
 
 	public void analyzeUpperHeatMapValueChanged(int newValue) {
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMaximum(newValue);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMaximum(newValue);
 		this.refreshHeatMapSlider();
 	}
 
 	public void analyzeLowerHeatMapValueChanged(int newValue) {
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinimum(newValue);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMinimum(newValue);
 		this.refreshHeatMapSlider();
 	}
 
 	public void analyzeHeatMapSliderChanged() {
 		// TODO
-		System.out.println(this.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue());
+		System.out.println(this.mainframe.filtermenu_analysis_panel_threshold_slider.getValue());
 		this.refreshHeatMap();
 	}
 	
 	public void refreshHeatMapSlider(){
-		int currentValue = this.mainframe.filtermenu_analysis_panel_posThreshold_slider.getValue();
+		int currentValue = this.mainframe.filtermenu_analysis_panel_threshold_slider.getValue();
 		int newMaxPosValue = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.getText());
 		int newMinPosValue = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText());
 		if(currentValue > newMaxPosValue || currentValue < newMinPosValue){
@@ -851,8 +851,8 @@ public class MainframeController {
 				currentValue = newMinPosValue;
 			}
 		}
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMaximum(newMaxPosValue);
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinimum(newMinPosValue+1);
-		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setValue(currentValue);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMaximum(newMaxPosValue);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMinimum(newMinPosValue+1);
+		this.mainframe.filtermenu_analysis_panel_threshold_slider.setValue(currentValue);
 	}
 }
