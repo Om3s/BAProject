@@ -78,11 +78,11 @@ public class Mainframe extends JFrame {
 	private final JFileChooser fileChooser;
 	private final JMenuItem fileMenu_item_load;
 	private final JMenuItem fileMenu_item_exit;
-	public final ButtonGroup filtermenu_interval_RadioButtongroupInterval;
-	public final JRadioButton filtermenu_interval_radioButtonMonths;
-	public final JRadioButton filtermenu_interval_radioButtonWeeks;
-	public final JRadioButton filtermenu_interval_radioButtonDays;
-	public final JRadioButton filtermenu_interval_radioButtonHours;
+//	public final ButtonGroup filtermenu_interval_RadioButtongroupInterval;
+//	public final JRadioButton filtermenu_interval_radioButtonMonths;
+//	public final JRadioButton filtermenu_interval_radioButtonWeeks;
+//	public final JRadioButton filtermenu_interval_radioButtonDays;
+//	public final JRadioButton filtermenu_interval_radioButtonHours;
 	public final JCheckBox checkBox_Mon;
 	public final JCheckBox checkBox_Tue;
 	public final JCheckBox checkBox_Wed;
@@ -128,17 +128,18 @@ public class Mainframe extends JFrame {
 	public JTextField filtermenu_analysis_panel_resolution_textfield;
 	private JLabel filtermenu_analysis_panel_slider_highValue_label;
 	private JLabel filtermenu_analysis_panel_currentSliderValue_label;
+	public TimeLineGraphic filtermenu_timeline_panel;
 	
 	
 	public Mainframe(GeoMapViewer map){
 		super();
 		this.geoMap = map;
 		//radiobuttons:
-		this.filtermenu_interval_RadioButtongroupInterval = new ButtonGroup();
-		this.filtermenu_interval_radioButtonMonths = new JRadioButton("Months");
-		this.filtermenu_interval_radioButtonWeeks = new JRadioButton("Weeks");
-		this.filtermenu_interval_radioButtonDays = new JRadioButton("Days");
-		this.filtermenu_interval_radioButtonHours = new JRadioButton("Hours");
+//		this.filtermenu_interval_RadioButtongroupInterval = new ButtonGroup();
+//		this.filtermenu_interval_radioButtonMonths = new JRadioButton("Months");
+//		this.filtermenu_interval_radioButtonWeeks = new JRadioButton("Weeks");
+//		this.filtermenu_interval_radioButtonDays = new JRadioButton("Days");
+//		this.filtermenu_interval_radioButtonHours = new JRadioButton("Hours");
 		//Day of Week Checkboxes:
 		this.checkBox_Mon = new JCheckBox("Mon");
 		this.checkBox_Tue = new JCheckBox("Tue");
@@ -306,63 +307,63 @@ public class Mainframe extends JFrame {
 		gbl_filtermenu_panel.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0, 1.0, 1.0};
 		filtermenu_panel.setLayout(gbl_filtermenu_panel);
 		
-		JPanel filtermenu_interval_panel = new JPanel();
-		GridBagConstraints gbc_filtermenu_interval_panel = new GridBagConstraints();
-		gbc_filtermenu_interval_panel.weighty = 0.1;
-		gbc_filtermenu_interval_panel.anchor = GridBagConstraints.NORTH;
-		gbc_filtermenu_interval_panel.insets = new Insets(0, 3, 5, 3);
-		gbc_filtermenu_interval_panel.gridwidth = 2;
-		gbc_filtermenu_interval_panel.fill = GridBagConstraints.HORIZONTAL;
-		gbc_filtermenu_interval_panel.gridx = 0;
-		gbc_filtermenu_interval_panel.gridy = 4;
-		filtermenu_panel.add(filtermenu_interval_panel, gbc_filtermenu_interval_panel);
-		GridBagLayout gbl_filtermenu_interval_panel = new GridBagLayout();
-		gbl_filtermenu_interval_panel.columnWidths = new int[] {0, 0};
-		gbl_filtermenu_interval_panel.rowHeights = new int[] {0, 0, 0};
-		gbl_filtermenu_interval_panel.columnWeights = new double[]{0.0, 0.0};
-		gbl_filtermenu_interval_panel.rowWeights = new double[]{0.0, 0.0, 0.0};
-		filtermenu_interval_panel.setLayout(gbl_filtermenu_interval_panel);
-		
-		JLabel filtermenu_interval_label = new JLabel("Choose time interval:");
-		GridBagConstraints gbc_filtermenu_intervall_label = new GridBagConstraints();
-		gbc_filtermenu_intervall_label.gridwidth = 2;
-		gbc_filtermenu_intervall_label.insets = new Insets(0, 0, 5, 0);
-		gbc_filtermenu_intervall_label.gridx = 0;
-		gbc_filtermenu_intervall_label.gridy = 0;
-		filtermenu_interval_panel.add(filtermenu_interval_label, gbc_filtermenu_intervall_label);
-		
-		GridBagConstraints gbc_filtermenu_interval_radioButtonMonths = new GridBagConstraints();
-		gbc_filtermenu_interval_radioButtonMonths.insets = new Insets(0, 0, 5, 0);
-		gbc_filtermenu_interval_radioButtonMonths.anchor = GridBagConstraints.WEST;
-		gbc_filtermenu_interval_radioButtonMonths.gridx = 0;
-		gbc_filtermenu_interval_radioButtonMonths.gridy = 1;
-		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonMonths, gbc_filtermenu_interval_radioButtonMonths);
-		
-		GridBagConstraints gbc_filtermenu_interval_radioButtonWeeks = new GridBagConstraints();
-		gbc_filtermenu_interval_radioButtonWeeks.anchor = GridBagConstraints.WEST;
-		gbc_filtermenu_interval_radioButtonWeeks.insets = new Insets(0, 0, 5, 5);
-		gbc_filtermenu_interval_radioButtonWeeks.gridx = 1;
-		gbc_filtermenu_interval_radioButtonWeeks.gridy = 1;
-		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonWeeks, gbc_filtermenu_interval_radioButtonWeeks);
-		
-		GridBagConstraints gbc_filtermenu_interval_radioButtonDays = new GridBagConstraints();
-		gbc_filtermenu_interval_radioButtonDays.insets = new Insets(0, 0, 5, 5);
-		gbc_filtermenu_interval_radioButtonDays.anchor = GridBagConstraints.WEST;
-		gbc_filtermenu_interval_radioButtonDays.gridx = 0;
-		gbc_filtermenu_interval_radioButtonDays.gridy = 2;
-		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonDays, gbc_filtermenu_interval_radioButtonDays);
-		
-		GridBagConstraints gbc_filtermenu_interval_radioButtonHours = new GridBagConstraints();
-		gbc_filtermenu_interval_radioButtonHours.insets = new Insets(0, 0, 5, 5);
-		gbc_filtermenu_interval_radioButtonHours.anchor = GridBagConstraints.WEST;
-		gbc_filtermenu_interval_radioButtonHours.gridx = 1;
-		gbc_filtermenu_interval_radioButtonHours.gridy = 2;
-		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonHours, gbc_filtermenu_interval_radioButtonHours);
-		
-		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonDays);
-		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonWeeks);
-		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonMonths);
-		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonHours);
+//		JPanel filtermenu_interval_panel = new JPanel();
+//		GridBagConstraints gbc_filtermenu_interval_panel = new GridBagConstraints();
+//		gbc_filtermenu_interval_panel.weighty = 0.1;
+//		gbc_filtermenu_interval_panel.anchor = GridBagConstraints.NORTH;
+//		gbc_filtermenu_interval_panel.insets = new Insets(0, 3, 5, 3);
+//		gbc_filtermenu_interval_panel.gridwidth = 2;
+//		gbc_filtermenu_interval_panel.fill = GridBagConstraints.HORIZONTAL;
+//		gbc_filtermenu_interval_panel.gridx = 0;
+//		gbc_filtermenu_interval_panel.gridy = 4;
+//		filtermenu_panel.add(filtermenu_interval_panel, gbc_filtermenu_interval_panel);
+//		GridBagLayout gbl_filtermenu_interval_panel = new GridBagLayout();
+//		gbl_filtermenu_interval_panel.columnWidths = new int[] {0, 0};
+//		gbl_filtermenu_interval_panel.rowHeights = new int[] {0, 0, 0};
+//		gbl_filtermenu_interval_panel.columnWeights = new double[]{0.0, 0.0};
+//		gbl_filtermenu_interval_panel.rowWeights = new double[]{0.0, 0.0, 0.0};
+//		filtermenu_interval_panel.setLayout(gbl_filtermenu_interval_panel);
+//		
+//		JLabel filtermenu_interval_label = new JLabel("Choose time interval:");
+//		GridBagConstraints gbc_filtermenu_intervall_label = new GridBagConstraints();
+//		gbc_filtermenu_intervall_label.gridwidth = 2;
+//		gbc_filtermenu_intervall_label.insets = new Insets(0, 0, 5, 0);
+//		gbc_filtermenu_intervall_label.gridx = 0;
+//		gbc_filtermenu_intervall_label.gridy = 0;
+//		filtermenu_interval_panel.add(filtermenu_interval_label, gbc_filtermenu_intervall_label);
+//		
+//		GridBagConstraints gbc_filtermenu_interval_radioButtonMonths = new GridBagConstraints();
+//		gbc_filtermenu_interval_radioButtonMonths.insets = new Insets(0, 0, 5, 0);
+//		gbc_filtermenu_interval_radioButtonMonths.anchor = GridBagConstraints.WEST;
+//		gbc_filtermenu_interval_radioButtonMonths.gridx = 0;
+//		gbc_filtermenu_interval_radioButtonMonths.gridy = 1;
+//		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonMonths, gbc_filtermenu_interval_radioButtonMonths);
+//		
+//		GridBagConstraints gbc_filtermenu_interval_radioButtonWeeks = new GridBagConstraints();
+//		gbc_filtermenu_interval_radioButtonWeeks.anchor = GridBagConstraints.WEST;
+//		gbc_filtermenu_interval_radioButtonWeeks.insets = new Insets(0, 0, 5, 5);
+//		gbc_filtermenu_interval_radioButtonWeeks.gridx = 1;
+//		gbc_filtermenu_interval_radioButtonWeeks.gridy = 1;
+//		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonWeeks, gbc_filtermenu_interval_radioButtonWeeks);
+//		
+//		GridBagConstraints gbc_filtermenu_interval_radioButtonDays = new GridBagConstraints();
+//		gbc_filtermenu_interval_radioButtonDays.insets = new Insets(0, 0, 5, 5);
+//		gbc_filtermenu_interval_radioButtonDays.anchor = GridBagConstraints.WEST;
+//		gbc_filtermenu_interval_radioButtonDays.gridx = 0;
+//		gbc_filtermenu_interval_radioButtonDays.gridy = 2;
+//		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonDays, gbc_filtermenu_interval_radioButtonDays);
+//		
+//		GridBagConstraints gbc_filtermenu_interval_radioButtonHours = new GridBagConstraints();
+//		gbc_filtermenu_interval_radioButtonHours.insets = new Insets(0, 0, 5, 5);
+//		gbc_filtermenu_interval_radioButtonHours.anchor = GridBagConstraints.WEST;
+//		gbc_filtermenu_interval_radioButtonHours.gridx = 1;
+//		gbc_filtermenu_interval_radioButtonHours.gridy = 2;
+//		filtermenu_interval_panel.add(this.filtermenu_interval_radioButtonHours, gbc_filtermenu_interval_radioButtonHours);
+//		
+//		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonDays);
+//		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonWeeks);
+//		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonMonths);
+//		this.filtermenu_interval_RadioButtongroupInterval.add(this.filtermenu_interval_radioButtonHours);
 		
 		JPanel filtermenu_specific_dow_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_specific_dow_panel = new GridBagConstraints();
@@ -443,7 +444,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_daytime_panel.anchor = GridBagConstraints.NORTH;
 		gbc_filtermenu_daytime_panel.weighty = 0.1;
 		gbc_filtermenu_daytime_panel.gridwidth = 2;
-		gbc_filtermenu_daytime_panel.insets = new Insets(0, 0, 0, 0);
+		gbc_filtermenu_daytime_panel.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_daytime_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_daytime_panel.gridx = 0;
 		gbc_filtermenu_daytime_panel.gridy = 3;
@@ -514,7 +515,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analyzis_panel.insets = new Insets(0, 3, 5, 3);
 		gbc_filtermenu_analyzis_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_analyzis_panel.gridx = 0;
-		gbc_filtermenu_analyzis_panel.gridy = 5;
+		gbc_filtermenu_analyzis_panel.gridy = 4;
 		filtermenu_panel.add(filtermenu_analyzis_panel, gbc_filtermenu_analyzis_panel);
 		GridBagLayout gbl_filtermenu_analyzis_panel = new GridBagLayout();
 		gbl_filtermenu_analyzis_panel.columnWidths = new int[] {0, 0, 0, 0, 0, 0};
@@ -637,12 +638,22 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analysis_panel_currentSliderValue_label.gridy = 5;
 		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_currentSliderValue_label, gbc_filtermenu_analysis_panel_currentSliderValue_label);
 		
+		this.filtermenu_timeline_panel = new TimeLineGraphic();
+		GridBagConstraints gbc_filtermenu_timeline_panel = new GridBagConstraints();
+		gbc_filtermenu_timeline_panel.gridwidth = 2;
+		gbc_filtermenu_timeline_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_filtermenu_timeline_panel.fill = GridBagConstraints.BOTH;
+		gbc_filtermenu_timeline_panel.gridx = 0;
+		gbc_filtermenu_timeline_panel.gridy = 5;
+		filtermenu_panel.add(filtermenu_timeline_panel, gbc_filtermenu_timeline_panel);
+		this.filtermenu_timeline_panel.setPreferredSize(new Dimension(250, 100));
+		
 		JPanel filtermenu_buttons_panel = new JPanel();
 		GridBagConstraints gbc_filtermenu_buttons_panel = new GridBagConstraints();
 		gbc_filtermenu_buttons_panel.weighty = 1.0;
 		gbc_filtermenu_buttons_panel.anchor = GridBagConstraints.SOUTH;
 		gbc_filtermenu_buttons_panel.gridwidth = 2;
-		gbc_filtermenu_buttons_panel.insets = new Insets(0, 3, 5, 3);
+		gbc_filtermenu_buttons_panel.insets = new Insets(0, 3, 0, 3);
 		gbc_filtermenu_buttons_panel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_filtermenu_buttons_panel.gridx = 0;
 		gbc_filtermenu_buttons_panel.gridy = 6;

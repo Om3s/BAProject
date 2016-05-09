@@ -70,10 +70,10 @@ public class MainframeController {
 		this.globalFromDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("01/01/2016 12:00:01 AM");
 		this.globalToDate = new SimpleDateFormat("dd/MM/yyyy KK:mm:ss a").parse("31/01/2016 11:59:59 PM");
 		//Radiobutton
-		this.mainframe.filtermenu_interval_radioButtonWeeks.setSelected(true);
-		this.mainframe.filtermenu_interval_radioButtonDays.setEnabled(false);
-		this.mainframe.filtermenu_interval_radioButtonHours.setEnabled(false);
-		this.mainframe.filtermenu_interval_radioButtonMonths.setEnabled(false);
+//		this.mainframe.filtermenu_interval_radioButtonWeeks.setSelected(true);
+//		this.mainframe.filtermenu_interval_radioButtonDays.setEnabled(false);
+//		this.mainframe.filtermenu_interval_radioButtonHours.setEnabled(false);
+//		this.mainframe.filtermenu_interval_radioButtonMonths.setEnabled(false);
 		this.timelineDateSteps = 2; // weeks
 		//Day of Week Checkboxes:
 		this.mainframe.checkBox_Mon.setSelected(true);
@@ -118,10 +118,10 @@ public class MainframeController {
 		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
-		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setText("1");
+		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setText("3");
 		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText("0");
 		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText("100");
-		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setText("20");
+		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setText("10");
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinorTickSpacing(2);
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMajorTickSpacing(10);
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setPaintTicks(true);
@@ -799,6 +799,9 @@ public class MainframeController {
 		int resolution = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_resolution_textfield.getText());
 		int intervalAmount = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText());
 		Main.mapController.createCellMatrix(resolution,resolution,this.globalFromDate, this.globalToDate, intervalAmount);
+		this.mainframe.filtermenu_timeline_panel.setAbsoluteIntervalData(Main.mapController.getIntervalData());
+		this.mainframe.filtermenu_timeline_panel.setWeightsOfData(Main.mapController.getWeightsOfIntervals());
+		this.mainframe.repaint();
 	}
 
 	public void checkBoxHeatmapChanged() {

@@ -27,8 +27,6 @@ public class GridController {
 		Date tDate = toDate;
 		Gridmodel.getInstance().getData().setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
 		
-		
-		
 		//TODO use threading over time
 		double weight = 1.0; //TODO determine weight properly and implement analysis of past data:
 		GridModelData newData;
@@ -43,7 +41,6 @@ public class GridController {
 	
 	public void matrixCalculations() {
 		double	minNegValue,maxNegValue,minPosValue,maxPosValue;
-		// min max determined by filters: TODO filternumbers are hardcoded atm
 		minNegValue = -1.0 * Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()) / 100.0;
 		maxNegValue = -1.0 * Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.getValue() / 100.0;
 		minPosValue = Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()) / 100.0;
@@ -156,5 +153,33 @@ public class GridController {
 
 	public void setPastGridModelData(ArrayList<GridModelData> pastGridModelData) {
 		this.pastGridModelData = pastGridModelData;
+	}
+
+	public int[] getIntervalOverallAmounts() {
+		int[] resultList = new int[Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText())+1];
+		resultList[0] = 0;
+		for(int y=0;y<Gridmodel.getInstance().getYResolution();y++){
+			for(int x=0;x<Gridmodel.getInstance().getXResolution();x++){
+				resultList[0] += Gridmodel.getInstance().getData().getDataMatrix()[x][y];
+			}
+		}
+		for(int i=1;i<resultList.length;i++){
+			resultList[i] = 0;
+			for(int y=0;y<Gridmodel.getInstance().getYResolution();y++){
+				for(int x=0;x<Gridmodel.getInstance().getXResolution();x++){
+					resultList[i] += this.pastGridModelData.get(i-1).getDataMatrix()[x][y];
+				}
+			}
+		}
+		return resultList;
+	}
+	
+	public double[] getWeightsFromIntervals(){
+		double[] resultList = new double[Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText())+1];
+		resultList[0] = 1.0;
+		for(int i=1;i<resultList.length;i++){
+			resultList[i] = this.pastGridModelData.get(i-1).getWeight();
+		}
+		return resultList;
 	}
 }

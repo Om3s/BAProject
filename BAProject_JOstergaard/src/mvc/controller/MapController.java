@@ -319,4 +319,12 @@ public class MapController extends DefaultMapController {
 			this.currentHeatMapImageMarker.setVisible(isVisible);
 		}
 	}
+
+	public int[] getIntervalData() {
+		return this.gridController.getIntervalOverallAmounts();
+	}
+
+	public double[] getWeightsOfIntervals() {
+		return this.gridController.getWeightsFromIntervals();
+	}
 }
