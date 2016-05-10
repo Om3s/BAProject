@@ -327,4 +327,8 @@ public class MapController extends DefaultMapController {
 	public double[] getWeightsOfIntervals() {
 		return this.gridController.getWeightsFromIntervals();
 	}
+
+	public void setIntervalWeight(int index, double newWeight) {
+		this.gridController.getPastGridModelData().get(index).setWeight(newWeight);
+	}
 }

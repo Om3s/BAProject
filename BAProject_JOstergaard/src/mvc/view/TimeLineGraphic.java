@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JPanel;
@@ -21,7 +22,7 @@ import mvc.main.Main;
 
 public class TimeLineGraphic extends JPanel {
 	//Offset space on each side
-	private Point mousePos;
+	private Point2D mousePos, mousePosBeforeDrag, weightRectPosBeforeDrag;
 	private Color[] colorMaps = {
 			new Color(255,255,204),
 			new Color(255,247,160),
@@ -42,8 +43,8 @@ public class TimeLineGraphic extends JPanel {
 	private double[] relativeIntervalData,weightsOfData;
 	private int[] absoluteIntervalData;
 	private Rectangle2D[] weightRectangleList;
-	private Rectangle2D mouseHoveringRectangle;
-	private int hoverInterval;
+	private Rectangle2D mouseHoveringRectangle, draggedWeight;
+	private int hoverInterval, draggedWeightIndex;
 
 	public TimeLineGraphic(){
 		super();
@@ -60,13 +61,32 @@ public class TimeLineGraphic extends JPanel {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				mousePos = e.getPoint();
 				//TODO if(item got dragged)set new position for dragged item
+				if(draggedWeight != null){ //release dragged state and set new weight
+					double newWeight;
+					newWeight = computePositionToPercentage(draggedWeight.getY());
+					Main.mapController.setIntervalWeight(draggedWeightIndex-1, newWeight);
+					weightsOfData[draggedWeightIndex] = newWeight;
+					draggedWeightIndex = -1;
+					draggedWeight = null;
+					repaint();
+				}
 			}
 			
 			@Override
 			public void mousePressed(MouseEvent e){
 				//TODO set maybe-drag-state, save hovered object
+				System.out.println("CLICK");
+				if(mouseHoveringRectangle != null){
+					draggedWeight = mouseHoveringRectangle;
+					for(int i=1;i<weightRectangleList.length;i++){
+						if(weightRectangleList[i].equals(draggedWeight)){
+							draggedWeightIndex = i;
+						}
+					}
+					mousePosBeforeDrag = e.getPoint();
+					weightRectPosBeforeDrag = new Point2D.Double(draggedWeight.getX(), draggedWeight.getY());
+				}
 			}
 			
 			@Override
@@ -83,6 +103,7 @@ public class TimeLineGraphic extends JPanel {
 			}
 		});
 		this.addMouseMotionListener(new MouseMotionListener() {
+			double relativeYDistanceToStartPos,xPos,yPos,width,height;
 			
 			@Override
 			public void mouseMoved(MouseEvent e) {
@@ -90,11 +111,10 @@ public class TimeLineGraphic extends JPanel {
 				Rectangle2D temp = getRectangleMouseIsHovering(mousePos);
 				if(temp == null){
 					mouseHoveringRectangle = temp;
+					repaint();
 				} else if(mouseHoveringRectangle == null){
 					mouseHoveringRectangle = temp;
 					repaint();
-				} else if(mouseHoveringRectangle != null && mouseHoveringRectangle.equals(temp)){
-					
 				} else if(mouseHoveringRectangle != null && !mouseHoveringRectangle.equals(temp)){
 					mouseHoveringRectangle = temp;
 					repaint();
@@ -103,17 +123,48 @@ public class TimeLineGraphic extends JPanel {
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				mousePos = e.getPoint();
-				//TODO if(dragged-state has not begun) begin dragged state
+				if(draggedWeight != null){
+					mousePos = e.getPoint();
+					//TODO handle drag
+					relativeYDistanceToStartPos = mousePos.getY() - mousePosBeforeDrag.getY();
+					xPos = draggedWeight.getX();
+					yPos = weightRectPosBeforeDrag.getY() + relativeYDistanceToStartPos;
+					width = draggedWeight.getWidth();
+					height = draggedWeight.getHeight();
+					draggedWeight = new Rectangle2D.Double(xPos, yPos, width, height);
+					repaint();
+				}
 			}
 		});
 	}
 	
-	private Rectangle2D getRectangleMouseIsHovering(Point p){
+	private double computePositionToPercentage(double yPos) {
+		double result = 0;
+		double rectHeight = this.relativeIntervalData[draggedWeightIndex]*this.yDrawRange;
+		double gapLength = this.yDrawRange - rectHeight;
+		System.out.println("yPos: "+yPos);
+		System.out.println("yOuterOffsetTop: "+this.yOuterOffsetTop);
+		System.out.println("yDrawRange: "+this.yDrawRange);
+		System.out.println("rectHeight: "+rectHeight);
+		System.out.println("gapLength: "+gapLength);
+		System.out.println("top Edge of Rect: "+(this.yOuterOffsetTop+gapLength));
+		if(yPos < this.yOuterOffsetTop + gapLength){
+			result = 1.0;
+		} else if (yPos > this.yOuterOffsetTop + this.yDrawRange) {
+			result = 0.0;
+		} else { //compute percentage
+			result = yPos - this.yOuterOffsetTop - gapLength;
+			System.out.println("yPosLength "+result);
+			result = 1.0 - (result / rectHeight);
+		}
+		System.out.println("PositionToPercentage: "+result);
+		return result;
+	}
+
+	private Rectangle2D getRectangleMouseIsHovering(Point2D p){
 		if(this.weightRectangleList != null && p != null){
 			for(int x=1;x<this.weightRectangleList.length;x++){
 				if(this.weightRectangleList[x].getX() < p.getX() && this.weightRectangleList[x].getY() < p.getY() && this.weightRectangleList[x].getX()+this.weightRectangleList[x].getWidth() > p.getX() && this.weightRectangleList[x].getY()+this.weightRectangleList[x].getHeight() > p.getY()){
-					System.out.println("index="+x);
 					this.hoverInterval = x;
 					return this.weightRectangleList[x];
 				}
@@ -163,7 +214,11 @@ public class TimeLineGraphic extends JPanel {
 			g2d.setColor(Color.BLUE);
 			this.weightRectangleList = new Rectangle2D[this.intervalAmount];
 			for(int i=1;i<this.intervalAmount;i++){
-				this.weightRectangleList[i] = new Rectangle2D.Double(this.xOuterOffsetLeft+i*this.barWidth+i*this.xInnerOffset, this.yOuterOffsetTop+((1.0-this.relativeIntervalData[i])*this.yDrawRange+(this.relativeIntervalData[i]*this.yDrawRange-5)*(1.0-this.weightsOfData[i])), this.barWidth, 5);
+				if(draggedWeightIndex == i){
+					this.weightRectangleList[i] = this.draggedWeight;
+				} else {
+					this.weightRectangleList[i] = new Rectangle2D.Double(this.xOuterOffsetLeft+i*this.barWidth+i*this.xInnerOffset, this.yOuterOffsetTop+((1.0-this.relativeIntervalData[i])*this.yDrawRange+(this.relativeIntervalData[i]*this.yDrawRange-5)*(1.0-this.weightsOfData[i])), this.barWidth, 5);
+				}
 				g2d.draw(this.weightRectangleList[i]);
 			}
 		}
