@@ -66,9 +66,10 @@ public class TimeLineGraphic extends JPanel {
 					double newWeight;
 					newWeight = computePositionToPercentage(draggedWeight.getY());
 					Main.mapController.setIntervalWeight(draggedWeightIndex-1, newWeight);
-					weightsOfData[draggedWeightIndex] = newWeight;
+					weightsOfData[draggedWeightIndex-1] = newWeight;
 					draggedWeightIndex = -1;
 					draggedWeight = null;
+					Main.mapController.updateTimelineWeights(weightsOfData);
 					repaint();
 				}
 			}
@@ -208,7 +209,7 @@ public class TimeLineGraphic extends JPanel {
 				} else {
 					g2d.setColor(Color.BLACK);
 				}
-				g2d.fillRect((int)(this.xOuterOffsetLeft+x*this.barWidth+x*this.xInnerOffset), (int)(this.yOuterOffsetTop+((1.0-this.relativeIntervalData[x])*this.yDrawRange)), (int)this.barWidth, (int)(this.yDrawRange*this.relativeIntervalData[x]));
+				g2d.fillRect((int)(this.xOuterOffsetLeft+(this.intervalAmount-x-1)*this.barWidth+(this.intervalAmount-x-1)*this.xInnerOffset), (int)(this.yOuterOffsetTop+((1.0-this.relativeIntervalData[x])*this.yDrawRange)), (int)this.barWidth, (int)(this.yDrawRange*this.relativeIntervalData[x]));
 			}
 		//DRAW WEIGHTLINES(include drag-state):
 			g2d.setColor(Color.BLUE);
@@ -217,7 +218,7 @@ public class TimeLineGraphic extends JPanel {
 				if(draggedWeightIndex == i){
 					this.weightRectangleList[i] = this.draggedWeight;
 				} else {
-					this.weightRectangleList[i] = new Rectangle2D.Double(this.xOuterOffsetLeft+i*this.barWidth+i*this.xInnerOffset, this.yOuterOffsetTop+((1.0-this.relativeIntervalData[i])*this.yDrawRange+(this.relativeIntervalData[i]*this.yDrawRange-5)*(1.0-this.weightsOfData[i])), this.barWidth, 5);
+					this.weightRectangleList[i] = new Rectangle2D.Double(this.xOuterOffsetLeft+(this.intervalAmount-i-1)*this.barWidth+(this.intervalAmount-i-1)*this.xInnerOffset, this.yOuterOffsetTop+((1.0-this.relativeIntervalData[i])*this.yDrawRange+(this.relativeIntervalData[i]*this.yDrawRange-5)*(1.0-this.weightsOfData[i-1])), this.barWidth, 5);
 				}
 				g2d.draw(this.weightRectangleList[i]);
 			}

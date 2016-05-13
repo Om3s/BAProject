@@ -276,14 +276,17 @@ public class MapController extends DefaultMapController {
 	}
 	
 	public void createCellMatrix(int xResolution, int yResolution, Date fromDate, Date toDate, int intervalAmount) {
-		this.gridController = new GridController();
-		//Viewport:
+		if(this.gridController == null){
+			this.gridController = new GridController();
+		}
+		//Viewport: //TODO  change to whole city
 		Coordinate coords1 = (Coordinate)this.map.getPosition(0,0);
 		Coordinate coords2 = (Coordinate)map.getPosition(map.getWidth(),map.getHeight());
 		System.out.println("Grid Boundary Points:\nP1:("+coords1.getLon()+"x,"+coords1.getLat()+"y)\nP2:("+coords2.getLon()+"x,"+coords2.getLat()+"y)");
 		this.gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2, intervalAmount);
 		this.loadHeatMapImage(0);
 		this.gridController.recommendedSliderValues();
+		this.loadHeatMapImage(0); //workaround
 	}
 	
 	public int getMapWidth(){
@@ -330,5 +333,10 @@ public class MapController extends DefaultMapController {
 
 	public void setIntervalWeight(int index, double newWeight) {
 		this.gridController.getPastGridModelData().get(index).setWeight(newWeight);
+	}
+
+	public void updateTimelineWeights(double[] weightsOfData) {
+		this.gridController.setDataWeights(weightsOfData);
+		
 	}
 }

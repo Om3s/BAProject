@@ -15,26 +15,40 @@ public class GridController {
 	private ImageController imageController = new ImageController();
 	private ArrayList<double[][]> normalizedRelativeMatrix,relativeDataDifference;
 	private double minValue, maxValue;
+	private int intervalAmount;
+	private boolean intervalChanged;
+	private double[] weightsOfData;
 	
 	public GridController(){
 		this.pastGridModelData = new ArrayList<GridModelData>();
 	}
 	
-	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight, int intervalAmount){
+	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight, int newIntervalAmount){
 		Gridmodel.getInstance().init(xResolution, yResolution, topLeft, botRight);
 		long dateInterval = toDate.getTime() - fromDate.getTime(); //interval is current date selection
 		Date fDate = fromDate;
 		Date tDate = toDate;
 		Gridmodel.getInstance().getData().setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
+		System.out.println("old intervalAmount: "+this.intervalAmount);
+		System.out.println("new intervalAmount: "+newIntervalAmount);
+		if(this.intervalAmount != newIntervalAmount){
+			this.intervalAmount = newIntervalAmount;
+			this.intervalChanged = true;
+			this.weightsOfData = new double[this.intervalAmount];
+		} else {
+			this.intervalChanged = false;
+		}
 		
 		//TODO use threading over time
 		double weight = 1.0; //TODO determine weight properly and implement analysis of past data:
 		GridModelData newData;
-		for(int i=0; i<intervalAmount; i++){
+		for(int i=0; i<this.intervalAmount; i++){
 			fDate = new Date(fromDate.getTime() - dateInterval*(i+1));
 			tDate = new Date(fDate.getTime() + dateInterval);
-			newData = new GridModelData(1.0 - ((1.0 / intervalAmount) * i)); //TODO Weight calculation is linear at the moment
-			newData.setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
+			if(this.intervalChanged){
+				this.weightsOfData[i] = 1.0 - ((1.0 / this.intervalAmount) * i); //TODO weight calculation is linear atms
+			}
+			newData = new GridModelData(this.weightsOfData[i], this.countGridOccurenciesFromTo(fDate, tDate));
 			this.pastGridModelData.add(newData);
 		}
 	}
@@ -81,7 +95,7 @@ public class GridController {
 						this.relativeDataDifference.get(index)[x][y] = maxNegValue;
 					} 
 					if(this.relativeDataDifference.get(index)[x][y] >= 0){
-						this.normalizedRelativeMatrix.get(index)[x][y] = (double)((double)this.relativeDataDifference.get(index)[x][y] - minPosValue)/(maxPosValue - minPosValue);	
+						this.normalizedRelativeMatrix.get(index)[x][y] = (double)((double)this.relativeDataDifference.get(index)[x][y] - minPosValue)/(maxPosValue - minPosValue);
 					} else {
 						this.normalizedRelativeMatrix.get(index)[x][y] = (double)((double)this.relativeDataDifference.get(index)[x][y] - minNegValue)/(maxNegValue - minNegValue) * (-1.0);
 					}
@@ -175,11 +189,13 @@ public class GridController {
 	}
 	
 	public double[] getWeightsFromIntervals(){
-		double[] resultList = new double[Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText())+1];
-		resultList[0] = 1.0;
-		for(int i=1;i<resultList.length;i++){
-			resultList[i] = this.pastGridModelData.get(i-1).getWeight();
+		return this.weightsOfData;
+	}
+
+	public void setDataWeights(double[] newWeights) {
+		this.weightsOfData = newWeights;
+		for(int i=1;i<this.weightsOfData.length;i++){
+			this.pastGridModelData.get(i).setWeight(this.weightsOfData[i]);
 		}
-		return resultList;
 	}
 }
