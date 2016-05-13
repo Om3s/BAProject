@@ -15,6 +15,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 
@@ -46,6 +47,7 @@ public class TimeLineGraphic extends JPanel {
 	private Rectangle2D[] weightRectangleList;
 	private Rectangle2D mouseHoveringRectangle, draggedWeight;
 	private int hoverInterval, draggedWeightIndex;
+	private int rightStringWidth;
 
 	public TimeLineGraphic(){
 		super();
@@ -70,6 +72,7 @@ public class TimeLineGraphic extends JPanel {
 					weightsOfData[draggedWeightIndex-1] = newWeight;
 					draggedWeightIndex = -1;
 					draggedWeight = null;
+					mouseHoveringRectangle = draggedWeight;
 					Main.mapController.updateTimelineWeights(weightsOfData);
 					repaint();
 				}
@@ -177,10 +180,10 @@ public class TimeLineGraphic extends JPanel {
 	
 	private void refreshLayoutSettings() {
 		if(Main.mainframeController != null){
-			this.xOuterOffsetLeft = this.getWidth()*0.2;
-			this.xOuterOffsetRight = this.getWidth()*0.1;
-			this.yOuterOffsetTop = this.getHeight()*0.1;
-			this.yOuterOffsetBot = this.getHeight()*0.2;
+			this.xOuterOffsetLeft = this.getWidth()*0.075;
+			this.xOuterOffsetRight = this.rightStringWidth + this.getWidth()*0.065;
+			this.yOuterOffsetTop = this.getHeight()*0.075;
+			this.yOuterOffsetBot = this.getHeight()*0.3;
 			this.xInnerOffset = 5;
 			this.yInnerOffset = 5;
 			this.xDrawRange = this.getWidth()*(1.0-(this.xOuterOffsetLeft+this.xOuterOffsetRight)/this.getWidth());
@@ -193,18 +196,56 @@ public class TimeLineGraphic extends JPanel {
 	public void paint(Graphics g){
 		//INIT:
 		Graphics2D g2d = (Graphics2D)g;
+		g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		this.rightStringWidth = Math.max(g2d.getFontMetrics().stringWidth(String.valueOf(this.maxAbsoluteDataValue)), g2d.getFontMetrics().stringWidth("interval:"));
 		this.refreshLayoutSettings();
+		double posX,posY,tempStringLength;
+		String tempDrawText = "";
+		DecimalFormat dFormat = new DecimalFormat("#,###,##0.0");
 		//DRAW BACKGROUND:
-		g2d.setColor(Color.WHITE);
+		Color backgroundColor = new Color(238,238,238);
+		g2d.setColor(backgroundColor);
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
-		g2d.setColor(Color.BLACK);
-		g2d.setStroke(new BasicStroke(2));
-		g2d.draw(new Line2D.Double(this.xOuterOffsetLeft-5, this.yOuterOffsetTop-5, this.xOuterOffsetLeft-5, this.yOuterOffsetTop+this.yDrawRange+3));
-		g2d.draw(new Line2D.Double(this.xOuterOffsetLeft-5, this.yOuterOffsetTop+this.yDrawRange+3, this.xOuterOffsetLeft+this.xDrawRange, this.yOuterOffsetTop+this.yDrawRange+3));
-//		g2d.fillRect((int)this.xOuterOffsetLeft, (int)this.yOuterOffsetTop, (int)this.xDrawRange, (int)this.yDrawRange);
-		//DRAW BARS:
-		g2d.setColor(Color.BLACK);
 		if(this.relativeIntervalData != null){
+			//DRAW SCALA:
+			g2d.setColor(Color.BLACK);
+			g2d.setStroke(new BasicStroke(2));
+			g2d.draw(new Line2D.Double(this.xOuterOffsetLeft+this.xDrawRange+5, this.yOuterOffsetTop-5, this.xOuterOffsetLeft+this.xDrawRange+5, this.yOuterOffsetTop+this.yDrawRange+3));
+			g2d.draw(new Line2D.Double(this.xOuterOffsetLeft-5, this.yOuterOffsetTop+this.yDrawRange+3, this.xOuterOffsetLeft+this.xDrawRange+8, this.yOuterOffsetTop+this.yDrawRange+3));
+			//DRAW SCALA TEXT:
+			posX = this.xOuterOffsetLeft+this.xDrawRange+this.xOuterOffsetRight*0.2;
+			g2d.drawString(String.valueOf(this.maxAbsoluteDataValue), (float)posX, (float)(this.yOuterOffsetTop+4));
+			g2d.drawString("0,0", (float)posX, (float)(this.yOuterOffsetTop+this.yDrawRange+3));
+			g2d.drawString("Cases", (float)posX, (float)(this.yOuterOffsetTop+(this.yDrawRange/2)+3));
+			posY = this.yOuterOffsetTop+this.yDrawRange+(this.yOuterOffsetBot*0.5); //botLine1
+			for(int x=0;x<this.intervalAmount;x++){
+				tempDrawText = String.valueOf(0-x);
+				tempStringLength = g2d.getFontMetrics().stringWidth(tempDrawText);
+				posX = this.xOuterOffsetLeft+(this.intervalAmount-x-1)*this.barWidth+(this.intervalAmount-x-1)*this.xInnerOffset+(this.barWidth/2)-(tempStringLength/2);
+				g2d.drawString(tempDrawText, (float)posX, (float)posY);
+			}
+			posX = this.xOuterOffsetLeft+this.xDrawRange+this.xOuterOffsetRight*0.2;
+			g2d.drawString("=interval", (float)posX, (float)posY);
+			g2d.setColor(Color.BLUE);
+			posY = this.yOuterOffsetTop+this.yDrawRange+(this.yOuterOffsetBot*0.9);
+			g2d.drawString("=weight", (float)posX, (float)posY);
+			tempDrawText = "-";
+			tempStringLength = g2d.getFontMetrics().stringWidth(tempDrawText);
+			posX = this.xOuterOffsetLeft+(this.intervalAmount-1)*this.barWidth+(this.intervalAmount-1)*this.xInnerOffset+(this.barWidth/2)-(tempStringLength/2);
+			g2d.drawString(tempDrawText, (float)posX, (float)posY);
+			for(int x=1;x<this.intervalAmount;x++){
+				if(this.intervalAmount > 8){
+					tempStringLength = this.weightsOfData[x-1];
+				} else {
+					tempStringLength = this.weightsOfData[x-1]*100;
+				}
+				tempDrawText = String.valueOf(dFormat.format(tempStringLength));
+				tempStringLength = g2d.getFontMetrics().stringWidth(tempDrawText);
+				posX = this.xOuterOffsetLeft+(this.intervalAmount-x-1)*this.barWidth+(this.intervalAmount-x-1)*this.xInnerOffset+(this.barWidth/2)-(tempStringLength/2);
+				g2d.drawString(tempDrawText, (float)posX, (float)posY);
+			}
+			//DRAW BARS:
+			g2d.setColor(Color.BLACK);
 			for(int x=0;x<this.intervalAmount;x++){
 				if(x==0){
 					g2d.setColor(Color.GRAY);
@@ -220,9 +261,9 @@ public class TimeLineGraphic extends JPanel {
 				if(draggedWeightIndex == i){
 					this.weightRectangleList[i] = this.draggedWeight;
 				} else {
-					this.weightRectangleList[i] = new Rectangle2D.Double(this.xOuterOffsetLeft+(this.intervalAmount-i-1)*this.barWidth+(this.intervalAmount-i-1)*this.xInnerOffset, this.yOuterOffsetTop+((1.0-this.relativeIntervalData[i])*this.yDrawRange+(this.relativeIntervalData[i]*this.yDrawRange-5)*(1.0-this.weightsOfData[i-1])), this.barWidth, 5);
+					this.weightRectangleList[i] = new Rectangle2D.Double(this.xOuterOffsetLeft+(this.intervalAmount-i-1)*this.barWidth+(this.intervalAmount-i-1)*this.xInnerOffset, this.yOuterOffsetTop+((1.0-this.relativeIntervalData[i])*this.yDrawRange+(this.relativeIntervalData[i]*this.yDrawRange-5)*(1.0-this.weightsOfData[i-1])), this.barWidth, 7);
 				}
-				g2d.draw(this.weightRectangleList[i]);
+				g2d.fill(this.weightRectangleList[i]);
 			}
 		}
 		if(this.mouseHoveringRectangle != null){ //HOVERING

@@ -43,6 +43,7 @@ public class GridController {
 		GridModelData newData;
 		long startTime = System.currentTimeMillis(), queryStart, currentTime;
 		System.out.println("Begin gridCountQuery...(0/"+this.intervalAmount+")");
+		String progressString;
 		for(int i=0; i<this.intervalAmount; i++){
 			queryStart = System.currentTimeMillis();
 			fDate = new Date(fromDate.getTime() - dateInterval*(i+1));
@@ -53,10 +54,16 @@ public class GridController {
 			newData = new GridModelData(this.weightsOfData[i], this.countGridOccurenciesFromTo(fDate, tDate));
 			this.pastGridModelData.add(newData);
 			currentTime = System.currentTimeMillis();
-			System.out.print("("+(i+1)+"/"+this.intervalAmount+") in "+(((double)currentTime-(double)queryStart)/1000)+"sec, ");
+			progressString = "("+(i+1)+"/"+this.intervalAmount+")";
+			System.out.print(progressString+" in "+(((double)currentTime-(double)queryStart)/1000)+"sec, ");
+			if((i)%3 == 2 && i != (this.intervalAmount-1)){
+				System.out.println("");
+			}
+			Main.mainframeController.mainframe.filtermenu_analysis_panel_progress_label.setText(progressString);
 		}
 		currentTime = System.currentTimeMillis();
 		System.out.println("\nQuery finished in "+(((double)currentTime-(double)startTime)/1000)+"sec");
+		Main.mainframeController.mainframe.filtermenu_analysis_panel_progress_label.setText(" ");
 	}
 	
 	public void matrixCalculations() {
