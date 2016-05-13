@@ -24,6 +24,7 @@ public class GridController {
 	}
 	
 	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight, int newIntervalAmount){
+		this.pastGridModelData = new ArrayList<GridModelData>();
 		Gridmodel.getInstance().init(xResolution, yResolution, topLeft, botRight);
 		long dateInterval = toDate.getTime() - fromDate.getTime(); //interval is current date selection
 		Date fDate = fromDate;
