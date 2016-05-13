@@ -138,9 +138,6 @@ public class ImageController {
 		    }
 		};
 		File[] fileList = folder.listFiles(filter);
-		for(File f : fileList){
-			System.out.println(f.getName());
-		}
 		ArrayList<BufferedImage> bImages = new ArrayList<BufferedImage>(fileList.length);
 		for(int i=0;i<fileList.length;i++){
 			try {

@@ -39,6 +39,7 @@ public class TimeLineGraphic extends JPanel {
 	private double xInnerOffset, yInnerOffset;
 	private double xDrawRange, yDrawRange;
 	private double barWidth;
+	private double maxAbsoluteDataValue, maxRelativeDataValue;
 	private int intervalAmount;
 	private double[] relativeIntervalData,weightsOfData;
 	private int[] absoluteIntervalData;
@@ -188,6 +189,7 @@ public class TimeLineGraphic extends JPanel {
 			this.barWidth = (xDrawRange - (this.intervalAmount-1)*this.xInnerOffset)/this.intervalAmount;
 		}
 	}
+	
 	public void paint(Graphics g){
 		//INIT:
 		Graphics2D g2d = (Graphics2D)g;
@@ -234,15 +236,19 @@ public class TimeLineGraphic extends JPanel {
 	public void setAbsoluteIntervalData(int[] absoluteIntervalData) {
 		this.absoluteIntervalData = absoluteIntervalData;
 		this.relativeIntervalData = new double[this.absoluteIntervalData.length];
-		double maxValue = 0;
+		this.maxAbsoluteDataValue = 0;
 		//Calculate relativeIntervalData:
 		for(int i=0;i<this.absoluteIntervalData.length;i++){ //Determine MAX
-			if(this.absoluteIntervalData[i] > maxValue){
-				maxValue = this.absoluteIntervalData[i];
+			if(this.absoluteIntervalData[i] > this.maxAbsoluteDataValue){
+				this.maxAbsoluteDataValue = this.absoluteIntervalData[i];
+				this.maxRelativeDataValue = i;
 			}
 		}
 		for(int i=0;i<this.absoluteIntervalData.length;i++){ //Determine MAX
-			this.relativeIntervalData[i] = this.absoluteIntervalData[i] / maxValue;
+			this.relativeIntervalData[i] = this.absoluteIntervalData[i] / this.maxAbsoluteDataValue;
+			if(i == this.maxRelativeDataValue){
+				this.maxRelativeDataValue = this.relativeIntervalData[i];
+			}
 		}
 	}
 

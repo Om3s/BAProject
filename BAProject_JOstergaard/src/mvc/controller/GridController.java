@@ -30,8 +30,6 @@ public class GridController {
 		Date fDate = fromDate;
 		Date tDate = toDate;
 		Gridmodel.getInstance().getData().setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
-		System.out.println("old intervalAmount: "+this.intervalAmount);
-		System.out.println("new intervalAmount: "+newIntervalAmount);
 		if(this.intervalAmount != newIntervalAmount){
 			this.intervalAmount = newIntervalAmount;
 			this.intervalChanged = true;
@@ -43,7 +41,10 @@ public class GridController {
 		//TODO use threading over time
 		double weight = 1.0; //TODO determine weight properly and implement analysis of past data:
 		GridModelData newData;
+		long startTime = System.currentTimeMillis(), queryStart, currentTime;
+		System.out.println("Begin gridCountQuery...(0/"+this.intervalAmount+")");
 		for(int i=0; i<this.intervalAmount; i++){
+			queryStart = System.currentTimeMillis();
 			fDate = new Date(fromDate.getTime() - dateInterval*(i+1));
 			tDate = new Date(fDate.getTime() + dateInterval);
 			if(this.intervalChanged){
@@ -51,7 +52,11 @@ public class GridController {
 			}
 			newData = new GridModelData(this.weightsOfData[i], this.countGridOccurenciesFromTo(fDate, tDate));
 			this.pastGridModelData.add(newData);
+			currentTime = System.currentTimeMillis();
+			System.out.print("("+(i+1)+"/"+this.intervalAmount+") in "+(((double)currentTime-(double)queryStart)/1000)+"sec, ");
 		}
+		currentTime = System.currentTimeMillis();
+		System.out.println("\nQuery finished in "+(((double)currentTime-(double)startTime)/1000)+"sec");
 	}
 	
 	public void matrixCalculations() {
@@ -148,13 +153,6 @@ public class GridController {
 	private int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate) {
 		int[][] result = null;
 		try {
-			if(Main.mainframeController == null){
-				System.out.println("HAHAHAHHAHAHAHAAAHAHAHAH");
-			} else if(Main.mainframeController.getIgnoredDayTimesAsList() == null){
-				System.out.println("DEBUG IgnDAYTIMES is NULL");
-			} else if(Main.mainframeController.getIgnoredWeekdaysAsList() == null){
-				System.out.println("DEBUG IgnWEEKDAYS is NULL");
-			}
 			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", Gridmodel.getInstance().getGridRectangleMatrix(), Main.mainframeController.getIgnoredDayTimesAsList(), Main.mainframeController.getIgnoredWeekdaysAsList());
 		} catch (IOException e) {
 			e.printStackTrace();

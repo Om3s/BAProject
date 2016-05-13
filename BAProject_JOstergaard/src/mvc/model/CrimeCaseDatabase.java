@@ -354,7 +354,6 @@ public class CrimeCaseDatabase {
 			boolQuery.add(query2, BooleanClause.Occur.MUST);
 		}
 		TopDocs docs = this.indexSearcher.search(boolQuery, 10000);
-		System.out.println(boolQuery);
 		System.out.println("Total hits: " + docs.totalHits);
 		Document doc;
 		for(ScoreDoc sDoc : docs.scoreDocs){
@@ -430,8 +429,6 @@ public class CrimeCaseDatabase {
 	}
 
 	public int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate, String category, Rectangle2D[][] gridRectangleMatrix, ArrayList<Integer> ignoreDayTimesList, ArrayList<Integer> ignoreWeekdaysList) throws IOException{
-		long startTime = System.currentTimeMillis(), currentTime;
-		System.out.println("Begin gridCountQuery...");
 		int[][] resultMatrix = new int[gridRectangleMatrix.length][gridRectangleMatrix[0].length];
 		TotalHitCountCollector hitCountCollector;
 		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
@@ -474,8 +471,6 @@ public class CrimeCaseDatabase {
 				resultMatrix[x][y] = hitCountCollector.getTotalHits();
 			}
 		}
-		currentTime = System.currentTimeMillis();
-		System.out.println("Query finished in "+(((double)currentTime-(double)startTime)/1000)+"sec");
 		return resultMatrix;
 	}
 
