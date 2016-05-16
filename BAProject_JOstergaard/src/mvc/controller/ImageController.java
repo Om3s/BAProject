@@ -3,6 +3,7 @@ package mvc.controller;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 import com.jhlabs.image.GaussianFilter;
 
@@ -39,7 +42,7 @@ public class ImageController {
 		System.out.println("Begin Heatmap creation...");
 		this.rawImage = new BufferedImage(matrix.length, matrix[0].length, BufferedImage.TYPE_INT_ARGB);
 		int rgb,white = new Color(0,0,0,0).getRGB();
-		float cellValue;
+//		float cellValue;
 //		for(int y=0; y<matrix[0].length; y++){
 //			for(int x=0; x<matrix.length; x++){
 //				cellValue = (float)((matrix[x][y]+1)/2);
@@ -68,8 +71,12 @@ public class ImageController {
 		this.scaledRawImage = this.resizeImage(this.rawImage, Main.mapController.getMapWidth(),Main.mapController.getMapHeight());
 		//Blurr image
 		this.finalHeatmap = this.blurImage(this.rawImage, 2);
-		this.finalHeatmap = this.resizeImage(this.finalHeatmap, Main.mapController.getMapWidth(),Main.mapController.getMapHeight());
-		this.finalHeatmap = this.blurImage(this.finalHeatmap, 20);
+		Point tempUL = Main.mapController.getMapPosition(Main.mapController.getUpperLeftFixPoint());
+		Point tempLR = Main.mapController.getMapPosition(Main.mapController.getLowerRightFixPoint());
+		int xDistance = (int)Math.abs(Math.round(tempLR.getX() - tempUL.getX()));
+		int yDistance = (int)Math.abs(Math.round(tempLR.getY() - tempUL.getY()));
+		this.finalHeatmap = this.resizeImage(this.finalHeatmap,xDistance,yDistance);
+		this.finalHeatmap = this.blurImage(this.finalHeatmap, -1);
 		this.saveImages(index);
 		currentTime = System.currentTimeMillis();
 		System.out.println("Heatmap created in "+(((double)currentTime-(double)startTime)/1000)+"sec");
@@ -79,25 +86,34 @@ public class ImageController {
 		Image tmp = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
 		BufferedImage result = new BufferedImage(newWidth,newHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = result.createGraphics();
-//		Graphics2D g2d = img.createGraphics(); //TODO affine transformation
-//		g2d.
-//		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		g2d.drawImage(tmp, 0, 0, null);
 		g2d.dispose();
 		return result;
 	}
 
-	private BufferedImage blurImage(BufferedImage img,int radius){
+	private BufferedImage blurImage(BufferedImage img, int radius){
 		BufferedImage result;
-//		float factor = 20.0f;
-//		float[] blurKernel = new float[(int)factor];
-//		for(int i=0; i<factor;i++){
-//			blurKernel[i] = 1.0f/factor;
-//		}
-//		BufferedImageOp blurredImage = new ConvolveOp(new Kernel(3, 3, blurKernel));
-//		result = blurredImage.filter(img, null);
-		GaussianFilter gFilter = new GaussianFilter(radius);
-		result = gFilter.filter(img, null);
+		int upperPixelLimit = 500;
+		if(img.getHeight() > upperPixelLimit){
+			int 	originalWidth = img.getWidth(),
+					originalHeight = img.getHeight(),
+					newHeight = upperPixelLimit, newWidth;
+			double resizeFactor = (double)upperPixelLimit / (double)originalHeight;
+			newWidth = (int)(originalWidth * resizeFactor);
+			img = this.resizeImage(img, newWidth, newHeight);
+			if(radius == -1){
+				radius = img.getWidth() / 15;
+			}
+			GaussianFilter gFilter = new GaussianFilter(radius);
+			result = gFilter.filter(img, null);
+			result = this.resizeImage(result, originalWidth, originalHeight);
+		} else {
+			if(radius == -1){
+				radius = img.getWidth() / 15;
+			}
+			GaussianFilter gFilter = new GaussianFilter(radius);
+			result = gFilter.filter(img, null);
+		}
 		return result;
 	}
 	

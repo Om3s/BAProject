@@ -39,6 +39,7 @@ public class MapController extends DefaultMapController {
 	private ArrayList<BufferedImage> heatMapImages = new ArrayList<BufferedImage>();
 	private ImageMapMarker currentHeatMapImageMarker;
 	private GridController gridController;
+	private Coordinate upperLeftFixPoint,lowerRightFixPoint;
 	
 	public MapController(JMapViewer map) {
 		super(map);
@@ -55,6 +56,8 @@ public class MapController extends DefaultMapController {
 		for(CaseReport cR : Main.dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
 		}
+		this.setUpperLeftFixPoint(new Coordinate(42.181723498412396,-88.0828857421875));
+		this.setLowerRightFixPoint(new Coordinate(41.48389104267176,-87.25341796875));
 		this.map.updateUI();
 	}
 	
@@ -152,7 +155,8 @@ public class MapController extends DefaultMapController {
 			double X = p.x;
 			double Y = p.y;
 	  		System.out.println("Left-Click at X="+X+", Y="+Y);
-	  		System.out.println("Left-Click at X="+geoClickPos.getLon()+", Y="+geoClickPos.getLat());
+	  		System.out.println("Left-Click at X="+geoClickPos.getLon()+", Y="+geoClickPos.getLat()+", Zoomlevel: "+this.map.getZoom());
+	  		System.out.println();
 	  	    Iterator<GeoPoint> i = this.currentPoints.iterator();
 	  	    double centerX, centerY,shortestDistance=Double.MAX_VALUE;
 	  	    Point markerPosition = null;
@@ -279,14 +283,9 @@ public class MapController extends DefaultMapController {
 		if(this.gridController == null){
 			this.gridController = new GridController();
 		}
-		//Viewport: //TODO  change to whole city
-		Coordinate coords1 = (Coordinate)this.map.getPosition(0,0);
-		Coordinate coords2 = (Coordinate)map.getPosition(map.getWidth(),map.getHeight());
-		System.out.println("Grid Boundary Points:\nP1:("+coords1.getLon()+"x,"+coords1.getLat()+"y)\nP2:("+coords2.getLon()+"x,"+coords2.getLat()+"y)");
-		this.gridController.analyze(xResolution, yResolution, fromDate, toDate, coords1, coords2, intervalAmount);
+		System.out.println("Grid Boundary Points:\nP1:("+this.upperLeftFixPoint.getLon()+"x,"+this.upperLeftFixPoint.getLat()+"y)\nP2:("+this.lowerRightFixPoint.getLon()+"x,"+this.lowerRightFixPoint.getLat()+"y)");
+		this.gridController.analyze(xResolution, yResolution, fromDate, toDate, this.upperLeftFixPoint, this.lowerRightFixPoint, intervalAmount);
 		this.loadHeatMapImage(0);
-		this.gridController.recommendedSliderValues();
-		this.loadHeatMapImage(0); //workaround
 	}
 	
 	public int getMapWidth(){
@@ -306,12 +305,14 @@ public class MapController extends DefaultMapController {
 		if(this.gridController != null){
 			if(index == 0){
 				this.gridController.matrixCalculations();
+				this.gridController.recommendedSliderValues();
+				this.gridController.matrixCalculations();
 			}
 			this.gridController.createHeatMap(index);
 		}
 		if(this.heatMapImages != null && this.heatMapImages.size() > 0){
 			if(this.heatMapImages.get(index) != null){
-				this.currentHeatMapImageMarker = new ImageMapMarker((Coordinate)this.map.getPosition(0, 0), this.heatMapImages.get(index));
+				this.currentHeatMapImageMarker = new ImageMapMarker(this.upperLeftFixPoint, this.heatMapImages.get(index));
 				this.map.addMapMarker(this.currentHeatMapImageMarker);
 			}
 		}
@@ -338,5 +339,29 @@ public class MapController extends DefaultMapController {
 	public void updateTimelineWeights(double[] weightsOfData) {
 		this.gridController.setDataWeights(weightsOfData);
 		
+	}
+
+	public Coordinate getUpperLeftFixPoint() {
+		return upperLeftFixPoint;
+	}
+
+	public void setUpperLeftFixPoint(Coordinate upperLeftFixPoint) {
+		this.upperLeftFixPoint = upperLeftFixPoint;
+	}
+
+	public Coordinate getLowerRightFixPoint() {
+		return lowerRightFixPoint;
+	}
+
+	public void setLowerRightFixPoint(Coordinate lowerRightFixPoint) {
+		this.lowerRightFixPoint = lowerRightFixPoint;
+	}
+	
+	public Point getMapPosition(Coordinate coord){
+		return this.map.getMapPosition(coord,false);
+	}
+	
+	public Coordinate getPosition(Point p){
+		return (Coordinate)this.map.getPosition(p);
 	}
 }

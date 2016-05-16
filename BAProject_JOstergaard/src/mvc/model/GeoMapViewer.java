@@ -34,14 +34,12 @@ public class GeoMapViewer extends JMapViewer {
         	} else {
         		alphaValue = 5;
         	}
-        	System.out.println("Zoomlevel: "+this.zoom);
-        	System.out.println("AlphaValue: "+alphaValue);
         	Main.alphaColor = new Color(35,115,0,alphaValue);
         	if(this.controller != null){
         		this.controller.refreshDots();
         	}
-        	if(Main.mapController != null){
-            	Main.mapController.setShowHeatMap(false);
+        	if(Main.mapController != null && Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected()){
+            	Main.mapController.loadHeatMapImage(0);
         	}
     	}
     }
