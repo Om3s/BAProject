@@ -305,8 +305,6 @@ public class MapController extends DefaultMapController {
 		if(this.gridController != null){
 			if(index == 0){
 				this.gridController.matrixCalculations();
-				this.gridController.recommendedSliderValues();
-				this.gridController.matrixCalculations();
 			}
 			this.gridController.createHeatMap(index);
 		}

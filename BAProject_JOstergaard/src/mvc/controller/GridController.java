@@ -23,13 +23,66 @@ public class GridController {
 		this.pastGridModelData = new ArrayList<GridModelData>();
 	}
 	
+	class AnalyzeThread extends Thread { // TODO analyzeThreads not working!!!
+		private Thread t;
+		private int threadInterval;
+		private GridModelData newData;
+		private Date fDate,tDate;
+		private boolean isFinished;
+		
+		AnalyzeThread(Date fDate, Date tDate){
+			this.threadInterval = -1;
+			this.fDate = fDate;
+			this.tDate = tDate;
+			this.isFinished = false;
+			System.out.println("Thread "+this.threadInterval+" created");
+		}
+		
+		AnalyzeThread(Date fDate, Date tDate, int interval){
+			this.threadInterval = interval;
+			this.fDate = fDate;
+			this.tDate = tDate;
+			this.isFinished = false;
+			System.out.println("Thread "+this.threadInterval+" created");
+		}
+		
+		public void run() {
+			System.out.println("run thread "+this.threadInterval );
+			if(intervalChanged && this.threadInterval != -1){
+				weightsOfData[this.threadInterval] = 1.0 - ((1.0 / intervalAmount) * this.threadInterval); //TODO weight calculation is linear atms
+//				this.newData = new GridModelData(weightsOfData[this.threadInterval], countGridOccurenciesFromTo(fDate, tDate), this.threadInterval);
+			}
+			this.isFinished = true;
+			if(this.threadInterval == -1){
+				Gridmodel.getInstance().setData(new GridModelData(1.0, countGridOccurenciesFromTo(fDate, tDate), this.threadInterval));
+			} else {
+				pastGridModelData.add(new GridModelData(weightsOfData[this.threadInterval], countGridOccurenciesFromTo(fDate, tDate), this.threadInterval));
+			}
+			System.out.println("Thread "+this.threadInterval+" exiting.");
+		}
+		
+		public void start (){
+			System.out.println("Starting "+this.threadInterval );
+			if (t == null){
+				t = new Thread(this);
+				t.start ();
+			}
+		}
+		
+		public boolean isFinished() {
+			return isFinished;
+		}
+
+		public GridModelData getNewData() {
+			return newData;
+		}
+	}
 	public void analyze(int xResolution, int yResolution, Date fromDate, Date toDate, Coordinate topLeft, Coordinate botRight, int newIntervalAmount){
 		this.pastGridModelData = new ArrayList<GridModelData>();
 		Gridmodel.getInstance().init(xResolution, yResolution, topLeft, botRight);
 		long dateInterval = toDate.getTime() - fromDate.getTime(); //interval is current date selection
 		Date fDate = fromDate;
 		Date tDate = toDate;
-		Gridmodel.getInstance().getData().setDataMatrix(this.countGridOccurenciesFromTo(fDate, tDate));
 		if(this.intervalAmount != newIntervalAmount){
 			this.intervalAmount = newIntervalAmount;
 			this.intervalChanged = true;
@@ -40,30 +93,49 @@ public class GridController {
 		
 		//TODO use threading over time
 		double weight = 1.0; //TODO determine weight properly and implement analysis of past data:
-		GridModelData newData;
 		long startTime = System.currentTimeMillis(), queryStart, currentTime;
 		System.out.println("Begin gridCountQuery...(0/"+this.intervalAmount+")");
 		String progressString;
+		ArrayList<AnalyzeThread> workers = new ArrayList<AnalyzeThread>();
+		workers.add(new AnalyzeThread(fDate, tDate));
+		queryStart = System.currentTimeMillis();
 		for(int i=0; i<this.intervalAmount; i++){
-			queryStart = System.currentTimeMillis();
 			fDate = new Date(fromDate.getTime() - dateInterval*(i+1));
 			tDate = new Date(fDate.getTime() + dateInterval);
-			if(this.intervalChanged){
-				this.weightsOfData[i] = 1.0 - ((1.0 / this.intervalAmount) * i); //TODO weight calculation is linear atms
-			}
-			newData = new GridModelData(this.weightsOfData[i], this.countGridOccurenciesFromTo(fDate, tDate));
-			this.pastGridModelData.add(newData);
-			currentTime = System.currentTimeMillis();
-			progressString = "("+(i+1)+"/"+this.intervalAmount+")";
-			System.out.print(progressString+" in "+(((double)currentTime-(double)queryStart)/1000)+"sec, ");
-			if((i)%3 == 2 && i != (this.intervalAmount-1)){
-				System.out.println("");
-			}
-			Main.mainframeController.mainframe.filtermenu_analysis_panel_progress_label.setText(progressString);
+			workers.add(new AnalyzeThread(fDate, tDate, i));
 		}
+		for(AnalyzeThread worker : workers){
+			worker.start();
+		}
+		boolean threadsRunning = true;
+		int progressCounter = -1, tempProgressCounter;
+		while(threadsRunning){
+			threadsRunning = false;
+			tempProgressCounter = this.intervalAmount+1;
+			for(AnalyzeThread worker : workers){
+				System.out.println(worker.isFinished);
+				if(!worker.isFinished){
+					threadsRunning = true;
+					tempProgressCounter--;
+				}
+			}
+			if(progressCounter != tempProgressCounter){
+				progressCounter = tempProgressCounter;
+				progressString = "("+progressCounter+"/"+(this.intervalAmount+1)+") ";
+				System.out.println(progressString);
+				Main.mainframeController.mainframe.filtermenu_analysis_panel_progress_label.setText(progressString);
+			}
+		}
+		
+		for(int i=1;i<workers.size();i++){
+			System.out.println(this.pastGridModelData.get(i));
+		}
+		
 		currentTime = System.currentTimeMillis();
 		System.out.println("\nQuery finished in "+(((double)currentTime-(double)startTime)/1000)+"sec");
-		Main.mainframeController.mainframe.filtermenu_analysis_panel_progress_label.setText(" ");
+//		Main.mainframeController.mainframe.filtermenu_analysis_panel_progress_label.setText(" ");
+		this.matrixCalculations();
+		this.recommendedSliderValues();
 	}
 	
 	public void matrixCalculations() {

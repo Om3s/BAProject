@@ -25,7 +25,7 @@ import com.jhlabs.image.GaussianFilter;
 import mvc.main.Main;
 
 public class ImageController {
-	private BufferedImage rawImage,scaledRawImage,finalHeatmap;
+	private BufferedImage rawImage,finalHeatmap;
 	private String imgDir = "dat/img/";
 	
 	public ImageController(){
@@ -67,8 +67,6 @@ public class ImageController {
 			}
 		}
 		
-		//Scaleup image
-		this.scaledRawImage = this.resizeImage(this.rawImage, Main.mapController.getMapWidth(),Main.mapController.getMapHeight());
 		//Blurr image
 		this.finalHeatmap = this.blurImage(this.rawImage, 2);
 		Point tempUL = Main.mapController.getMapPosition(Main.mapController.getUpperLeftFixPoint());
@@ -127,13 +125,10 @@ public class ImageController {
 	
 	public void saveImages(int index) throws IOException{
 		File 	rawImage = new File(this.imgDir+"rawImage_"+index+".png"),
-				scaledRawImage = new File(this.imgDir+"scaledRawImage_"+index+".png"),
 				finalHeatMap = new File(this.imgDir+"finalHeatmap_"+index+".png");
 		rawImage.createNewFile();
-		scaledRawImage.createNewFile();
 		finalHeatMap.createNewFile();
 		ImageIO.write(this.rawImage, "png", rawImage);
-		ImageIO.write(this.scaledRawImage, "png", scaledRawImage);
 		ImageIO.write(this.finalHeatmap, "png", finalHeatMap);
 	}
 

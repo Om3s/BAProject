@@ -30,7 +30,7 @@ public class Gridmodel {
 		this.yResolution = yResolution;
 		this.topLeftCornerDot = topLeftCornerDot;
 		this.botRightCornerDot = botRightCornerDot;
-		this.data = new GridModelData(1.0);
+		this.data = new GridModelData(1.0, -1); //-1 means its the current dataInterval
 		this.recalculateValues();
 		this.createGridRectangles();
 	}

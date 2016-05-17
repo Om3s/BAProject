@@ -3,14 +3,14 @@ package mvc.model;
 public class GridModelData {
 	private int[][] dataMatrix;
 	private double weight;
-	private int overallAmount;
+	private int overallAmount, index;
 
-	public GridModelData(double weight){
+	public GridModelData(double weight, int index){
 		this.dataMatrix = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
 		this.weight = weight;
 	}
 
-	public GridModelData(double weight, int[][] data){
+	public GridModelData(double weight, int[][] data, int index){
 		this.dataMatrix = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
 		this.weight = weight;
 		this.dataMatrix = data;
@@ -37,5 +37,9 @@ public class GridModelData {
 
 	public int getOverallAmount() {
 		return overallAmount;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 }
