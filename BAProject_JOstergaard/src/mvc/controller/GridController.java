@@ -2,6 +2,7 @@ package mvc.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
@@ -52,12 +53,13 @@ public class GridController {
 				weightsOfData[this.threadInterval] = 1.0 - ((1.0 / intervalAmount) * this.threadInterval); //TODO weight calculation is linear atms
 //				this.newData = new GridModelData(weightsOfData[this.threadInterval], countGridOccurenciesFromTo(fDate, tDate), this.threadInterval);
 			}
-			this.isFinished = true;
 			if(this.threadInterval == -1){
 				Gridmodel.getInstance().setData(new GridModelData(1.0, countGridOccurenciesFromTo(fDate, tDate), this.threadInterval));
 			} else {
 				pastGridModelData.add(new GridModelData(weightsOfData[this.threadInterval], countGridOccurenciesFromTo(fDate, tDate), this.threadInterval));
+				System.out.println("GridModelData added to pastGridModelData from "+this.threadInterval);
 			}
+			this.isFinished = true;
 			System.out.println("Thread "+this.threadInterval+" exiting.");
 		}
 		
@@ -109,12 +111,11 @@ public class GridController {
 		}
 		boolean threadsRunning = true;
 		int progressCounter = -1, tempProgressCounter;
-		while(threadsRunning){
+		while(threadsRunning){ //Wait while threads are running
 			threadsRunning = false;
 			tempProgressCounter = this.intervalAmount+1;
 			for(AnalyzeThread worker : workers){
-				System.out.println(worker.isFinished);
-				if(!worker.isFinished){
+				if(!worker.isFinished()){
 					threadsRunning = true;
 					tempProgressCounter--;
 				}
@@ -126,10 +127,14 @@ public class GridController {
 				Main.mainframeController.mainframe.filtermenu_analysis_panel_progress_label.setText(progressString);
 			}
 		}
-		
-		for(int i=1;i<workers.size();i++){
-			System.out.println(this.pastGridModelData.get(i));
-		}
+		//Sort pastGridModelData:
+		this.pastGridModelData.sort(new Comparator<GridModelData>() {
+
+			@Override
+			public int compare(GridModelData o1, GridModelData o2) {
+				return o1.compareTo(o2);
+			}
+		});
 		
 		currentTime = System.currentTimeMillis();
 		System.out.println("\nQuery finished in "+(((double)currentTime-(double)startTime)/1000)+"sec");

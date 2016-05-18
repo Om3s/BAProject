@@ -22,6 +22,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
 
+import mvc.controller.AnalyzeButtonThreadController;
 import mvc.controller.MainframeController;
 import mvc.controller.MapController;
 import mvc.main.Main;
@@ -189,7 +190,7 @@ public class Mainframe extends JFrame {
 		frameHeight = (int) (frameWidth * 0.75);
 		this.setSize(frameWidth, frameHeight);
 		this.setLocation((int)((Main.screenWidth / 2) - (frameWidth / 2)), (int)((Main.screenHeight / 2) - (frameHeight / 2 )));
-		this.setMinimumSize(new Dimension(800, 450));
+		this.setMinimumSize(new Dimension(800, 610));
 		
 		// =================== GUI LAYOUT: =================== 
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -570,8 +571,9 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.weightx = 0.01;
 		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.gridx = 5;
 		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.gridy = 7;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_upperPosThreshold_textfield, gbc_filtermenu_analysis_panel_upperPosThreshold_textfield);
-		filtermenu_analysis_panel_upperPosThreshold_textfield.setColumns(4);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_upperPosThreshold_textfield, gbc_filtermenu_analysis_panel_upperPosThreshold_textfield);
+		this.filtermenu_analysis_panel_upperPosThreshold_textfield.setColumns(4);
+		this.filtermenu_analysis_panel_upperPosThreshold_textfield.setMinimumSize(new Dimension(30,20));
 		
 		GridBagConstraints gbc_filtermenu_analysis_panel_slider_lowValue_label = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_slider_lowValue_label.insets = new Insets(0, 0, 5, 5);
@@ -594,8 +596,9 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.insets = new Insets(0, 0, 0, 5);
 		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.gridx = 0;
 		gbc_filtermenu_analysis_panel_lowPosThreshold_textfield.gridy = 7;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_lowPosThreshold_textfield, gbc_filtermenu_analysis_panel_lowPosThreshold_textfield);
-		filtermenu_analysis_panel_lowPosThreshold_textfield.setColumns(4);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_lowPosThreshold_textfield, gbc_filtermenu_analysis_panel_lowPosThreshold_textfield);
+		this.filtermenu_analysis_panel_lowPosThreshold_textfield.setColumns(4);
+		this.filtermenu_analysis_panel_lowPosThreshold_textfield.setMinimumSize(new Dimension(30,20));
 		
 		GridBagConstraints gbc_filtermenu_analysis_panel_intervallAmount_textfield = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_intervallAmount_textfield.gridwidth = 2;
@@ -603,24 +606,25 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analysis_panel_intervallAmount_textfield.insets = new Insets(0, 0, 5, 5);
 		gbc_filtermenu_analysis_panel_intervallAmount_textfield.gridx = 2;
 		gbc_filtermenu_analysis_panel_intervallAmount_textfield.gridy = 4;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_intervallAmount_textfield, gbc_filtermenu_analysis_panel_intervallAmount_textfield);
-		filtermenu_analysis_panel_intervallAmount_textfield.setColumns(4);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_intervallAmount_textfield, gbc_filtermenu_analysis_panel_intervallAmount_textfield);
+		this.filtermenu_analysis_panel_intervallAmount_textfield.setColumns(4);
+		this.filtermenu_analysis_panel_intervallAmount_textfield.setMinimumSize(new Dimension(30,20));
 		
-		filtermenu_analysis_panel_intervalAmount_label = new JLabel("#intervals:");
+		this.filtermenu_analysis_panel_intervalAmount_label = new JLabel("#intervals:");
 		GridBagConstraints gbc_filtermenu_analysis_panel_intervalAmount_label = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_intervalAmount_label.gridwidth = 2;
 		gbc_filtermenu_analysis_panel_intervalAmount_label.insets = new Insets(0, 0, 5, 5);
 		gbc_filtermenu_analysis_panel_intervalAmount_label.gridx = 2;
 		gbc_filtermenu_analysis_panel_intervalAmount_label.gridy = 3;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_intervalAmount_label, gbc_filtermenu_analysis_panel_intervalAmount_label);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_intervalAmount_label, gbc_filtermenu_analysis_panel_intervalAmount_label);
 		
-		filtermenu_analysis_panel_resolution_label = new JLabel("grid(n\u00B2):");
+		this.filtermenu_analysis_panel_resolution_label = new JLabel("grid(n\u00B2):");
 		GridBagConstraints gbc_filtermenu_analysis_panel_resolution_label = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_resolution_label.gridwidth = 2;
 		gbc_filtermenu_analysis_panel_resolution_label.insets = new Insets(0, 0, 5, 5);
 		gbc_filtermenu_analysis_panel_resolution_label.gridx = 0;
 		gbc_filtermenu_analysis_panel_resolution_label.gridy = 3;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_resolution_label, gbc_filtermenu_analysis_panel_resolution_label);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_resolution_label, gbc_filtermenu_analysis_panel_resolution_label);
 		
 		GridBagConstraints gbc_filtermenu_analysis_panel_resolution_textfield = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_resolution_textfield.gridwidth = 2;
@@ -628,15 +632,16 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analysis_panel_resolution_textfield.insets = new Insets(0, 0, 5, 5);
 		gbc_filtermenu_analysis_panel_resolution_textfield.gridx = 0;
 		gbc_filtermenu_analysis_panel_resolution_textfield.gridy = 4;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_resolution_textfield, gbc_filtermenu_analysis_panel_resolution_textfield);
-		filtermenu_analysis_panel_resolution_textfield.setColumns(4);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_resolution_textfield, gbc_filtermenu_analysis_panel_resolution_textfield);
+		this.filtermenu_analysis_panel_resolution_textfield.setColumns(4);
+		this.filtermenu_analysis_panel_resolution_textfield.setMinimumSize(new Dimension(30,20));
 		
-		filtermenu_analysis_panel_slider_highValue_label = new JLabel("max:");
+		this.filtermenu_analysis_panel_slider_highValue_label = new JLabel("max:");
 		GridBagConstraints gbc_filtermenu_analysis_panel_slider_highValue_label = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_slider_highValue_label.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_analysis_panel_slider_highValue_label.gridx = 5;
 		gbc_filtermenu_analysis_panel_slider_highValue_label.gridy = 6;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_slider_highValue_label, gbc_filtermenu_analysis_panel_slider_highValue_label);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_slider_highValue_label, gbc_filtermenu_analysis_panel_slider_highValue_label);
 		
 		this.filtermenu_analysis_panel_currentSliderValue_label = new JLabel("threshold: 50 %");
 		GridBagConstraints gbc_filtermenu_analysis_panel_currentSliderValue_label = new GridBagConstraints();
@@ -644,7 +649,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_analysis_panel_currentSliderValue_label.insets = new Insets(0, 0, 5, 5);
 		gbc_filtermenu_analysis_panel_currentSliderValue_label.gridx = 1;
 		gbc_filtermenu_analysis_panel_currentSliderValue_label.gridy = 6;
-		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_currentSliderValue_label, gbc_filtermenu_analysis_panel_currentSliderValue_label);
+		filtermenu_analyzis_panel.add(this.filtermenu_analysis_panel_currentSliderValue_label, gbc_filtermenu_analysis_panel_currentSliderValue_label);
 		
 		this.filtermenu_timeline_panel = new TimeLineGraphic();
 		GridBagConstraints gbc_filtermenu_timeline_panel = new GridBagConstraints();
@@ -653,7 +658,7 @@ public class Mainframe extends JFrame {
 		gbc_filtermenu_timeline_panel.fill = GridBagConstraints.BOTH;
 		gbc_filtermenu_timeline_panel.gridx = 0;
 		gbc_filtermenu_timeline_panel.gridy = 2;
-		filtermenu_analyzis_panel.add(filtermenu_timeline_panel, gbc_filtermenu_timeline_panel);
+		filtermenu_analyzis_panel.add(this.filtermenu_timeline_panel, gbc_filtermenu_timeline_panel);
 		this.filtermenu_timeline_panel.setPreferredSize(new Dimension(300, 100));
 		
 		JPanel filtermenu_buttons_panel = new JPanel();
@@ -668,9 +673,10 @@ public class Mainframe extends JFrame {
 		filtermenu_panel.add(filtermenu_buttons_panel, gbc_filtermenu_buttons_panel);
 		filtermenu_buttons_panel.setLayout(new GridLayout(1, 2, 0, 0));
 		
-		
-		filtermenu_buttons_panel.add(filtermenu_buttons_applyButton);
-		filtermenu_buttons_panel.add(filtermenu_buttons_defaultButton);
+		this.filtermenu_buttons_applyButton.setMinimumSize(new Dimension(40,30));
+		this.filtermenu_buttons_defaultButton.setMinimumSize(new Dimension(40,30));
+		filtermenu_buttons_panel.add(this.filtermenu_buttons_applyButton);
+		filtermenu_buttons_panel.add(this.filtermenu_buttons_defaultButton);
 		
 		((JLabel)this.filtermenu_comboBox_category.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		this.filtermenu_comboBox_category.addItem("All categories");
@@ -991,7 +997,7 @@ public class Mainframe extends JFrame {
 		this.filtermenu_analysis_panel_analyze_button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Main.mainframeController.analyzeButtonIsPressed();
+				new AnalyzeButtonThreadController("AnalyzeButtonThread").start();
 			}
 		});
 		

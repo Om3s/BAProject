@@ -8,12 +8,14 @@ public class GridModelData {
 	public GridModelData(double weight, int index){
 		this.dataMatrix = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
 		this.weight = weight;
+		this.index = index;
 	}
 
 	public GridModelData(double weight, int[][] data, int index){
 		this.dataMatrix = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
 		this.weight = weight;
 		this.dataMatrix = data;
+		this.index = index;
 	}
 	public int[][] getDataMatrix() {
 		return dataMatrix;
@@ -41,5 +43,15 @@ public class GridModelData {
 
 	public int getIndex() {
 		return index;
+	}
+
+	public int compareTo(GridModelData o2) {
+		if(this.index > o2.getIndex()){
+			return 1;
+		} else if(this.index < o2.getIndex()){
+			return -1;
+		} else {
+			return 0;
+		}
 	}
 }

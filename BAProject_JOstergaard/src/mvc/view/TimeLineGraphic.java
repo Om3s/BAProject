@@ -55,6 +55,7 @@ public class TimeLineGraphic extends JPanel {
 	}
 	
 	private void init() {
+		this.setMinimumSize(new Dimension(150,70));
 		this.setupMouseListener();
 		this.refreshLayoutSettings();
 	}
@@ -208,8 +209,11 @@ public class TimeLineGraphic extends JPanel {
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 		if(this.relativeIntervalData != null){
 			//DRAW SCALA:
-			g2d.setColor(Color.BLACK);
+			g2d.setColor(Color.LIGHT_GRAY);
+			g2d.setStroke(new BasicStroke(1));
+			g2d.draw(new Line2D.Double(this.xOuterOffsetLeft-5, this.yOuterOffsetTop-2, this.xOuterOffsetLeft+this.xDrawRange+2, this.yOuterOffsetTop-2));
 			g2d.setStroke(new BasicStroke(2));
+			g2d.setColor(Color.BLACK);
 			g2d.draw(new Line2D.Double(this.xOuterOffsetLeft+this.xDrawRange+5, this.yOuterOffsetTop-5, this.xOuterOffsetLeft+this.xDrawRange+5, this.yOuterOffsetTop+this.yDrawRange+3));
 			g2d.draw(new Line2D.Double(this.xOuterOffsetLeft-5, this.yOuterOffsetTop+this.yDrawRange+3, this.xOuterOffsetLeft+this.xDrawRange+8, this.yOuterOffsetTop+this.yDrawRange+3));
 			//DRAW SCALA TEXT:
