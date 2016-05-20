@@ -14,6 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
+import javax.swing.SwingUtilities;
+
 import mvc.main.Main;
 import mvc.model.CaseReport;
 import mvc.model.GeoMapViewer;
@@ -197,6 +199,24 @@ public class MapController extends DefaultMapController {
 	  		System.out.println("Right-Click at X="+X+", Y="+Y);
 		}
   	    this.map.repaint();
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e){
+		if(SwingUtilities.isLeftMouseButton(e)){
+			System.out.println("left dragggg");
+		} else if (SwingUtilities.isRightMouseButton(e)){
+			System.out.println("right dragggg");
+		}
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e){
+		if(SwingUtilities.isLeftMouseButton(e)){
+			System.out.println("left pressed");
+		} else if (SwingUtilities.isRightMouseButton(e)){
+			System.out.println("right pressed");
+		}
 	}
 	
 	/**
