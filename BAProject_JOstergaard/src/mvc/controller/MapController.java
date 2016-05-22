@@ -1,6 +1,7 @@
 package mvc.controller;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -26,7 +27,9 @@ import mvc.model.ImageMapMarker;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.DefaultMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
+import org.openstreetmap.gui.jmapviewer.interfaces.MapPolygon;
 
 /**
  * 
@@ -43,8 +46,12 @@ public class MapController extends DefaultMapController {
 	private GridController gridController;
 	private Coordinate upperLeftFixPoint,lowerRightFixPoint;
 	//selection variables:
-	private boolean isDraggingSelection,isPotentialDrag,isInSelectionMode;
+	private boolean isDraggingSelection,isPotentialDrag;
+	public boolean wasPreviouslyHeatmap,isInSelectionMode;
 	private Coordinate dragModeStartMousePosition,dragModeCurrentMousePosition,dragModeEndMousePosition;
+	private ArrayList<Coordinate> selectionRectanglePath;
+	private Point topLeftCorner,botRightCorner,topRightCorner,botLeftCorner;
+	private MapPolygon selectionRectanglePolygon;
 	
 	public MapController(JMapViewer map) {
 		super(map);
@@ -60,6 +67,7 @@ public class MapController extends DefaultMapController {
 		this.isDraggingSelection = false;
 		this.isPotentialDrag = false;
 		this.isInSelectionMode = false;
+		this.wasPreviouslyHeatmap = false;
 		this.map.setTileSource(new GrayOSMTileSource.BWMapnik());
 		for(CaseReport cR : Main.dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
@@ -193,16 +201,10 @@ public class MapController extends DefaultMapController {
 		  	    } else {
 		  	    	Main.mainframeController.mainframe.reportList.setSelectedValue(this.selectedMapMarker.getRelatedCaseReport(), true);
 		  	    }
-			} else if(e.getButton() == MouseEvent.BUTTON3){
-				if(this.isInSelectionMode){
-					this.isInSelectionMode = false;
-					Main.mainframeController.refreshMapData();
-				}
 			}
 		}
-  	    this.map.repaint();
-		//Debug console outputs
 		if(e.getButton() == MouseEvent.BUTTON1){
+			//DEBUG OUTPUT:
 	  		Coordinate geoClickPos = (Coordinate) this.map.getPosition(e.getPoint());
 			Point p = this.map.getMapPosition(geoClickPos);
 			double X = p.x;
@@ -210,16 +212,34 @@ public class MapController extends DefaultMapController {
 	  		System.out.println("Left-Click at X="+X+", Y="+Y);
 	  		System.out.println("Left-Click at X="+geoClickPos.getLon()+", Y="+geoClickPos.getLat()+", Zoomlevel: "+this.map.getZoom());
 		} else if(e.getButton() == MouseEvent.BUTTON2){
+			//DEBUG OUTPUT:
 			Point p = e.getPoint();
 			int X = p.x;
 			int Y = p.y;
 	  		System.out.println("Mid-Click at X="+X+", Y="+Y);
 		} else if(e.getButton() == MouseEvent.BUTTON3){
+			System.out.println("isInSelectionMode "+this.isInSelectionMode);
+			if(this.isInSelectionMode){
+				if(this.selectionRectanglePolygon != null){
+					this.map.removeMapPolygon(this.selectionRectanglePolygon);
+					this.selectionRectanglePolygon = null;
+				}
+				System.out.println("wasPreviouslyHeatmap: "+this.wasPreviouslyHeatmap);
+				this.isInSelectionMode = false;
+				if(this.wasPreviouslyHeatmap){
+					Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setSelected(true);
+				} else {
+					Main.mainframeController.refreshMapData();
+				}
+				Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setEnabled(true);
+			}
+			//DEBUG OUTPUT:
 			Point p = e.getPoint();
 			int X = p.x;
 			int Y = p.y;
 	  		System.out.println("Right-Click at X="+X+", Y="+Y);
 		}
+  	    this.map.repaint();
 	}
 	
 	@Override
@@ -229,9 +249,23 @@ public class MapController extends DefaultMapController {
 				this.isDraggingSelection = true;
 			}
 			if(this.isDraggingSelection){
-				System.out.println("DRAGMODE");
 				this.dragModeCurrentMousePosition = (Coordinate)this.map.getPosition(e.getPoint());
+				this.topLeftCorner = this.map.getMapPosition(this.dragModeStartMousePosition);
+				this.botRightCorner = this.map.getMapPosition(this.dragModeCurrentMousePosition);
+				this.topRightCorner = new Point(botRightCorner.x,topLeftCorner.y);
+				this.botLeftCorner = new Point(topLeftCorner.x,botRightCorner.y);
 				//TODO paint the rectangle somehow
+				if(this.selectionRectanglePolygon != null){
+					this.map.removeMapPolygon(this.selectionRectanglePolygon);
+				}
+				this.selectionRectanglePath = new ArrayList<Coordinate>();
+				this.selectionRectanglePath.add((Coordinate)this.map.getPosition(topLeftCorner));
+				this.selectionRectanglePath.add((Coordinate)this.map.getPosition(topRightCorner));
+				this.selectionRectanglePath.add((Coordinate)this.map.getPosition(botRightCorner));
+				this.selectionRectanglePath.add((Coordinate)this.map.getPosition(botLeftCorner));
+				this.selectionRectanglePath.add((Coordinate)this.map.getPosition(topLeftCorner));
+				this.selectionRectanglePolygon = new MapPolygonImpl(this.selectionRectanglePath);
+				this.map.addMapPolygon(this.selectionRectanglePolygon);
 			}
 		}
 	}
@@ -242,7 +276,6 @@ public class MapController extends DefaultMapController {
 			System.out.println("left pressed");
 			this.isPotentialDrag = true;
 			this.dragModeStartMousePosition = (Coordinate)this.map.getPosition(e.getPoint());
-			//TODO not sure
 		} else if (SwingUtilities.isRightMouseButton(e)){
 			System.out.println("right pressed");
 		}
@@ -253,8 +286,12 @@ public class MapController extends DefaultMapController {
 		if(this.isDraggingSelection){
 			this.isInSelectionMode = true;
 			this.dragModeEndMousePosition = (Coordinate)this.map.getPosition(e.getPoint());
-			Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setSelected(false);
-			//TODO call the query
+			this.wasPreviouslyHeatmap = Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected();
+			Main.mainframeController.wasInSelectionMode = true;
+			if(this.wasPreviouslyHeatmap){
+				Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setSelected(false);
+			}
+			Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setEnabled(false);
 			try {
 				Main.dataBase.selectSpatialWeekdaysCasesBetweenDatesToCurrentData(Main.mainframeController.getGlobalFromDate(), Main.mainframeController.getGlobalToDate(), Main.mainframeController.getIgnoredWeekdaysAsList(), Main.mainframeController.getCurrentCategory(), Main.mainframeController.getIgnoredDayTimesAsList(), this.dragModeStartMousePosition, this.dragModeEndMousePosition);
 				System.out.println("currentData#: "+Main.dataBase.getCurrentData().size());

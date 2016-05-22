@@ -15,7 +15,7 @@ public class GridController {
 	private ArrayList<GridModelData> pastGridModelData;
 	private ImageController imageController = new ImageController();
 	private ArrayList<double[][]> normalizedRelativeMatrix,relativeDataDifference;
-	private double minValue, maxValue;
+	private double minValue, maxValue,recommendedSliderValue;
 	private int intervalAmount;
 	private boolean intervalChanged;
 	private double[] weightsOfData;

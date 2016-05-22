@@ -35,6 +35,7 @@ public class MainframeController {
 	private ArrayList<Integer> selectedDayTimesAsList, selectedWeekdaysAsList, ignoredDayTimesAsList, ignoredWeekdaysAsList;
 	private final int dayTimesAmount = 6;
 	private String currentCategory;
+	public boolean wasInSelectionMode;
 
 	//Chart:
 	private String intervalName = null;
@@ -130,7 +131,7 @@ public class MainframeController {
 		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMinimum(Integer.valueOf(this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText())+1);
 		this.mainframe.filtermenu_analysis_panel_threshold_slider.setValue(50);
 		this.mainframe.filtermenu_analysis_panel_threshold_slider.setEnabled(false);
-		
+		this.wasInSelectionMode = false;
 		//Weekdays:
 		//Chart:
 		this.mainframe.matrix_chart_panel.setTransformationMode(2);
@@ -801,7 +802,6 @@ public class MainframeController {
 	}
 
 	public void analyzeButtonIsPressed() {
-		// TODO
 		int resolution = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_resolution_textfield.getText());
 		int intervalAmount = Integer.valueOf(this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText());
 		Main.mapController.createCellMatrix(resolution,resolution,this.globalFromDate, this.globalToDate, intervalAmount);
@@ -828,6 +828,11 @@ public class MainframeController {
 			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_threshold_slider.setEnabled(false);
+			if(this.wasInSelectionMode && !Main.mapController.isInSelectionMode){
+				System.out.println("BALAAALAAA");
+				this.wasInSelectionMode = false;
+				this.refreshMapData();
+			}
 			Main.mapController.setShowCurrentPoints(true);
 			Main.mapController.setShowHeatMap(false);
 		}
