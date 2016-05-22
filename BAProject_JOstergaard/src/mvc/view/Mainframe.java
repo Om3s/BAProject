@@ -833,9 +833,15 @@ public class Mainframe extends JFrame {
 		this.reportList_panel.add(this.reportList_panel_filter_checkBoxClosed ,gbc_reportList_panel_filter_radioButtonClosed);
 		
 		reportList_scrollPane = new JScrollPane(reportList);
-		reportList_scrollPane.setMinimumSize(new Dimension(210,0));
-		reportList_scrollPane.setMaximumSize(new Dimension(210,Main.screenHeight));
-		reportList_scrollPane.setPreferredSize(new Dimension(210,500));
+		int tempReccommendedWidth;
+		if(Main.isChicago){
+			tempReccommendedWidth = 170;
+		} else {
+			tempReccommendedWidth = 210;
+		}
+		reportList_scrollPane.setMinimumSize(new Dimension(tempReccommendedWidth,0));
+		reportList_scrollPane.setMaximumSize(new Dimension(tempReccommendedWidth,Main.screenHeight));
+		reportList_scrollPane.setPreferredSize(new Dimension(tempReccommendedWidth,500));
 		GridBagConstraints gbc_reportList_scrollPane = new GridBagConstraints();
 		gbc_reportList_scrollPane.anchor = GridBagConstraints.WEST;
 		gbc_reportList_scrollPane.fill = GridBagConstraints.BOTH;

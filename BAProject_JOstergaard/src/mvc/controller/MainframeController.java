@@ -228,11 +228,9 @@ public class MainframeController {
 		this.refreshCurrentCategory();
 		this.refreshChart();
 		if(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected()){
-//			Main.mapController.setZoom(false);
 			this.analyzeButtonIsPressed();
 			Main.mapController.setShowCurrentPoints(false);
 		} else {
-//			Main.mapController.setZoom(true);
 			Main.mapController.setShowCurrentPoints(true);
 			this.refreshMapData();
 			this.showOpenedCases(this.mainframe.reportList_panel_filter_checkBoxOpen.isSelected());
@@ -434,7 +432,7 @@ public class MainframeController {
 	 * 
 	 * @param currentData contains the data thas should be listed.
 	 */
-	private void fillReportListWith(boolean openedCases, boolean closedCases) {
+	public void fillReportListWith(boolean openedCases, boolean closedCases) {
 		this.mainframe.reportListModel.clear();
 		for(CaseReport cR : Main.dataBase.getCurrentData()){
 			if(cR.isClosed() && closedCases){
@@ -662,6 +660,14 @@ public class MainframeController {
 	}
 	
 	/**
+	 * 
+	 * @return the globalToDate value
+	 */
+	public Date getGlobalToDate(){
+		return this.globalToDate;
+	}
+	
+	/**
 	 * This method is called when the details button is clicked.
 	 * It will open a new Window containing detailed information of the selected report.
 	 */
@@ -857,5 +863,9 @@ public class MainframeController {
 		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMaximum(newMaxPosValue);
 		this.mainframe.filtermenu_analysis_panel_threshold_slider.setMinimum(newMinPosValue+1);
 		this.mainframe.filtermenu_analysis_panel_threshold_slider.setValue(currentValue);
+	}
+	
+	public String getCurrentCategory(){
+		return this.currentCategory;
 	}
 }

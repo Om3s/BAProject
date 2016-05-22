@@ -42,6 +42,9 @@ public class MapController extends DefaultMapController {
 	private ImageMapMarker currentHeatMapImageMarker;
 	private GridController gridController;
 	private Coordinate upperLeftFixPoint,lowerRightFixPoint;
+	//selection variables:
+	private boolean isDraggingSelection,isPotentialDrag,isInSelectionMode;
+	private Coordinate dragModeStartMousePosition,dragModeCurrentMousePosition,dragModeEndMousePosition;
 	
 	public MapController(JMapViewer map) {
 		super(map);
@@ -54,6 +57,9 @@ public class MapController extends DefaultMapController {
 	 * Simply draws all current data initially to the map.
 	 */
 	public void init(){
+		this.isDraggingSelection = false;
+		this.isPotentialDrag = false;
+		this.isInSelectionMode = false;
 		this.map.setTileSource(new GrayOSMTileSource.BWMapnik());
 		for(CaseReport cR : Main.dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
@@ -151,6 +157,51 @@ public class MapController extends DefaultMapController {
 	 * visible and logically selected.
 	 */
 	public void mouseClicked(MouseEvent e) {
+		if(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected()){
+			//not clear what clicks should do in heatMap Mode
+		} else {
+			if(e.getButton() == MouseEvent.BUTTON1){
+		  		Coordinate geoClickPos = (Coordinate) this.map.getPosition(e.getPoint());
+				Point p = this.map.getMapPosition(geoClickPos);
+				double X = p.x;
+				double Y = p.y;
+		  	    Iterator<GeoPoint> i = this.currentPoints.iterator();
+		  	    double centerX, centerY,shortestDistance=Double.MAX_VALUE;
+		  	    Point markerPosition = null;
+		  	    GeoPoint mapMarker = null;
+		  	    double newDistance;
+		  	    while (i.hasNext()) {
+
+		  	        mapMarker = (GeoPoint) i.next();
+
+		  	        if(mapMarker != null){
+		  	        	
+		  	        	newDistance = this.distance(mapMarker.getCoordinate(), geoClickPos);
+		  	        	
+		  	        	if (newDistance < shortestDistance){
+		  	        		shortestDistance = newDistance;
+	  	            		this.setSelectedMarker(mapMarker);
+		  	        	}
+		  	        }
+		  	    }
+		  	    markerPosition = this.map.getMapPosition(this.selectedMapMarker.getCoordinate());
+		  	    centerX =  markerPosition.getX();
+		  	    centerY = markerPosition.getY();
+		  	    double radCircle  = Math.sqrt( (((centerX-X)*(centerX-X)) + (centerY-Y)*(centerY-Y)));
+		  	    if (radCircle > 8){
+		  	    	this.clearSelectedMapMarker();
+		  	    } else {
+		  	    	Main.mainframeController.mainframe.reportList.setSelectedValue(this.selectedMapMarker.getRelatedCaseReport(), true);
+		  	    }
+			} else if(e.getButton() == MouseEvent.BUTTON3){
+				if(this.isInSelectionMode){
+					this.isInSelectionMode = false;
+					Main.mainframeController.refreshMapData();
+				}
+			}
+		}
+  	    this.map.repaint();
+		//Debug console outputs
 		if(e.getButton() == MouseEvent.BUTTON1){
 	  		Coordinate geoClickPos = (Coordinate) this.map.getPosition(e.getPoint());
 			Point p = this.map.getMapPosition(geoClickPos);
@@ -158,35 +209,6 @@ public class MapController extends DefaultMapController {
 			double Y = p.y;
 	  		System.out.println("Left-Click at X="+X+", Y="+Y);
 	  		System.out.println("Left-Click at X="+geoClickPos.getLon()+", Y="+geoClickPos.getLat()+", Zoomlevel: "+this.map.getZoom());
-	  		System.out.println();
-	  	    Iterator<GeoPoint> i = this.currentPoints.iterator();
-	  	    double centerX, centerY,shortestDistance=Double.MAX_VALUE;
-	  	    Point markerPosition = null;
-	  	    GeoPoint mapMarker = null;
-	  	    double newDistance;
-	  	    while (i.hasNext()) {
-
-	  	        mapMarker = (GeoPoint) i.next();
-
-	  	        if(mapMarker != null){
-	  	        	
-	  	        	newDistance = this.distance(mapMarker.getCoordinate(), geoClickPos);
-	  	        	
-	  	        	if (newDistance < shortestDistance){
-	  	        		shortestDistance = newDistance;
-  	            		this.setSelectedMarker(mapMarker);
-	  	        	}
-	  	        }
-	  	    }
-	  	    markerPosition = this.map.getMapPosition(this.selectedMapMarker.getCoordinate());
-	  	    centerX =  markerPosition.getX();
-	  	    centerY = markerPosition.getY();
-	  	    double radCircle  = Math.sqrt( (((centerX-X)*(centerX-X)) + (centerY-Y)*(centerY-Y)));
-	  	    if (radCircle > 8){
-	  	    	this.clearSelectedMapMarker();
-	  	    } else {
-	  	    	Main.mainframeController.mainframe.reportList.setSelectedValue(this.selectedMapMarker.getRelatedCaseReport(), true);
-	  	    }
 		} else if(e.getButton() == MouseEvent.BUTTON2){
 			Point p = e.getPoint();
 			int X = p.x;
@@ -198,15 +220,19 @@ public class MapController extends DefaultMapController {
 			int Y = p.y;
 	  		System.out.println("Right-Click at X="+X+", Y="+Y);
 		}
-  	    this.map.repaint();
 	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e){
 		if(SwingUtilities.isLeftMouseButton(e)){
-			System.out.println("left dragggg");
-		} else if (SwingUtilities.isRightMouseButton(e)){
-			System.out.println("right dragggg");
+			if(!this.isDraggingSelection && this.isPotentialDrag){
+				this.isDraggingSelection = true;
+			}
+			if(this.isDraggingSelection){
+				System.out.println("DRAGMODE");
+				this.dragModeCurrentMousePosition = (Coordinate)this.map.getPosition(e.getPoint());
+				//TODO paint the rectangle somehow
+			}
 		}
 	}
 	
@@ -214,9 +240,33 @@ public class MapController extends DefaultMapController {
 	public void mousePressed(MouseEvent e){
 		if(SwingUtilities.isLeftMouseButton(e)){
 			System.out.println("left pressed");
+			this.isPotentialDrag = true;
+			this.dragModeStartMousePosition = (Coordinate)this.map.getPosition(e.getPoint());
+			//TODO not sure
 		} else if (SwingUtilities.isRightMouseButton(e)){
 			System.out.println("right pressed");
 		}
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e){
+		if(this.isDraggingSelection){
+			this.isInSelectionMode = true;
+			this.dragModeEndMousePosition = (Coordinate)this.map.getPosition(e.getPoint());
+			Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setSelected(false);
+			//TODO call the query
+			try {
+				Main.dataBase.selectSpatialWeekdaysCasesBetweenDatesToCurrentData(Main.mainframeController.getGlobalFromDate(), Main.mainframeController.getGlobalToDate(), Main.mainframeController.getIgnoredWeekdaysAsList(), Main.mainframeController.getCurrentCategory(), Main.mainframeController.getIgnoredDayTimesAsList(), this.dragModeStartMousePosition, this.dragModeEndMousePosition);
+				System.out.println("currentData#: "+Main.dataBase.getCurrentData().size());
+				Main.mapController.loadPoints(Main.dataBase.getCurrentData());
+				Main.mainframeController.fillReportListWith(Main.mainframeController.mainframe.reportList_panel_filter_checkBoxOpen.isSelected(), Main.mainframeController.mainframe.reportList_panel_filter_checkBoxClosed.isSelected());
+				Main.mapController.setShowCurrentPoints(true);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		this.isPotentialDrag = false;
+		this.isDraggingSelection = false;
 	}
 	
 	/**

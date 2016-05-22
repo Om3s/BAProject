@@ -39,6 +39,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -54,6 +55,7 @@ public class CrimeCaseDatabase {
 	private StandardAnalyzer standardAnalyzer = null;
 	private ArrayList<String> categories;
 	private CaseReport currentSelected;
+	private int queryResultLimit = 30000;
 	
 	public CrimeCaseDatabase(String path, boolean reIndex) throws IOException {
 		
@@ -353,7 +355,53 @@ public class CrimeCaseDatabase {
 			Query query2 = new TermQuery(new Term("category", category));
 			boolQuery.add(query2, BooleanClause.Occur.MUST);
 		}
-		TopDocs docs = this.indexSearcher.search(boolQuery, 10000);
+		TopDocs docs = this.indexSearcher.search(boolQuery, queryResultLimit);
+		System.out.println("Total hits: " + docs.totalHits);
+		Document doc;
+		for(ScoreDoc sDoc : docs.scoreDocs){
+			 doc = indexSearcher.doc(sDoc.doc);
+			 if(doc.get("lat") != null){
+				 this.currentData.add(new CaseReport(Integer.valueOf(doc.get("id")), doc.get("dateOpened"), doc.get("dateClosed"), doc.get("dayTimeValue"), doc.get("dayOfWeek"), doc.get("status"), doc.get("statusNotes"), doc.get("category"), doc.get("address"), doc.get("neighbourhood"), "(" + doc.get("lat") + ", " + doc.get("lon") + ")", doc.get("mediaUrl"))); 
+			 }
+		}
+		this.currentData.sort(new Comparator<CaseReport>() {
+
+			@Override
+			public int compare(CaseReport cR1, CaseReport cR2) {
+				return cR1.compareTo(cR2);
+			}
+		});
+	}
+	
+	//TODO
+	public void selectSpatialWeekdaysCasesBetweenDatesToCurrentData(Date fromDate, Date toDate, ArrayList<Integer> ignoredWeekdaysAsList, String category, ArrayList<Integer> ignoredDayTimesAsList, Coordinate upperLeftPoint, Coordinate lowerRightPoint) throws IOException {
+		this.clearCurrentData();
+		ArrayList<Query> dayQueries = new ArrayList<Query>();
+		BooleanQuery boolQuery = new BooleanQuery();
+		for(int day : ignoredWeekdaysAsList){
+			boolQuery.add(NumericRangeQuery.newIntRange("dayOfWeek", day, day, true, true), BooleanClause.Occur.MUST_NOT);
+		}
+		for(int dayTimeValue : ignoredDayTimesAsList){
+			boolQuery.add(NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true), BooleanClause.Occur.MUST_NOT);
+		}
+		boolQuery.add(NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true), BooleanClause.Occur.MUST);
+		if(!category.equals("All categories")){
+			boolQuery.add(new TermQuery(new Term("category", category)), BooleanClause.Occur.MUST);
+		}
+		Query tempQuery;
+		if(upperLeftPoint.getLon() <= lowerRightPoint.getLon()){
+			tempQuery = NumericRangeQuery.newDoubleRange("lon", upperLeftPoint.getLon(), lowerRightPoint.getLon(), true, true);
+		} else {
+			tempQuery = NumericRangeQuery.newDoubleRange("lon", lowerRightPoint.getLon(), upperLeftPoint.getLon(), true, true);
+		}
+		boolQuery.add(tempQuery, BooleanClause.Occur.MUST);
+		if(upperLeftPoint.getLat() <= lowerRightPoint.getLat()){
+			tempQuery = NumericRangeQuery.newDoubleRange("lat", upperLeftPoint.getLat(), lowerRightPoint.getLat(), true, true);
+		} else {
+			tempQuery = NumericRangeQuery.newDoubleRange("lat", lowerRightPoint.getLat(),upperLeftPoint.getLat(), true, true);
+		}
+		boolQuery.add(tempQuery, BooleanClause.Occur.MUST);
+		TopDocs docs = this.indexSearcher.search(boolQuery, this.queryResultLimit);
 		System.out.println("Total hits: " + docs.totalHits);
 		Document doc;
 		for(ScoreDoc sDoc : docs.scoreDocs){
