@@ -151,6 +151,7 @@ public class GridController {
 		maxPosValue = Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.getValue() / 100.0;
 		this.minValue = Double.MAX_VALUE;
 		this.maxValue = Double.MIN_VALUE;
+		this.recommendedSliderValue = 0.0;
 		
 		int[][] pastDataAverage = this.calculateWeightedAverage(this.pastGridModelData.toArray(new GridModelData[0]));
 		int[][] absoluteDataDifference = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
@@ -174,6 +175,9 @@ public class GridController {
 					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) < this.minValue){
 						this.minValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
 					}
+					if(this.recommendedSliderValue < this.relativeDataDifference.get(index)[x][y]){
+						this.recommendedSliderValue = this.relativeDataDifference.get(index)[x][y];
+					}
 				}
 			}
 			this.normalizedRelativeMatrix.add(new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()]);
@@ -191,12 +195,14 @@ public class GridController {
 					}
 				}
 			}
+			this.recommendedSliderValue = (double)((double)(this.recommendedSliderValue - this.minValue) / (double)(this.maxValue - this.minValue));
 		}
 	}
 	
 	public void recommendedSliderValues(){
 		Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText(""+(int)(this.minValue*100));
 		Main.mainframeController.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText(""+(int)(this.maxValue*105));
+		Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.setValue((int)(this.recommendedSliderValue*100.0));
 		Main.mainframeController.refreshHeatMapSlider();
 	}
 

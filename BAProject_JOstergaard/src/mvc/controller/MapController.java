@@ -286,12 +286,13 @@ public class MapController extends DefaultMapController {
 		if(this.isDraggingSelection){
 			this.isInSelectionMode = true;
 			this.dragModeEndMousePosition = (Coordinate)this.map.getPosition(e.getPoint());
-			this.wasPreviouslyHeatmap = Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected();
+			if(!this.wasPreviouslyHeatmap){
+				this.wasPreviouslyHeatmap = Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected();
+			}
 			Main.mainframeController.wasInSelectionMode = true;
 			if(this.wasPreviouslyHeatmap){
 				Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setSelected(false);
 			}
-			Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setEnabled(false);
 			try {
 				Main.dataBase.selectSpatialWeekdaysCasesBetweenDatesToCurrentData(Main.mainframeController.getGlobalFromDate(), Main.mainframeController.getGlobalToDate(), Main.mainframeController.getIgnoredWeekdaysAsList(), Main.mainframeController.getCurrentCategory(), Main.mainframeController.getIgnoredDayTimesAsList(), this.dragModeStartMousePosition, this.dragModeEndMousePosition);
 				System.out.println("currentData#: "+Main.dataBase.getCurrentData().size());
