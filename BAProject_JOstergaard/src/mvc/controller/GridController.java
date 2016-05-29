@@ -189,13 +189,13 @@ public class GridController {
 						this.relativeDataDifference.get(index)[x][y] = maxNegValue;
 					} 
 					if(this.relativeDataDifference.get(index)[x][y] >= 0){
-						this.normalizedRelativeMatrix.get(index)[x][y] = (double)((double)this.relativeDataDifference.get(index)[x][y] - minPosValue)/(maxPosValue - minPosValue);
+						this.normalizedRelativeMatrix.get(index)[x][y] = ((double)this.relativeDataDifference.get(index)[x][y] - minPosValue)/(maxPosValue - minPosValue);
 					} else {
-						this.normalizedRelativeMatrix.get(index)[x][y] = (double)((double)this.relativeDataDifference.get(index)[x][y] - minNegValue)/(maxNegValue - minNegValue) * (-1.0);
+						this.normalizedRelativeMatrix.get(index)[x][y] = ((double)this.relativeDataDifference.get(index)[x][y] - minNegValue)/(maxNegValue - minNegValue) * (-1.0);
 					}
 				}
 			}
-			this.recommendedSliderValue = (double)((double)(this.recommendedSliderValue - this.minValue) / (double)(this.maxValue - this.minValue));
+			this.recommendedSliderValue = ((double)(this.recommendedSliderValue - this.minValue) / (double)(this.maxValue - this.minValue));
 		}
 	}
 	

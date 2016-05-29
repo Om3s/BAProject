@@ -165,10 +165,10 @@ public class CaseCountMatrix extends JPanel {
 	
 	private void refreshLayoutSettings() {
 		this.xOuterOffsetLeft = this.leftStringWidth*1.2;
-		this.xOuterOffsetRight = this.getWidth()*0.05;
+		this.xOuterOffsetRight = this.getWidth()*0.1;
 		this.yOuterOffsetTop = this.getHeight()*0.2;
 		this.textHeightTop = this.getHeight() / 11;
-		this.yOuterOffsetBot = this.getHeight()*0.1;
+		this.yOuterOffsetBot = this.getHeight()*0.145;
 		this.xInnerOffset = 0; //this.getWidth()*0.02;
 		this.yInnerOffset = 0; //this.getHeight()*0.02;
 		this.xDrawRange = this.getWidth()*(1.0-(this.xOuterOffsetLeft+this.xOuterOffsetRight)/this.getWidth());
@@ -297,8 +297,17 @@ public class CaseCountMatrix extends JPanel {
 				g2d.drawString(cellContent, (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth(cellContent)/2), (float)(posY+dataRectHeight/2+5));
 			}
 		}
-		//DRAW TEXT LEFT:
+		//DRAW LEGEND COLORS:
+		double colorLegendRectHeight = (this.yDrawRange+this.textHeightTop+this.yOuterOffsetTop/2.5)/this.colorMaps.length;
+		posX = this.xOuterOffsetLeft+7*(dataRectWidth+this.xInnerOffset)+dataRectWidth*0.25;
+		for(int y=0;y<this.colorMaps.length;y++){
+			posY = this.yOuterOffsetTop*0.72+y*colorLegendRectHeight;
+			g2d.setColor(this.colorMaps[this.colorMaps.length-y-1]);
+			g2d.fill(new Rectangle2D.Double(posX, posY, dataRectWidth/2, colorLegendRectHeight));
+		}
 		g2d.setColor(Color.BLACK);
+		g2d.draw(new Rectangle2D.Double(posX, this.yOuterOffsetTop*0.72, dataRectWidth/2, colorLegendRectHeight*this.colorMaps.length));
+		//DRAW TEXT LEFT:
 		posY = this.yOuterOffsetTop-5+this.textHeightTop/1.5;
 		g2d.drawString("Daily Total", (float)(this.leftStringWidth*0.15), (float)posY);
 		posY = this.yOuterOffsetTop-5+this.textHeightTop+this.textHeightTop+0*(dataRectHeight+yInnerOffset);
@@ -348,6 +357,12 @@ public class CaseCountMatrix extends JPanel {
 		posX = this.xOuterOffsetLeft+6*(dataRectWidth+this.xInnerOffset);
 		g2d.setColor(Main.sundayColor);
 		g2d.drawString("Sun", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Sun")*0.5), (float)posY);
+		//DRAW LEGEND TEXT:
+		posX = this.xOuterOffsetLeft+7*(dataRectWidth+this.xInnerOffset);
+		g2d.setColor(Color.BLACK);
+		g2d.drawString("Max", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Max")*0.5), (float)posY);
+		posY = this.yOuterOffsetTop+this.yDrawRange+this.yOuterOffsetBot*1.2;
+		g2d.drawString("Min", (float)(posX+dataRectWidth/2-g2d.getFontMetrics().stringWidth("Min")*0.5), (float)posY);
 		this.renewSelectedRectangle();
 		if(this.selectedRectangle != null){
 			g2d.setStroke(new BasicStroke(3));
@@ -359,7 +374,6 @@ public class CaseCountMatrix extends JPanel {
 			g2d.setColor(Color.WHITE);
 			g2d.draw(new Rectangle2D.Double(this.rectangleMouseIsOver.getX(), this.rectangleMouseIsOver.getY(), this.rectangleMouseIsOver.getWidth(), this.rectangleMouseIsOver.getHeight()));
 		}
-		g2d.dispose();
 	}
 
 	/**

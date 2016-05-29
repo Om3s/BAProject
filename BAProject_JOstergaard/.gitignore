@@ -6,3 +6,5 @@
 /dat/lucene_index_chicago/*
 /dat/img/*
 /libs/*
+
+!/dat/img/heatmap_legend.png
