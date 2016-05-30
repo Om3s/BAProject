@@ -6,9 +6,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -24,20 +21,9 @@ import mvc.main.Main;
 public class TimeLineGraphic extends JPanel {
 	//Offset space on each side
 	private Point2D mousePos, mousePosBeforeDrag, weightRectPosBeforeDrag;
-	private Color[] colorMaps = {
-			new Color(255,255,204),
-			new Color(255,247,160),
-			new Color(254,217,118),
-			new Color(254,178,76),
-			new Color(253,151,60),
-			new Color(252,78,42),
-			new Color(227,26,28),
-			new Color(189,0,38),
-			new Color(128,0,38),
-			};
 	private double xOuterOffsetLeft, xOuterOffsetRight;
 	private double yOuterOffsetTop, yOuterOffsetBot;
-	private double xInnerOffset, yInnerOffset;
+	private double xInnerOffset;
 	private double xDrawRange, yDrawRange;
 	private double barWidth;
 	private double maxAbsoluteDataValue, maxRelativeDataValue;
@@ -46,7 +32,7 @@ public class TimeLineGraphic extends JPanel {
 	private int[] absoluteIntervalData;
 	private Rectangle2D[] weightRectangleList;
 	private Rectangle2D mouseHoveringRectangle, draggedWeight;
-	private int hoverInterval, draggedWeightIndex;
+	private int draggedWeightIndex;
 	private int rightStringWidth;
 
 	public TimeLineGraphic(){
@@ -171,7 +157,6 @@ public class TimeLineGraphic extends JPanel {
 		if(this.weightRectangleList != null && p != null){
 			for(int x=1;x<this.weightRectangleList.length;x++){
 				if(this.weightRectangleList[x].getX() < p.getX() && this.weightRectangleList[x].getY() < p.getY() && this.weightRectangleList[x].getX()+this.weightRectangleList[x].getWidth() > p.getX() && this.weightRectangleList[x].getY()+this.weightRectangleList[x].getHeight() > p.getY()){
-					this.hoverInterval = x;
 					return this.weightRectangleList[x];
 				}
 			}
@@ -186,7 +171,6 @@ public class TimeLineGraphic extends JPanel {
 			this.yOuterOffsetTop = this.getHeight()*0.075;
 			this.yOuterOffsetBot = this.getHeight()*0.3;
 			this.xInnerOffset = 5;
-			this.yInnerOffset = 5;
 			this.xDrawRange = this.getWidth()*(1.0-(this.xOuterOffsetLeft+this.xOuterOffsetRight)/this.getWidth());
 			this.yDrawRange = this.getHeight()*(1.0-(this.yOuterOffsetTop+this.yOuterOffsetBot)/this.getHeight());
 			this.intervalAmount = Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.getText())+1;
@@ -275,7 +259,6 @@ public class TimeLineGraphic extends JPanel {
 			g2d.setColor(Color.WHITE);
 			g2d.draw(new Rectangle2D.Double(this.mouseHoveringRectangle.getX(), this.mouseHoveringRectangle.getY(), this.mouseHoveringRectangle.getWidth(), this.mouseHoveringRectangle.getHeight()));
 		}
-		g2d.dispose();
 	}
 
 	public void setAbsoluteIntervalData(int[] absoluteIntervalData) {
