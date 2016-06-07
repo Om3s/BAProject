@@ -243,7 +243,7 @@ public class GridController {
 	private int[][] countGridOccurenciesFromTo(Date fromDate, Date toDate) {
 		int[][] result = null;
 		try {
-			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, "All categories", Gridmodel.getInstance().getGridRectangleMatrix(), Main.mainframeController.getIgnoredDayTimesAsList(), Main.mainframeController.getIgnoredWeekdaysAsList());
+			result = Main.dataBase.countGridOccurenciesFromTo(fromDate, toDate, Main.mainframeController.mainframe.filtermenu_comboBox_category.getSelectedItem().toString(), Gridmodel.getInstance().getGridRectangleMatrix(), Main.mainframeController.getIgnoredDayTimesAsList(), Main.mainframeController.getIgnoredWeekdaysAsList());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
