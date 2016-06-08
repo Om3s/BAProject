@@ -233,6 +233,7 @@ public class MapController extends DefaultMapController {
 				}
 				Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setEnabled(true);
 			}
+			Main.mainframeController.refreshChart();
 			//DEBUG OUTPUT:
 			Point p = e.getPoint();
 			int X = p.x;
@@ -254,7 +255,6 @@ public class MapController extends DefaultMapController {
 				this.botRightCorner = this.map.getMapPosition(this.dragModeCurrentMousePosition);
 				this.topRightCorner = new Point(botRightCorner.x,topLeftCorner.y);
 				this.botLeftCorner = new Point(topLeftCorner.x,botRightCorner.y);
-				//TODO paint the rectangle somehow
 				if(this.selectionRectanglePolygon != null){
 					this.map.removeMapPolygon(this.selectionRectanglePolygon);
 				}
@@ -303,6 +303,7 @@ public class MapController extends DefaultMapController {
 				e1.printStackTrace();
 			}
 		}
+		Main.mainframeController.refreshChart();
 		this.isPotentialDrag = false;
 		this.isDraggingSelection = false;
 	}
@@ -469,5 +470,13 @@ public class MapController extends DefaultMapController {
 	
 	public Coordinate getPosition(Point p){
 		return (Coordinate)this.map.getPosition(p);
+	}
+	
+	public Coordinate getCurrentUpperLeftPoint() {
+		return this.selectionRectanglePath.get(0);
+	}
+	
+	public Coordinate getCurrentLowerRightPoint() {
+		return this.selectionRectanglePath.get(2);
 	}
 }

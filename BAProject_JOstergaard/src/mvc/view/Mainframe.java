@@ -167,7 +167,7 @@ public class Mainframe extends JFrame {
 		//Combobox Categories:
 		this.filtermenu_comboBox_category = new JComboBox();
 		//ChartPanel
-		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4], this);
+		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4]);
 		//filtermenu_analysis:
 		this.filtermenu_analysis_panel_chckbxHeatmap = new JCheckBox("Heatmap Mode");
 		this.filtermenu_analysis_panel_threshold_slider = new JSlider(JSlider.HORIZONTAL);

@@ -25,7 +25,6 @@ public class CaseCountMatrix extends JPanel {
 	private Point mousePos;
 	private int[] weekDayCounts;
 	private int[][] dataMatrix;
-	private Mainframe mFrame;
 	private Rectangle2D[][] dataRectangles; 
 	private Rectangle2D[] weekDayRectangles;
 	private Rectangle2D rectangleMouseIsOver ,selectedRectangle;
@@ -41,9 +40,8 @@ public class CaseCountMatrix extends JPanel {
 			new Color(128,0,38),
 			};
 
-	public CaseCountMatrix(int[][] matrix, Mainframe mFrame){
+	public CaseCountMatrix(int[][] matrix){
 		super();
-		this.mFrame = mFrame;
 		this.dataMatrix = matrix;
 		this.init();
 		this.repaint();

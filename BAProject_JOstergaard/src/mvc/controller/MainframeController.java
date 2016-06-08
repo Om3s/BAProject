@@ -558,7 +558,12 @@ public class MainframeController {
 				for(int y = 0; y<this.currentDataMatrix[0].length; y++){
 					if(this.selectedDayTimesAsList.contains(y)){
 						try {
-							this.currentDataMatrix[x-1][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x);
+							//TODO if selectionmode do spatial of selection, otherwise all in general!!!
+							if(Main.mapController.isInSelectionMode){
+								this.currentDataMatrix[x-1][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x, Main.mapController.getCurrentUpperLeftPoint(), Main.mapController.getCurrentLowerRightPoint());
+							} else {
+								this.currentDataMatrix[x-1][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, x, Main.mapController.getUpperLeftFixPoint(), Main.mapController.getLowerRightFixPoint());
+							}
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -577,7 +582,12 @@ public class MainframeController {
 			for(int y = 0; y<this.currentDataMatrix[0].length; y++){
 				if(this.selectedDayTimesAsList.contains(y)){
 					try {
-						this.currentDataMatrix[6][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, 0);
+//						this.currentDataMatrix[6][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, 0, Main.mapController.getUpperLeftFixPoint(), Main.mapController.getLowerRightFixPoint());
+						if(Main.mapController.isInSelectionMode){
+							this.currentDataMatrix[6][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, 0, Main.mapController.getCurrentUpperLeftPoint(), Main.mapController.getCurrentLowerRightPoint());
+						} else {
+							this.currentDataMatrix[6][y] = Main.dataBase.countCaseReportsFromToWithDayTimes(this.globalFromDate, this.globalToDate, this.currentCategory, y, 0, Main.mapController.getUpperLeftFixPoint(), Main.mapController.getLowerRightFixPoint());
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

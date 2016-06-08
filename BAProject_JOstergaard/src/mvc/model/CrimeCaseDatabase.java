@@ -456,21 +456,27 @@ public class CrimeCaseDatabase {
 		}
 		return totalHits;
 	}
-	
-	public int countCaseReportsFromToWithDayTimes(Date fromDate, Date toDate, String category, int dayTimeValue, int actualWeekday) throws IOException{
+	//TODO
+	public int countCaseReportsFromToWithDayTimes(Date fromDate, Date toDate, String category, int dayTimeValue, int actualWeekday, Coordinate upperLeftPoint, Coordinate lowerRightPoint) throws IOException{
 		int totalHits = 0;
 		TotalHitCountCollector hitCountCollector = new TotalHitCountCollector();
 		BooleanQuery boolQuery = new BooleanQuery();
-		Query query1 = NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true);
-		boolQuery.add(query1, BooleanClause.Occur.MUST);
+		boolQuery.add(NumericRangeQuery.newLongRange("dateOpened", fromDate.getTime(), toDate.getTime(), true, true), BooleanClause.Occur.MUST);
 		if(!category.equals("All categories")){
-			Query query2 = new TermQuery(new Term("category", category));
-			boolQuery.add(query2, BooleanClause.Occur.MUST);
+			boolQuery.add(new TermQuery(new Term("category", category)), BooleanClause.Occur.MUST);
 		}
-		Query query3 = NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true);
-		boolQuery.add(query3, BooleanClause.Occur.MUST);
-		Query query4 = NumericRangeQuery.newIntRange("dayOfWeek", actualWeekday+1, actualWeekday+1, true, true);
-		boolQuery.add(query4, BooleanClause.Occur.MUST);
+		boolQuery.add(NumericRangeQuery.newIntRange("dayTimeValue", dayTimeValue, dayTimeValue, true, true), BooleanClause.Occur.MUST);
+		boolQuery.add(NumericRangeQuery.newIntRange("dayOfWeek", actualWeekday+1, actualWeekday+1, true, true), BooleanClause.Occur.MUST);
+		if(upperLeftPoint.getLon() <= lowerRightPoint.getLon()){
+			boolQuery.add(NumericRangeQuery.newDoubleRange("lon", upperLeftPoint.getLon(), lowerRightPoint.getLon(), true, true), BooleanClause.Occur.MUST);
+		} else {
+			boolQuery.add(NumericRangeQuery.newDoubleRange("lon", lowerRightPoint.getLon(), upperLeftPoint.getLon(), true, true), BooleanClause.Occur.MUST);
+		}
+		if(upperLeftPoint.getLat() <= lowerRightPoint.getLat()){
+			boolQuery.add(NumericRangeQuery.newDoubleRange("lat", upperLeftPoint.getLat(), lowerRightPoint.getLat(), true, true), BooleanClause.Occur.MUST);
+		} else {
+			boolQuery.add(NumericRangeQuery.newDoubleRange("lat", lowerRightPoint.getLat(),upperLeftPoint.getLat(), true, true), BooleanClause.Occur.MUST);
+		}
 		this.indexSearcher.search(boolQuery, hitCountCollector);
 		totalHits += hitCountCollector.getTotalHits();
 		return totalHits;
@@ -498,7 +504,6 @@ public class CrimeCaseDatabase {
 		BooleanQuery actualQuery = null;
 		Query query5;
 		Query query6;
-		//TODO threadpools and executers, fork, join
 		for(int x=0; x<gridRectangleMatrix.length; x++){
 			for(int y=0; y<gridRectangleMatrix[0].length; y++){
 				hitCountCollector = new TotalHitCountCollector();
