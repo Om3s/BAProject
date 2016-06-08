@@ -64,31 +64,33 @@ public class CaseCountMatrix extends JPanel {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if(rectangleMouseIsOver == null){
-					selectedWeekDay = -1;
-					selectedDayTime = -1;
-					selectedRectangle = null;
-				} else if(selectedRectangle == null){
-					selectedWeekDay = hoverWeekDay;
-					selectedDayTime = hoverDayTime;
-					selectedRectangle = rectangleMouseIsOver;
-				} else if(selectedRectangle.equals(rectangleMouseIsOver)){
-					selectedRectangle = null;
-					selectedWeekDay = -1;
-					selectedDayTime = -1;
-				} else {
-					selectedWeekDay = hoverWeekDay;
-					selectedDayTime = hoverDayTime;
-					selectedRectangle = rectangleMouseIsOver;
+				if(!Main.mapController.isInSelectionMode){
+					if(rectangleMouseIsOver == null){
+						selectedWeekDay = -1;
+						selectedDayTime = -1;
+						selectedRectangle = null;
+					} else if(selectedRectangle == null){
+						selectedWeekDay = hoverWeekDay;
+						selectedDayTime = hoverDayTime;
+						selectedRectangle = rectangleMouseIsOver;
+					} else if(selectedRectangle.equals(rectangleMouseIsOver)){
+						selectedRectangle = null;
+						selectedWeekDay = -1;
+						selectedDayTime = -1;
+					} else {
+						selectedWeekDay = hoverWeekDay;
+						selectedDayTime = hoverDayTime;
+						selectedRectangle = rectangleMouseIsOver;
+					}
+					boolean isSelected;
+					if(selectedRectangle == null){
+						isSelected = false;
+					} else {
+						isSelected = true;
+					}
+					Main.mainframeController.filterForCaseCountMatrixSelection(isSelected, selectedWeekDay, selectedDayTime);
+					repaint();
 				}
-				boolean isSelected;
-				if(selectedRectangle == null){
-					isSelected = false;
-				} else {
-					isSelected = true;
-				}
-				Main.mainframeController.filterForCaseCountMatrixSelection(isSelected, selectedWeekDay, selectedDayTime);
-				repaint();
 			}
 			
 			@Override
@@ -119,18 +121,20 @@ public class CaseCountMatrix extends JPanel {
 			}
 			
 			private void anyMouseMovement(MouseEvent e){
-				mousePos = e.getPoint();
-				Rectangle2D temp = getRectangleMouseIsHovering(mousePos);
-				if(temp == null){
-					rectangleMouseIsOver = temp;
-				} else if(rectangleMouseIsOver == null){
-					rectangleMouseIsOver = temp;
-					repaint();
-				} else if(rectangleMouseIsOver != null && rectangleMouseIsOver.equals(temp)){
-					
-				} else if(rectangleMouseIsOver != null && !rectangleMouseIsOver.equals(temp)){
-					rectangleMouseIsOver = temp;
-					repaint();
+				if(!Main.mapController.isInSelectionMode){
+					mousePos = e.getPoint();
+					Rectangle2D temp = getRectangleMouseIsHovering(mousePos);
+					if(temp == null){
+						rectangleMouseIsOver = temp;
+					} else if(rectangleMouseIsOver == null){
+						rectangleMouseIsOver = temp;
+						repaint();
+					} else if(rectangleMouseIsOver != null && rectangleMouseIsOver.equals(temp)){
+						
+					} else if(rectangleMouseIsOver != null && !rectangleMouseIsOver.equals(temp)){
+						rectangleMouseIsOver = temp;
+						repaint();
+					}
 				}
 			}
 		});
@@ -260,7 +264,11 @@ public class CaseCountMatrix extends JPanel {
 		//DRAW BACKGROUND:
 		g2d.setColor(backgroundColor);
 		g2d.fill(new Rectangle2D.Double(0,0,this.getWidth(),this.getHeight()));
-		g2d.setColor(Color.BLACK);
+		if(Main.mapController.isInSelectionMode){
+			g2d.setColor(Color.GRAY);
+		} else {
+			g2d.setColor(Color.BLACK);
+		}
 		g2d.fill(new Rectangle2D.Double(xOuterOffsetLeft-5,yOuterOffsetTop-10,this.getWidth()-xOuterOffsetLeft-xOuterOffsetRight+10,this.getHeight()-yOuterOffsetBot-yOuterOffsetTop+15));
 		//DRAW WEEKDAYS
 		for(int weekDay = 0; weekDay<this.dataMatrix.length; weekDay++){
@@ -303,7 +311,11 @@ public class CaseCountMatrix extends JPanel {
 			g2d.setColor(this.colorMaps[this.colorMaps.length-y-1]);
 			g2d.fill(new Rectangle2D.Double(posX, posY, dataRectWidth/2, colorLegendRectHeight));
 		}
-		g2d.setColor(Color.BLACK);
+		if(Main.mapController.isInSelectionMode){
+			g2d.setColor(Color.GRAY);
+		} else {
+			g2d.setColor(Color.BLACK);
+		}
 		g2d.draw(new Rectangle2D.Double(posX, this.yOuterOffsetTop*0.72, dataRectWidth/2, colorLegendRectHeight*this.colorMaps.length));
 		//DRAW TEXT LEFT:
 		posY = this.yOuterOffsetTop-5+this.textHeightTop/1.5;
