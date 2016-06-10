@@ -15,7 +15,7 @@ public class GridController {
 	private ArrayList<GridModelData> pastGridModelData;
 	private ImageController imageController = new ImageController();
 	private ArrayList<double[][]> normalizedRelativeMatrix,relativeDataDifference;
-	private double minValue, maxValue,recommendedSliderValue;
+	private double minRelativeValue, maxRelativeValue,recommendedSliderValue;
 	private int intervalAmount;
 	private boolean intervalChanged;
 	private double[] weightsOfData;
@@ -149,9 +149,9 @@ public class GridController {
 		maxNegValue = -1.0 * Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.getValue() / 100.0;
 		minPosValue = Integer.valueOf(Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.getText()) / 100.0;
 		maxPosValue = Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.getValue() / 100.0;
-		this.minValue = Double.MAX_VALUE;
-		this.maxValue = Double.MIN_VALUE;
-		this.recommendedSliderValue = 0.0;
+		this.minRelativeValue = Double.MAX_VALUE;
+		this.maxRelativeValue = Double.MIN_VALUE;
+		this.recommendedSliderValue = Double.MIN_VALUE;
 		
 		int[][] pastDataAverage = this.calculateWeightedAverage(this.pastGridModelData.toArray(new GridModelData[0]));
 		int[][] absoluteDataDifference = new int[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()];
@@ -165,21 +165,24 @@ public class GridController {
 				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
 					absoluteDataDifference[x][y] = Gridmodel.getInstance().getData().getDataMatrix()[x][y] - pastDataAverage[x][y];
 					if(absoluteDataDifference[x][y] != 0 && Gridmodel.getInstance().getData().getDataMatrix()[x][y] != 0){
+						//TODO Maybe this part is wrong:
 						this.relativeDataDifference.get(index)[x][y] = (double)absoluteDataDifference[x][y] / (double)Gridmodel.getInstance().getData().getDataMatrix()[x][y];
 					} else {
 						this.relativeDataDifference.get(index)[x][y] = 0.0;	
 					}
-					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) > this.maxValue){
-						this.maxValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
+					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) > this.maxRelativeValue){
+						this.maxRelativeValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
 					}
-					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) < this.minValue){
-						this.minValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
+					if(Math.abs(this.relativeDataDifference.get(index)[x][y]) < this.minRelativeValue){
+						this.minRelativeValue = Math.abs(this.relativeDataDifference.get(index)[x][y]);
 					}
-					if(this.recommendedSliderValue < this.relativeDataDifference.get(index)[x][y]){
-						this.recommendedSliderValue = this.relativeDataDifference.get(index)[x][y];
+					if(this.recommendedSliderValue < relativeDataDifference.get(index)[x][y]){
+						this.recommendedSliderValue = relativeDataDifference.get(index)[x][y];
 					}
 				}
 			}
+			System.out.println("DEBUG max pos relative Difference: "+this.recommendedSliderValue);
+			System.out.println("DEBUG max abs relative Difference: "+this.maxRelativeValue);
 			this.normalizedRelativeMatrix.add(new double[Gridmodel.getInstance().getXResolution()][Gridmodel.getInstance().getYResolution()]);
 			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){ //fill the normalized RelativeMatrix
 				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
@@ -195,14 +198,16 @@ public class GridController {
 					}
 				}
 			}
-			this.recommendedSliderValue = ((double)(this.recommendedSliderValue - this.minValue) / (double)(this.maxValue - this.minValue));
+			//TODO recommended is not working properly absolute and relative difference has to be considered properly
+//			this.recommendedSliderValue = ((double)(this.recommendedSliderValue - this.minAbsoluteValue) / (double)(this.maxAbsoluteValue - this.minAbsoluteValue));
 		}
 	}
 	
 	public void recommendedSliderValues(){
-		Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText(""+(int)(this.minValue*100));
-		Main.mainframeController.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText(""+(int)(this.maxValue*105));
-		Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.setValue((int)(this.recommendedSliderValue*100.0));
+		Main.mainframeController.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText(""+(int)(this.minRelativeValue*100.0));
+		Main.mainframeController.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText(""+(int)(this.maxRelativeValue*100.0));
+		System.out.println("Recommended Slider Values: "+this.recommendedSliderValue+", "+this.maxRelativeValue);
+//		Main.mainframeController.mainframe.filtermenu_analysis_panel_threshold_slider.setValue((int)(this.recommendedSliderValue*this.maxRelativeValue*100.0)); //Somehow bugged
 		Main.mainframeController.refreshHeatMapSlider();
 	}
 

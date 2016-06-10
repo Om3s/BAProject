@@ -68,13 +68,19 @@ public class ImageController {
 		}
 		
 		//Blurr image
-		this.finalHeatmap = this.blurImage(this.rawImage, 2);
+		if(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxBlur.isSelected()){
+			this.finalHeatmap = this.blurImage(this.rawImage, 2);
+		} else {
+			this.finalHeatmap = this.rawImage;
+		}
 		Point tempUL = Main.mapController.getMapPosition(Main.mapController.getUpperLeftFixPoint());
 		Point tempLR = Main.mapController.getMapPosition(Main.mapController.getLowerRightFixPoint());
 		int xDistance = (int)Math.abs(Math.round(tempLR.getX() - tempUL.getX()));
 		int yDistance = (int)Math.abs(Math.round(tempLR.getY() - tempUL.getY()));
 		this.finalHeatmap = this.resizeImage(this.finalHeatmap,xDistance,yDistance);
-		this.finalHeatmap = this.blurImage(this.finalHeatmap, -1);
+		if(Main.mainframeController.mainframe.filtermenu_analysis_panel_chckbxBlur.isSelected()){
+			this.finalHeatmap = this.blurImage(this.finalHeatmap, -1);
+		}
 		this.saveImages(index);
 		currentTime = System.currentTimeMillis();
 		System.out.println("Heatmap created in "+(((double)currentTime-(double)startTime)/1000)+"sec");
@@ -100,14 +106,14 @@ public class ImageController {
 			newWidth = (int)(originalWidth * resizeFactor);
 			img = this.resizeImage(img, newWidth, newHeight);
 			if(radius == -1){
-				radius = img.getWidth() / 15;
+				radius = img.getWidth() / 25;
 			}
 			GaussianFilter gFilter = new GaussianFilter(radius);
 			result = gFilter.filter(img, null);
 			result = this.resizeImage(result, originalWidth, originalHeight);
 		} else {
 			if(radius == -1){
-				radius = img.getWidth() / 15;
+				radius = img.getWidth() / 25;
 			}
 			GaussianFilter gFilter = new GaussianFilter(radius);
 			result = gFilter.filter(img, null);

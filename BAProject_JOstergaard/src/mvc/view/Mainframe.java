@@ -119,6 +119,7 @@ public class Mainframe extends JFrame {
 	private JLabel filtermenu_analysis_panel_label;
 	private JLabel filtermenu_analysis_panel_slider_lowValue_label;
 	public JCheckBox filtermenu_analysis_panel_chckbxHeatmap;
+	public JCheckBox filtermenu_analysis_panel_chckbxBlur;
 	public JSlider filtermenu_analysis_panel_threshold_slider;
 	public JButton filtermenu_analysis_panel_analyze_button;
 	public JTextField filtermenu_analysis_panel_lowPosThreshold_textfield;
@@ -170,6 +171,7 @@ public class Mainframe extends JFrame {
 		this.matrix_chart_panel = new CaseCountMatrix(new int[7][4]);
 		//filtermenu_analysis:
 		this.filtermenu_analysis_panel_chckbxHeatmap = new JCheckBox("Heatmap Mode");
+		this.filtermenu_analysis_panel_chckbxBlur = new JCheckBox("Blur");
 		this.filtermenu_analysis_panel_threshold_slider = new JSlider(JSlider.HORIZONTAL);
 		this.filtermenu_analysis_panel_intervallAmount_textfield = new JTextField();
 		this.filtermenu_analysis_panel_lowPosThreshold_textfield = new JTextField();
@@ -583,11 +585,18 @@ public class Mainframe extends JFrame {
 		
 		filtermenu_analysis_panel_interactive_label = new JLabel("realtime intensity adjustments:");
 		GridBagConstraints gbc_filtermenu_analysis_panel_interactive_label = new GridBagConstraints();
-		gbc_filtermenu_analysis_panel_interactive_label.gridwidth = 6;
+		gbc_filtermenu_analysis_panel_interactive_label.gridwidth = 5;
 		gbc_filtermenu_analysis_panel_interactive_label.insets = new Insets(0, 0, 5, 0);
 		gbc_filtermenu_analysis_panel_interactive_label.gridx = 0;
 		gbc_filtermenu_analysis_panel_interactive_label.gridy = 5;
 		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_interactive_label, gbc_filtermenu_analysis_panel_interactive_label);
+		
+		GridBagConstraints gbc_filtermenu_analysis_panel_chckbxBlur = new GridBagConstraints();
+		gbc_filtermenu_analysis_panel_chckbxBlur.gridwidth = 1;
+		gbc_filtermenu_analysis_panel_chckbxBlur.insets = new Insets(0, 0, 5, 0);
+		gbc_filtermenu_analysis_panel_chckbxBlur.gridx = 5;
+		gbc_filtermenu_analysis_panel_chckbxBlur.gridy = 5;
+		filtermenu_analyzis_panel.add(filtermenu_analysis_panel_chckbxBlur, gbc_filtermenu_analysis_panel_chckbxBlur);
 		
 		GridBagConstraints gbc_filtermenu_analysis_panel_upperPosThreshold_textfield = new GridBagConstraints();
 		gbc_filtermenu_analysis_panel_upperPosThreshold_textfield.weightx = 0.01;
@@ -1053,14 +1062,10 @@ public class Mainframe extends JFrame {
 			
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		
@@ -1119,6 +1124,14 @@ public class Mainframe extends JFrame {
 			
 			@Override
 			public void focusGained(FocusEvent e) {
+			}
+		});
+		
+		this.filtermenu_analysis_panel_chckbxBlur.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.mainframeController.blurCheckboxChanged();
 			}
 		});
 	}

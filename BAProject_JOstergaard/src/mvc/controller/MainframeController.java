@@ -114,6 +114,8 @@ public class MainframeController {
 		this.mainframe.checkBox_daytime_midnight.setSelected(true);
 		//Analysis panel:
 		this.mainframe.filtermenu_analysis_panel_chckbxHeatmap.setSelected(false);
+		this.mainframe.filtermenu_analysis_panel_chckbxBlur.setSelected(true);
+		this.mainframe.filtermenu_analysis_panel_chckbxBlur.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_analyze_button.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
@@ -823,6 +825,7 @@ public class MainframeController {
 	public void checkBoxHeatmapChanged() {
 		if(this.mainframe.filtermenu_analysis_panel_chckbxHeatmap.isSelected()){
 			this.mainframe.filtermenu_analysis_panel_analyze_button.setEnabled(true);
+			this.mainframe.filtermenu_analysis_panel_chckbxBlur.setEnabled(true);
 			this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setEnabled(true);
 			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(true);
 			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(true);
@@ -833,6 +836,7 @@ public class MainframeController {
 			this.refreshHeatMap();
 		} else {
 			this.mainframe.filtermenu_analysis_panel_analyze_button.setEnabled(false);
+			this.mainframe.filtermenu_analysis_panel_chckbxBlur.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
 			this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
@@ -882,5 +886,9 @@ public class MainframeController {
 	
 	public String getCurrentCategory(){
 		return this.currentCategory;
+	}
+
+	public void blurCheckboxChanged() {
+		Main.mapController.loadHeatMapImage(0);
 	}
 }
