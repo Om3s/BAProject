@@ -164,9 +164,9 @@ public class GridController {
 			for(int y=0; y<Gridmodel.getInstance().getYResolution(); y++){ //Fill absolute- and relativeDifferenceMatrices:
 				for(int x=0; x<Gridmodel.getInstance().getXResolution();x++){
 					absoluteDataDifference[x][y] = Gridmodel.getInstance().getData().getDataMatrix()[x][y] - pastDataAverage[x][y];
-					if(absoluteDataDifference[x][y] != 0 && Gridmodel.getInstance().getData().getDataMatrix()[x][y] != 0){
+					if(absoluteDataDifference[x][y] != 0 && pastDataAverage[x][y] != 0){
 						//TODO Maybe this part is wrong:
-						this.relativeDataDifference.get(index)[x][y] = (double)absoluteDataDifference[x][y] / (double)Gridmodel.getInstance().getData().getDataMatrix()[x][y];
+						this.relativeDataDifference.get(index)[x][y] = (double)absoluteDataDifference[x][y] / (double)pastDataAverage[x][y];
 					} else {
 						this.relativeDataDifference.get(index)[x][y] = 0.0;	
 					}
