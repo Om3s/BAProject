@@ -717,6 +717,7 @@ public class Mainframe extends JFrame {
 			this.filtermenu_comboBox_category.addItem("THEFT");
 			this.filtermenu_comboBox_category.addItem("NARCOTICS");
 			this.filtermenu_comboBox_category.addItem("ROBBERY");
+			this.filtermenu_comboBox_category.addItem("BURGLARY");
 			this.filtermenu_comboBox_category.addItem("HOMICIDE");
 			this.filtermenu_comboBox_category.addItem("PROSTITUTION");
 			this.filtermenu_comboBox_category.addItem("CRIMINAL DAMAGE");
@@ -726,7 +727,6 @@ public class Mainframe extends JFrame {
 			this.filtermenu_comboBox_category.addItem("MOTOR VEHICLE THEFT");
 			this.filtermenu_comboBox_category.addItem("WEAPONS VIOLATION");
 			this.filtermenu_comboBox_category.addItem("CRIMINAL TRESPASS");
-			this.filtermenu_comboBox_category.addItem("BURGLARY");
 			this.filtermenu_comboBox_category.addItem("DECEPTIVE PRACTICE");
 			this.filtermenu_comboBox_category.addItem("SEX OFFENSE");
 			this.filtermenu_comboBox_category.addItem("OFFENSE INVOLVING CHILDREN");

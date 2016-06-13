@@ -13,7 +13,7 @@ public class HeatMapLegendPanel extends JPanel {
 	private BufferedImage image;
 	
 	public HeatMapLegendPanel(){
-		File imageFile = new File("dat/img/heatmap_legend.png");
+		File imageFile = new File("dat/img/heatmap_legend_horizontal.png");
 		try {
 			this.image = ImageIO.read(imageFile);
 		} catch (IOException e) {

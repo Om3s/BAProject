@@ -428,6 +428,11 @@ public class MapController extends DefaultMapController {
 	public void setShowHeatMap(boolean isVisible) {
 		if(this.currentHeatMapImageMarker != null){
 			this.currentHeatMapImageMarker.setVisible(isVisible);
+			if(isVisible){
+				//TODO draw Legend on Map ALSO consider update the graphic on panning
+			} else {
+				
+			}
 		}
 	}
 
