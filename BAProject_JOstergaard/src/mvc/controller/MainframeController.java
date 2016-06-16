@@ -121,10 +121,10 @@ public class MainframeController {
 		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setEnabled(false);
 		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setEnabled(false);
-		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setText("3");
+		this.mainframe.filtermenu_analysis_panel_intervallAmount_textfield.setText("6");
 		this.mainframe.filtermenu_analysis_panel_lowPosThreshold_textfield.setText("0");
 		this.mainframe.filtermenu_analysis_panel_upperPosThreshold_textfield.setText("100");
-		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setText("20");
+		this.mainframe.filtermenu_analysis_panel_resolution_textfield.setText("30");
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMinorTickSpacing(2);
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setMajorTickSpacing(10);
 //		this.mainframe.filtermenu_analysis_panel_posThreshold_slider.setPaintTicks(true);

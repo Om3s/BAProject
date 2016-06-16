@@ -197,6 +197,7 @@ public class Mainframe extends JFrame {
 		this.setSize(frameWidth, frameHeight);
 		this.setLocation((int)((Main.screenWidth / 2) - (frameWidth / 2)), (int)((Main.screenHeight / 2) - (frameHeight / 2 )));
 		this.setMinimumSize(new Dimension(800, 610));
+		this.setTitle("VExGeoCri");
 		
 		// =================== GUI LAYOUT: =================== 
 		GridBagLayout gridBagLayout = new GridBagLayout();
