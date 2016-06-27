@@ -67,8 +67,13 @@ public class MapController extends DefaultMapController {
 		for(CaseReport cR : Main.dataBase.getCurrentData()){
 			this.map.addMapMarker(cR.getPoint());
 		}
-		this.setUpperLeftFixPoint(new Coordinate(42.181723498412396,-88.0828857421875));
-		this.setLowerRightFixPoint(new Coordinate(41.48389104267176,-87.25341796875));
+		if(Main.isChicago){
+			this.setUpperLeftFixPoint(new Coordinate(42.181723498412396,-88.0828857421875));
+			this.setLowerRightFixPoint(new Coordinate(41.48389104267176,-87.25341796875));
+		} else {
+			this.setUpperLeftFixPoint(new Coordinate(37.83636090929916,-122.56141662597656));
+			this.setLowerRightFixPoint(new Coordinate(37.627828123247475,-122.28263854980469));
+		}
 		this.map.updateUI();
 	}
 	
@@ -230,10 +235,12 @@ public class MapController extends DefaultMapController {
 			}
 			Main.mainframeController.refreshChart();
 			//DEBUG OUTPUT:
+	  		Coordinate geoClickPos = (Coordinate) this.map.getPosition(e.getPoint());
 			Point p = e.getPoint();
 			int X = p.x;
 			int Y = p.y;
 	  		System.out.println("Right-Click at X="+X+", Y="+Y);
+	  		System.out.println("Right-Click at X="+geoClickPos.getLon()+", Y="+geoClickPos.getLat()+", Zoomlevel: "+this.map.getZoom());
 		}
   	    this.map.repaint();
 	}
